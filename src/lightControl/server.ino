@@ -31,7 +31,9 @@ void configRouter() {
 void handleRoot() {
   digitalWrite(LED_BUILTIN, LOW);
 
-  server.send(200, "text/plain", "Some data here");
+  String message = getPzemValues();
+
+  server.send(200, "text/plain", message);
 
   digitalWrite(LED_BUILTIN, HIGH);
 }

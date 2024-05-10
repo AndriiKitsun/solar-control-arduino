@@ -4,3 +4,5 @@
 #endif
 
 #define DOMAIN_NAME "server-domain-name"
+#define PZEM_RX_PIN 1
+#define PZEM_TX_PIN 2
