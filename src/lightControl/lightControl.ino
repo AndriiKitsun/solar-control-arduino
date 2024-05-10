@@ -2,8 +2,8 @@
 #include <ESP8266mDNS.h>
 
 #ifndef STASSID
-#define STASSID "KnWireless"
-#define STAPSK "ShitWirelessPoint!@#"
+#define STASSID "123"
+#define STAPSK "123"
 #endif
 
 const char* ssid = STASSID;
