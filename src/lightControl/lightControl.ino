@@ -1,23 +1,16 @@
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
 
-#ifndef STASSID
-#define STASSID "123"
-#define STAPSK "123"
-#endif
-
-const char* ssid = STASSID;
-const char* password = STAPSK;
-const String domainName = "esp8266";
+#include "config.h"
 
 ESP8266WebServer server(80);
 
 void connectToWiFi() {
   Serial.print(F("Connecting to "));
-  Serial.print(ssid);
+  Serial.print(STASSID);
 
   WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
+  WiFi.begin(STASSID, STAPSK);
 
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
@@ -29,7 +22,7 @@ void connectToWiFi() {
 }
 
 void startServer() {
-  if (MDNS.begin(domainName)) {
+  if (MDNS.begin(DOMAIN_NAME)) {
     Serial.println(F("MDNS responder started"));
   }
 
@@ -44,14 +37,14 @@ void startServer() {
   Serial.print(F("1. IP address: "));
   Serial.println(WiFi.localIP());
   Serial.print(F("2. URL: "));
-  Serial.println(String("http://" + domainName + ".local"));
+  Serial.println("http://" + String(DOMAIN_NAME) + ".local");
 }
 
 void handleRoot() {
   digitalWrite(LED_BUILTIN, LOW);
 
   server.send(200, "text/plain", "Some data here");
-  
+
   digitalWrite(LED_BUILTIN, HIGH);
 }
 
@@ -59,7 +52,7 @@ void handleHealthCheck() {
   digitalWrite(LED_BUILTIN, LOW);
 
   server.send(200, "text/plain", "UP");
-  
+
   digitalWrite(LED_BUILTIN, HIGH);
 }
 
@@ -70,7 +63,7 @@ void handleNotFound() {
   server.send(404, "text/plain", "Route Not Found");
 
   digitalWrite(LED_BUILTIN, HIGH);
-} 
+}
 
 void setup() {
   Serial.begin(115200);

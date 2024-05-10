@@ -1,0 +1,6 @@
+#ifndef STASSID
+#define STASSID "WiFi-ssid"
+#define STAPSK "WiFi-password"
+#endif
+
+#define DOMAIN_NAME "server-domain-name"
