@@ -31,9 +31,10 @@ void configRouter() {
 void handleRoot() {
   digitalWrite(LED_BUILTIN, LOW);
 
-  String message = getPzemValues();
+  String payload;
+  serializeJson(getPzemValues(), payload);
 
-  server.send(200, "text/plain", message);
+  server.send(200, "application/json", payload);
 
   digitalWrite(LED_BUILTIN, HIGH);
 }
