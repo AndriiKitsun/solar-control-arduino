@@ -13,3 +13,11 @@ JsonDocument getPzemValues() {
 
   return doc;
 }
+
+String getJsonPzemValues() {
+  String result;
+
+  serializeJson(getPzemValues(), result);
+
+  return result;
+}
