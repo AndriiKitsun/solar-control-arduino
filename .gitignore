@@ -1,2 +1,6 @@
 .DS_Store
-config.ino
+.idea
+
+libraries
+
+01-config.ino

@@ -1,0 +1,10 @@
+#ifndef STASSID
+#define STASSID "WiFi-ssid"
+#define STAPSK "WiFi-password"
+#endif
+
+#define DOMAIN_NAME "server-domain-name"
+
+// GPIO pins
+#define PZEM_RX_PIN 1
+#define PZEM_TX_PIN 2

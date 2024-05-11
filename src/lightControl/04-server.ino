@@ -13,7 +13,7 @@ void startServer() {
   Serial.print(F("1. IP address: "));
   Serial.println(WiFi.localIP());
   Serial.print(F("2. URL: "));
-  Serial.println("http://" + String(DOMAIN_NAME) + ".local");
+  Serial.println(F("http://" DOMAIN_NAME ".local"));
 }
 
 void handleClient() {
@@ -31,7 +31,7 @@ void configRouter() {
 void handleRoot() {
   digitalWrite(LED_BUILTIN, LOW);
 
-  server.send(200, "text/plain", "Some data here");
+  server.send(200, "application/json", getJsonPzemValues());
 
   digitalWrite(LED_BUILTIN, HIGH);
 }

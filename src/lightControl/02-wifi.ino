@@ -5,11 +5,16 @@ void connectToWiFi() {
   WiFi.mode(WIFI_STA);
   WiFi.begin(STASSID, STAPSK);
 
-  while (WiFi.status() != WL_CONNECTED) {
+  while (!isWiFiConnected()) {
     delay(500);
     Serial.print(F("."));
   }
 
   Serial.println();
-  Serial.println(F("WiFi connected"));
+  Serial.print(F("Connected to WiFi with MAC: "));
+  Serial.println(WiFi.macAddress());
+}
+
+bool isWiFiConnected() {
+  return WiFi.status() == WL_CONNECTED;
 }
