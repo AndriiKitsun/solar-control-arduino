@@ -13,7 +13,7 @@ void startServer() {
   Serial.print(F("1. IP address: "));
   Serial.println(WiFi.localIP());
   Serial.print(F("2. URL: "));
-  Serial.println("http://" + String(DOMAIN_NAME) + ".local");
+  Serial.println(F("http://" DOMAIN_NAME ".local"));
 }
 
 void handleClient() {
