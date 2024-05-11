@@ -10,6 +10,7 @@ JsonDocument getPzemValues() {
   doc["energy"] = pzem.energy();
   doc["frequency"] = pzem.frequency();
   doc["pf"] = pzem.pf();
+  doc["creationDate"] = getISODateTimeString();
 
   return doc;
 }
