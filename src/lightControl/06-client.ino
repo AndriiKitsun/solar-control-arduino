@@ -6,6 +6,7 @@ void streamPzemValues() {
   if (currentMillis - previousMillis >= POST_PZEM_INTERVAL) {
     previousMillis = currentMillis;
 
+    calcZoneEnergy();
     jsonPOST(POST_PZEM_ENDPOINT, getJsonPzemValues());
   }
 }

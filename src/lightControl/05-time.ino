@@ -1,5 +1,13 @@
 GyverNTP ntp(0);
 
+float t1StartEnergy = 0;
+float t1EndEnergy = 0;
+float t2StartEnergy = 0;
+float t2EndEnergy = 0;
+
+float t1Energy = 0;
+float t2Energy = 0;
+
 void startNTP() {
   bool status = ntp.begin();
 
@@ -93,4 +101,47 @@ String getISODateTimeString() {
   str += "Z";
 
   return str;
+}
+
+uint8_t getCurrentHour() {
+  return ntp.hour();
+}
+
+uint8_t getCurrentDay() {
+  return ntp.day();
+}
+
+bool isT1ZoneNow() {
+  return ntp.hour() >= 7 && ntp.hour() < 23;
+}
+
+bool isT2ZoneNow() {
+  return ntp.hour() == 23 || ntp.hour() == 0 || ntp.hour() < 7;
+}
+
+void calcZoneEnergy() {
+  float energy = pzem.energy();
+
+  // 7:00 UTC+3 == 4:00 UTC
+  // 23:00 UTC+3 == 20:00 UTC
+  if ((ntp.hour() == 7 && ntp.minute() == 0 && ntp.second == 0)) {
+    t1StartEnergy = energy;
+    t2EndEnergy = energy;
+  }
+
+  if (ntp.hour() == 23 && ntp.minute() == 0 && ntp.second == 0) {
+    t2StartEnergy = energy;
+    t1EndEnergy = energy;
+  }
+
+  if (!t1StartEnergy) {
+    t1StartEnergy = energy;
+  }
+
+  if (!t2StartEnergy) {
+    t2StartEnergy = energy;
+  }
+
+  t1Energy = isT1ZoneNow() ? energy - t1StartEnergy : t1EndEnergy - t1StartEnergy;
+  t2Energy = isT2ZoneNow() ? energy - t2StartEnergy : t2EndEnergy - t2StartEnergy
 }

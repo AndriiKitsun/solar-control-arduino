@@ -1,6 +1,7 @@
 SoftwareSerial pzemSerial(PZEM_TX_PIN, PZEM_RX_PIN);
 PZEM004Tv30 pzem(pzemSerial);
 
+
 JsonDocument getPzemValues() {
   JsonDocument doc;
 
