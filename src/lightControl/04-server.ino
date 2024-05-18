@@ -24,6 +24,7 @@ void handleClient() {
 void configRouter() {
   server.on("/", HTTP_GET, handleRoot);
   server.on("/health", HTTP_GET, handleHealthCheck);
+  server.on("/counter", HTTP_DELETE, handleResetCounter);
   server.on("/time", HTTP_GET, handleTime);
   server.on("/time/sync", HTTP_POST, handleTimeUpdate);
   server.onNotFound(handleNotFound);
@@ -33,7 +34,7 @@ void configRouter() {
 void handleRoot() {
   digitalWrite(LED_BUILTIN, LOW);
 
-  server.send(200, "application/json", getJsonPzemValues());
+  server.send(HTTP_CODE_OK, "application/json", getJsonPzemValues());
 
   digitalWrite(LED_BUILTIN, HIGH);
 }
@@ -42,7 +43,18 @@ void handleRoot() {
 void handleHealthCheck() {
   digitalWrite(LED_BUILTIN, LOW);
 
-  server.send(200, "text/plain", "UP");
+  server.send(HTTP_CODE_OK, "text/plain", "UP");
+
+  digitalWrite(LED_BUILTIN, HIGH);
+}
+
+// DELETE "/counter"
+void handleResetCounter() {
+  digitalWrite(LED_BUILTIN, LOW);
+
+  resetEnergyCounter();
+
+  server.send(HTTP_CODE_NO_CONTENT);
 
   digitalWrite(LED_BUILTIN, HIGH);
 }
@@ -51,7 +63,7 @@ void handleHealthCheck() {
 void handleTime() {
   digitalWrite(LED_BUILTIN, LOW);
 
-  server.send(200, "application/json", getNTPStatus());
+  server.send(HTTP_CODE_OK, "application/json", getNTPStatus());
 
   digitalWrite(LED_BUILTIN, HIGH);
 }
@@ -62,7 +74,7 @@ void handleTimeUpdate() {
 
   uint8_t status = updateTime();
 
-  server.send(200, "application/json", getNTPStatusWithUpdateStatus(status));
+  server.send(HTTP_CODE_OK, "application/json", getNTPStatusWithUpdateStatus(status));
 
   digitalWrite(LED_BUILTIN, HIGH);
 }
@@ -71,7 +83,7 @@ void handleTimeUpdate() {
 void handleNotFound() {
   digitalWrite(LED_BUILTIN, LOW);
 
-  server.send(404, "text/plain", "Route Not Found");
+  server.send(HTTP_CODE_NOT_FOUND, "text/plain", "Route Not Found");
 
   digitalWrite(LED_BUILTIN, HIGH);
 }

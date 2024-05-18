@@ -1,4 +1,4 @@
-SoftwareSerial pzemSerial(PZEM_RX_PIN, PZEM_TX_PIN);
+SoftwareSerial pzemSerial(PZEM_TX_PIN, PZEM_RX_PIN);
 PZEM004Tv30 pzem(pzemSerial);
 
 JsonDocument getPzemValues() {
@@ -6,10 +6,10 @@ JsonDocument getPzemValues() {
 
   doc["voltageV"] = pzem.voltage();
   doc["currentA"] = pzem.current();
-  doc["powerKw"] = pzem.power() / 1000;
+  doc["powerKw"] = pzem.power() / 1000.0;
   doc["energyKwh"] = pzem.energy();
   doc["frequencyHz"] = pzem.frequency();
-  doc["pf"] = pzem.pf();
+  doc["powerFactor"] = pzem.pf();
 
   doc["creationTimeGmt"] = getISODateTimeString();
 
@@ -22,4 +22,8 @@ String getJsonPzemValues() {
   serializeJson(getPzemValues(), result);
 
   return result;
+}
+
+void resetEnergyCounter() {
+  pzem.resetEnergy();
 }
