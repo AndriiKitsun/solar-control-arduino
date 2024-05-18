@@ -6,19 +6,18 @@ void streamPzemValues() {
   if (currentMillis - previousMillis >= POST_PZEM_INTERVAL) {
     previousMillis = currentMillis;
 
-    jsonPOST("/sensors/pzem", getJsonPzemValues());
+    jsonPOST(POST_PZEM_ENDPOINT, getJsonPzemValues());
   }
 }
 
 void jsonPOST(String endpoint, String payload) {
-  String url = SERVER_BASE_URL + endpoint;
   WiFiClient client;
   HTTPClient http;
 
   Serial.print(F("[HTTP] POST "));
-  Serial.println(url);
+  Serial.println(endpoint);
 
-  http.begin(client, url);
+  http.begin(client, endpoint);
   http.addHeader("Content-Type", "application/json");
 
   // NB: HttpClient works synchronously
@@ -28,9 +27,8 @@ void jsonPOST(String endpoint, String payload) {
     Serial.print(F("[HTTP] POST... status: "));
     Serial.println(httpCode);
 
-    if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_CREATED) {
-      Serial.println(http.getString());
-    }
+    Serial.print(F("[HTTP] POST... response: "));
+    Serial.println(http.getString());
   } else {
     Serial.print(F("[HTTP] POST... failed, error: "));
     Serial.println(http.errorToString(httpCode).c_str());

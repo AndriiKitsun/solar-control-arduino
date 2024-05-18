@@ -4,7 +4,7 @@
 #endif
 
 #define DOMAIN_NAME "server-domain-name"
-#define SERVER_BASE_URL "https://server.com"
+#define POST_PZEM_ENDPOINT "pzem-server-endpoint-url"
 #define POST_PZEM_INTERVAL 1000
 
 // GPIO pins

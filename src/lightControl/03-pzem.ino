@@ -4,13 +4,14 @@ PZEM004Tv30 pzem(pzemSerial);
 JsonDocument getPzemValues() {
   JsonDocument doc;
 
-  doc["voltage"] = pzem.voltage();
-  doc["current"] = pzem.current();
-  doc["power"] = pzem.power();
-  doc["energy"] = pzem.energy();
-  doc["frequency"] = pzem.frequency();
+  doc["voltageV"] = pzem.voltage();
+  doc["currentA"] = pzem.current();
+  doc["powerKw"] = pzem.power() / 1000;
+  doc["energyKwh"] = pzem.energy();
+  doc["frequencyHz"] = pzem.frequency();
   doc["pf"] = pzem.pf();
-  doc["creationDate"] = getISODateTimeString();
+
+  doc["creationTimeGmt"] = getISODateTimeString();
 
   return doc;
 }
