@@ -23,3 +23,7 @@ String getJsonPzemValues() {
 
   return result;
 }
+
+void resetEnergyCounter() {
+  pzem.resetEnergy();
+}
