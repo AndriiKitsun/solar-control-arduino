@@ -24,6 +24,8 @@ void handleClient() {
 void configRouter() {
   server.on("/", HTTP_GET, handleRoot);
   server.on("/health", HTTP_GET, handleHealthCheck);
+  server.on("/time", HTTP_GET, handleTime);
+  server.on("/time/sync", HTTP_POST, handleTimeUpdate);
   server.onNotFound(handleNotFound);
 }
 
@@ -41,6 +43,26 @@ void handleHealthCheck() {
   digitalWrite(LED_BUILTIN, LOW);
 
   server.send(200, "text/plain", "UP");
+
+  digitalWrite(LED_BUILTIN, HIGH);
+}
+
+// GET "/time"
+void handleTime() {
+  digitalWrite(LED_BUILTIN, LOW);
+
+  server.send(200, "application/json", getNTPStatus());
+
+  digitalWrite(LED_BUILTIN, HIGH);
+}
+
+// POST "/time/sync"
+void handleTimeUpdate() {
+  digitalWrite(LED_BUILTIN, LOW);
+
+  uint8_t status = updateTime();
+
+  server.send(200, "application/json", getNTPStatusWithUpdateStatus(status));
 
   digitalWrite(LED_BUILTIN, HIGH);
 }

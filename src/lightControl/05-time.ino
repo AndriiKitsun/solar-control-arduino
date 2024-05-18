@@ -11,6 +11,43 @@ void syncTime() {
   ntp.tick();
 }
 
+uint8_t updateTime() {
+  return ntp.updateNow();
+}
+
+String getNTPStatus() {
+  JsonDocument doc;
+  String result;
+
+  doc["status"] = ntp.status();
+  doc["isSynced"] = ntp.synced();
+  doc["isBusy"] = ntp.busy();
+  doc["ping"] = ntp.ping();
+  doc["isoDate"] = getISODateTimeString();
+  doc["tickStatus"] = ntp.tick();
+
+  serializeJson(doc, result);
+
+  return result;
+}
+
+String getNTPStatusWithUpdateStatus(uint8_t updateStatus) {
+  JsonDocument doc;
+  String result;
+
+  doc["status"] = ntp.status();
+  doc["isSynced"] = ntp.synced();
+  doc["isBusy"] = ntp.busy();
+  doc["ping"] = ntp.ping();
+  doc["isoDate"] = getISODateTimeString();
+  doc["tickStatus"] = ntp.tick();
+  doc["updateStatus"] = updateStatus;
+
+  serializeJson(doc, result);
+
+  return result;
+}
+
 String getISODateTimeString() {
   String str;
   str.reserve(24);
