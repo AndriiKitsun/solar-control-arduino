@@ -1,18 +1,19 @@
-GyverNTP ntp(0);
-
-float t1StartEnergy = 0;
-float t1EndEnergy = 0;
-float t2StartEnergy = 0;
-float t2EndEnergy = 0;
-
-float t1Energy = 0;
-float t2Energy = 0;
+GyverNTP ntp(TIMEZONE_OFFSET);
 
 void startNTP() {
   bool status = ntp.begin();
 
   Serial.print(F("NTP started. Status: "));
   Serial.println(status);
+
+  if (status > 1) {
+    Serial.print(F("NTP Status is not ok. Updating... "));
+
+    uint8_t status = updateTime();
+
+    Serial.print(F("Status: "));
+    Serial.println(status);
+  }
 }
 
 void syncTime() {
@@ -31,7 +32,7 @@ String getNTPStatus() {
   doc["isSynced"] = ntp.synced();
   doc["isBusy"] = ntp.busy();
   doc["ping"] = ntp.ping();
-  doc["isoDate"] = getISODateTimeString();
+  doc["isoDate"] = toISODateString(getDate());
   doc["tickStatus"] = ntp.tick();
 
   serializeJson(doc, result);
@@ -47,7 +48,7 @@ String getNTPStatusWithUpdateStatus(uint8_t updateStatus) {
   doc["isSynced"] = ntp.synced();
   doc["isBusy"] = ntp.busy();
   doc["ping"] = ntp.ping();
-  doc["isoDate"] = getISODateTimeString();
+  doc["isoDate"] = toISODateString(getDate());
   doc["tickStatus"] = ntp.tick();
   doc["updateStatus"] = updateStatus;
 
@@ -56,92 +57,81 @@ String getNTPStatusWithUpdateStatus(uint8_t updateStatus) {
   return result;
 }
 
-String getISODateTimeString() {
+Date getDate() {
+  return {
+    year: ntp.year(),
+    month: ntp.month(),
+    day: ntp.day(),
+    hour: ntp.hour(),
+    minute: ntp.minute(),
+    second: ntp.second(),
+    ms: ntp.ms(),
+  };
+}
+
+String toISODateString(Date date) {
   String str;
   str.reserve(24);
 
-  str += ntp.year();
+  str += date.year;
   str += "-";
 
-  if (ntp.month() < 10) {
+  if (date.month < 10) {
     str += "0";
   }
-  str += ntp.month();
+  str += date.month;
   str += "-";
 
-  if (ntp.day() < 10) {
+  if (date.day < 10) {
     str += "0";
   }
-  str += ntp.day();
+  str += date.day;
 
   str += "T";
 
-  if (ntp.hour() < 10) {
+  if (date.hour < 10) {
     str += "0";
   }
-  str += ntp.hour();
+  str += date.hour;
   str += ":";
 
-  if (ntp.minute() < 10) {
+  if (date.minute < 10) {
     str += "0";
   }
-  str += ntp.minute();
+  str += date.minute;
   str += ":";
 
-  if (ntp.second() < 10) {
+  if (date.second < 10) {
     str += "0";
   }
-  str += ntp.second();
+  str += date.second;
   str += ".";
 
-  if (ntp.ms() < 100) {
+  if (date.ms < 100) {
     str += "0";
   }
-  str += ntp.ms();
+  str += date.ms;
   str += "Z";
 
   return str;
 }
 
-uint8_t getCurrentHour() {
-  return ntp.hour();
+bool isT1ZoneActive(uint8_t hour) {
+  return hour >= 7 && hour < 23;
 }
 
-uint8_t getCurrentDay() {
-  return ntp.day();
+bool isStartOfT1Zone(uint8_t hour, uint8_t minute, uint8_t second) {
+  return hour == 7 && minute == 0 && second == 0;
 }
 
-bool isT1ZoneNow() {
-  return ntp.hour() >= 7 && ntp.hour() < 23;
+bool isEndOfT1Zone(uint8_t hour, uint8_t minute, uint8_t second) {
+  return hour == 22 && minute == 59 && second == 59;
 }
 
-bool isT2ZoneNow() {
-  return ntp.hour() == 23 || ntp.hour() == 0 || ntp.hour() < 7;
+bool isStartOfT2Zone(uint8_t hour, uint8_t minute, uint8_t second) {
+  return hour == 23 && minute == 0 && second == 0;
 }
 
-void calcZoneEnergy() {
-  float energy = pzem.energy();
-
-  // 7:00 UTC+3 == 4:00 UTC
-  // 23:00 UTC+3 == 20:00 UTC
-  if ((ntp.hour() == 7 && ntp.minute() == 0 && ntp.second == 0)) {
-    t1StartEnergy = energy;
-    t2EndEnergy = energy;
-  }
-
-  if (ntp.hour() == 23 && ntp.minute() == 0 && ntp.second == 0) {
-    t2StartEnergy = energy;
-    t1EndEnergy = energy;
-  }
-
-  if (!t1StartEnergy) {
-    t1StartEnergy = energy;
-  }
-
-  if (!t2StartEnergy) {
-    t2StartEnergy = energy;
-  }
-
-  t1Energy = isT1ZoneNow() ? energy - t1StartEnergy : t1EndEnergy - t1StartEnergy;
-  t2Energy = isT2ZoneNow() ? energy - t2StartEnergy : t2EndEnergy - t2StartEnergy
+bool isEndOfT2Zone(uint8_t hour, uint8_t minute, uint8_t second) {
+  return hour == 6 && minute == 59 && second == 59;
 }
