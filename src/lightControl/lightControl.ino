@@ -5,6 +5,28 @@
 #include <GyverNTP.h>
 #include <ESP8266HTTPClient.h>
 
+struct Date {
+  uint16_t year;
+  uint8_t month;
+  uint8_t day;
+  uint8_t hour;
+  uint8_t minute;
+  uint8_t second;
+  uint16_t ms;
+};
+
+struct Pzem {
+  float voltage;
+  float current;
+  float power;
+  float energy;
+  float frequency;
+  float powerFactor;
+  float t1Energy;
+  float t2Energy;
+  Date createdAt;
+};
+
 void initLedPins() {
   pinMode(LED_BUILTIN, OUTPUT);
 }

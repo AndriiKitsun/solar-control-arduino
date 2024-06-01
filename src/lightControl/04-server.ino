@@ -34,7 +34,7 @@ void configRouter() {
 void handleRoot() {
   digitalWrite(LED_BUILTIN, LOW);
 
-  server.send(HTTP_CODE_OK, "application/json", getJsonPzemValues());
+  server.send(HTTP_CODE_OK, "application/json", pzemToJson(getPzemValues()));
 
   digitalWrite(LED_BUILTIN, HIGH);
 }
