@@ -6,7 +6,7 @@ void startNTP() {
   Serial.print(F("NTP started. Status: "));
   Serial.println(status);
 
-  if (status > 1) {
+  if (status != 0) {
     Serial.print(F("NTP Status is not ok. Updating... "));
 
     uint8_t status = updateTime();

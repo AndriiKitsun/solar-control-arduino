@@ -22,10 +22,8 @@ struct Pzem {
   float energy;
   float frequency;
   float powerFactor;
-
   float t1Energy;
   float t2Energy;
-
   Date createdAt;
 };
 
@@ -52,5 +50,5 @@ void loop() {
   syncTime();
 
   handleClient();
-  // streamPzemValues();
+  streamPzemValues();
 }
