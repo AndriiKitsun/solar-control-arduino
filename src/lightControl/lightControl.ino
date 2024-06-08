@@ -57,5 +57,5 @@ void loop() {
   syncTime();
 
   handleClient();
-  // streamPzemValues();
+  streamPzemValues();
 }

@@ -22,22 +22,16 @@ void handleClient() {
 }
 
 void configRouter() {
-  server.on(F("/"), HTTP_GET, handleRoot);
   server.on(F("/health"), HTTP_GET, handleHealthCheck);
-  server.on(F("/pzems/counter"), HTTP_DELETE, handleResetCounter);
+
+  server.on(F("/pzems"), HTTP_GET, handlePzemValues);
   server.on(F("/pzems/address"), HTTP_PATCH, handlePzemAddressChange);
+  server.on(F("/pzems/counter"), HTTP_DELETE, handleCounterReset);
+
   server.on(F("/time"), HTTP_GET, handleTime);
   server.on(F("/time/sync"), HTTP_POST, handleTimeUpdate);
+
   server.onNotFound(handleNotFound);
-}
-
-// GET "/"
-void handleRoot() {
-  digitalWrite(LED_BUILTIN, LOW);
-
-  server.send(HTTP_CODE_OK, F("application/json"), collectPzemPayload());
-
-  digitalWrite(LED_BUILTIN, HIGH);
 }
 
 // GET "/health"
@@ -49,13 +43,11 @@ void handleHealthCheck() {
   digitalWrite(LED_BUILTIN, HIGH);
 }
 
-// DELETE "/pzems/counter"
-void handleResetCounter() {
+// GET "/pzems"
+void handlePzemValues() {
   digitalWrite(LED_BUILTIN, LOW);
 
-  resetEnergyCounter();
-
-  server.send(HTTP_CODE_NO_CONTENT);
+  server.send(HTTP_CODE_OK, F("application/json"), collectPzemPayload());
 
   digitalWrite(LED_BUILTIN, HIGH);
 }
@@ -77,6 +69,17 @@ void handlePzemAddressChange() {
   } else {
     server.send(HTTP_CODE_BAD_REQUEST, F("text/plain"), F("The \"address\" query param should be in the range between 1 and 247"));
   }
+
+  digitalWrite(LED_BUILTIN, HIGH);
+}
+
+// DELETE "/pzems/counter"
+void handleCounterReset() {
+  digitalWrite(LED_BUILTIN, LOW);
+
+  resetEnergyCounter();
+
+  server.send(HTTP_CODE_NO_CONTENT);
 
   digitalWrite(LED_BUILTIN, HIGH);
 }

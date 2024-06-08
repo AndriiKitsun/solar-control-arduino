@@ -99,6 +99,20 @@ float calcT2ZoneEnergy(const Pzem &sensor, Zone &zone) {
   return t2Energy;
 }
 
+String changePzemAddress(uint8_t addr) {
+  JsonDocument doc;
+  String result;
+
+  doc[F("currentAddress")] = inputAcPzem.getAddress();
+  doc[F("addressToSet")] = addr;
+  doc[F("isConnected")] = !isnan(inputAcPzem.voltage());
+  doc[F("isChanged")] = inputAcPzem.setAddress(addr);
+
+  serializeJson(doc, result);
+
+  return result;
+}
+
 void resetPzemCounter(PZEM004Tv30 &sensor, Zone &zone) {
   sensor.resetEnergy();
 
@@ -111,20 +125,6 @@ void resetPzemCounter(PZEM004Tv30 &sensor, Zone &zone) {
 void resetEnergyCounter() {
   resetPzemCounter(inputAcPzem, inputAcPzemZone);
   resetPzemCounter(outputAcPzem, outputAcPzemZone);
-}
-
-String changePzemAddress(const uint8_t &addr) {
-  JsonDocument doc;
-  String result;
-
-  doc[F("currentAddress")] = inputAcPzem.getAddress();
-  doc[F("addressToSet")] = addr;
-  doc[F("isConnected")] = !isnan(inputAcPzem.voltage());
-  doc[F("isChanged")] = inputAcPzem.setAddress(addr);
-
-  serializeJson(doc, result);
-
-  return result;
 }
 
 String collectPzemPayload() {
