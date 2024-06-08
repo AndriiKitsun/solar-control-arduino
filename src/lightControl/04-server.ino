@@ -22,11 +22,11 @@ void handleClient() {
 }
 
 void configRouter() {
-  server.on("/", HTTP_GET, handleRoot);
-  server.on("/health", HTTP_GET, handleHealthCheck);
-  server.on("/counter", HTTP_DELETE, handleResetCounter);
-  server.on("/time", HTTP_GET, handleTime);
-  server.on("/time/sync", HTTP_POST, handleTimeUpdate);
+  server.on(F("/"), HTTP_GET, handleRoot);
+  server.on(F("/health"), HTTP_GET, handleHealthCheck);
+  server.on(F("/counter"), HTTP_DELETE, handleResetCounter);
+  server.on(F("/time"), HTTP_GET, handleTime);
+  server.on(F("/time/sync"), HTTP_POST, handleTimeUpdate);
   server.onNotFound(handleNotFound);
 }
 
@@ -34,7 +34,7 @@ void configRouter() {
 void handleRoot() {
   digitalWrite(LED_BUILTIN, LOW);
 
-  server.send(HTTP_CODE_OK, "application/json", pzemToJson(getPzemValues()));
+  server.send(HTTP_CODE_OK, F("application/json"), collectPzemPayload());
 
   digitalWrite(LED_BUILTIN, HIGH);
 }
@@ -43,7 +43,7 @@ void handleRoot() {
 void handleHealthCheck() {
   digitalWrite(LED_BUILTIN, LOW);
 
-  server.send(HTTP_CODE_OK, "text/plain", "UP");
+  server.send(HTTP_CODE_OK, F("text/plain"), F("UP"));
 
   digitalWrite(LED_BUILTIN, HIGH);
 }
@@ -63,7 +63,7 @@ void handleResetCounter() {
 void handleTime() {
   digitalWrite(LED_BUILTIN, LOW);
 
-  server.send(HTTP_CODE_OK, "application/json", getNTPStatus());
+  server.send(HTTP_CODE_OK, F("application/json"), getNTPStatus());
 
   digitalWrite(LED_BUILTIN, HIGH);
 }
@@ -74,7 +74,7 @@ void handleTimeUpdate() {
 
   uint8_t status = updateTime();
 
-  server.send(HTTP_CODE_OK, "application/json", getNTPStatusWithUpdateStatus(status));
+  server.send(HTTP_CODE_OK, F("application/json"), getNTPStatusWithUpdateStatus(status));
 
   digitalWrite(LED_BUILTIN, HIGH);
 }
@@ -83,7 +83,7 @@ void handleTimeUpdate() {
 void handleNotFound() {
   digitalWrite(LED_BUILTIN, LOW);
 
-  server.send(HTTP_CODE_NOT_FOUND, "text/plain", "Route Not Found");
+  server.send(HTTP_CODE_NOT_FOUND, F("text/plain"), F("Route Not Found"));
 
   digitalWrite(LED_BUILTIN, HIGH);
 }

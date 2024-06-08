@@ -1,12 +1,13 @@
 SoftwareSerial pzemSerial(PZEM_TX_PIN, PZEM_RX_PIN);
-PZEM004Tv30 pzem(pzemSerial);
 
-float t1StartEnergy = 0.0;
-float t2StartEnergy = 0.0;
-float t1EnergyAcc = 0.0;
-float t2EnergyAcc = 0.0;
+// Pzem custom address can be between 0x01 (1) and 0xF7 (247)
+PZEM004Tv30 inputPzem(pzemSerial, 0x01);
+PZEM004Tv30 outputPzem(pzemSerial, 0x02);
 
-Pzem getPzemValues() {
+Zone inputPzemZone = { 0.0, 0.0, 0.0, 0.0 };
+Zone outputPzemZone = { 0.0, 0.0, 0.0, 0.0 };
+
+Pzem getPzemValues(PZEM004Tv30 &pzem, Zone &zone) {
   Pzem sensor;
 
   sensor.voltage = pzem.voltage();
@@ -27,86 +28,126 @@ Pzem getPzemValues() {
     sensor.frequency = pzem.frequency();
     sensor.powerFactor = pzem.pf();
 
-    calcZoneEnergy(sensor);
+    calcZoneEnergy(sensor, zone);
   }
 
   return sensor;
 }
 
-String pzemToJson(Pzem sensor) {
+JsonDocument pzemToJson(const Pzem &sensor) {
   JsonDocument doc;
-  String result;
 
-  doc["voltageV"] = sensor.voltage;
-  doc["currentA"] = sensor.current;
-  doc["powerKw"] = sensor.power;
-  doc["energyKwh"] = sensor.energy;
-  doc["frequencyHz"] = sensor.frequency;
-  doc["powerFactor"] = sensor.powerFactor;
-  doc["t1EnergyKwh"] = sensor.t1Energy;
-  doc["t2EnergyKwh"] = sensor.t2Energy;
-  doc["createdAt"] = toISODateString(sensor.createdAt);
+  doc[F("voltageV")] = sensor.voltage;
+  doc[F("currentA")] = sensor.current;
+  doc[F("powerKw")] = sensor.power;
+  doc[F("energyKwh")] = sensor.energy;
+  doc[F("frequencyHz")] = sensor.frequency;
+  doc[F("powerFactor")] = sensor.powerFactor;
+  doc[F("t1EnergyKwh")] = sensor.t1Energy;
+  doc[F("t2EnergyKwh")] = sensor.t2Energy;
+  doc[F("createdAt")] = toISODateString(sensor.createdAt);
 
-  serializeJson(doc, result);
-
-  return result;
+  return doc;
 }
 
-void resetEnergyCounter() {
-  pzem.resetEnergy();
-
-  t1StartEnergy = 0.0;
-  t2StartEnergy = 0.0;
-  t1EnergyAcc = 0.0;
-  t2EnergyAcc = 0.0;
-}
-
-void calcZoneEnergy(Pzem &sensor) {
+void calcZoneEnergy(Pzem &sensor, Zone &zone) {
   float t1Energy;
   float t2Energy;
 
   if (isT1ZoneActive(sensor.createdAt.hour)) {
-    t1Energy = calcT1ZoneEnergy(sensor);
-    t2Energy = t2EnergyAcc;
+    t1Energy = calcT1ZoneEnergy(sensor, zone);
+    t2Energy = zone.t2EnergyAcc;
   } else {
-    t1Energy = t1EnergyAcc;
-    t2Energy = calcT2ZoneEnergy(sensor);
+    t1Energy = zone.t1EnergyAcc;
+    t2Energy = calcT2ZoneEnergy(sensor, zone);
   }
 
   sensor.t1Energy = t1Energy;
   sensor.t2Energy = t2Energy;
 }
 
-float calcT1ZoneEnergy(Pzem sensor) {
+float calcT1ZoneEnergy(const Pzem &sensor, Zone &zone) {
   bool isStartOfZone = isStartOfT1Zone(sensor.createdAt.hour, sensor.createdAt.minute, sensor.createdAt.second);
   bool isEndOfZone = isEndOfT1Zone(sensor.createdAt.hour, sensor.createdAt.minute, sensor.createdAt.second);
 
-  if (!t1StartEnergy || isStartOfZone) {
-    t1StartEnergy = sensor.energy;
+  if (!zone.t1StartEnergy || isStartOfZone) {
+    zone.t1StartEnergy = sensor.energy;
   }
 
-  float t1Energy = sensor.energy - t1StartEnergy + t1EnergyAcc;
+  float t1Energy = sensor.energy - zone.t1StartEnergy + zone.t1EnergyAcc;
 
   if (isEndOfZone) {
-    t1EnergyAcc = t1Energy;
+    zone.t1EnergyAcc = t1Energy;
   }
 
   return t1Energy;
 }
 
-float calcT2ZoneEnergy(Pzem sensor) {
+float calcT2ZoneEnergy(const Pzem &sensor, Zone &zone) {
   bool isStartOfZone = isStartOfT2Zone(sensor.createdAt.hour, sensor.createdAt.minute, sensor.createdAt.second);
   bool isEndOfZone = isEndOfT2Zone(sensor.createdAt.hour, sensor.createdAt.minute, sensor.createdAt.second);
 
-  if (!t2StartEnergy || isStartOfZone) {
-    t2StartEnergy = sensor.energy;
+  if (!zone.t2StartEnergy || isStartOfZone) {
+    zone.t2StartEnergy = sensor.energy;
   }
 
-  float t2Energy = sensor.energy - t2StartEnergy + t2EnergyAcc;
+  float t2Energy = sensor.energy - zone.t2StartEnergy + zone.t2EnergyAcc;
 
   if (isEndOfZone) {
-    t2EnergyAcc = t2Energy;
+    zone.t2EnergyAcc = t2Energy;
   }
 
   return t2Energy;
+}
+
+void resetPzemCounter(PZEM004Tv30 &sensor, Zone &zone) {
+  sensor.resetEnergy();
+
+  zone.t1StartEnergy = 0.0;
+  zone.t2StartEnergy = 0.0;
+  zone.t1EnergyAcc = 0.0;
+  zone.t2EnergyAcc = 0.0;
+}
+
+void resetEnergyCounter() {
+  resetPzemCounter(inputPzem, inputPzemZone);
+  resetPzemCounter(outputPzem, outputPzemZone);
+}
+
+String collectPzemPayload() {
+  JsonDocument doc;
+  String payload;
+
+  unsigned long start = millis();
+
+  doc[F("inputAc")].to<JsonObject>();
+  doc[F("outputAc")].to<JsonObject>();
+
+  unsigned long addedObjects = millis();
+
+  doc[F("inputAc")] = pzemToJson(getPzemValues(inputPzem, inputPzemZone));
+
+  unsigned long firstCalc = millis();
+
+  doc[F("outputAc")] = pzemToJson(getPzemValues(outputPzem, outputPzemZone));
+
+  unsigned long secCalc = millis();
+
+  serializeJson(doc, payload);
+
+  unsigned long end = millis();
+
+  Serial.print(F("Adding objects: "));
+  Serial.println(addedObjects - start);
+  Serial.print(F("Input Pzem calculation: "));
+  Serial.println(firstCalc - addedObjects);
+  Serial.print(F("Output Pzem calculation: "));
+  Serial.println(secCalc - firstCalc);
+  Serial.print(F("Calculating: "));
+  Serial.println(secCalc - addedObjects);
+
+  Serial.print(F("Whole method: "));
+  Serial.println(end - start);
+
+  return payload;
 }

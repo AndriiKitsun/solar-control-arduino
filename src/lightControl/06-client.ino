@@ -6,7 +6,7 @@ void streamPzemValues() {
   if (currentMillis - previousMillis >= POST_PZEM_INTERVAL) {
     previousMillis = currentMillis;
 
-    jsonPOST(POST_PZEM_ENDPOINT, pzemToJson(getPzemValues()));
+    jsonPOST(POST_PZEM_ENDPOINT, collectPzemPayload());
   }
 }
 
@@ -18,7 +18,7 @@ void jsonPOST(String endpoint, String payload) {
   Serial.println(endpoint);
 
   http.begin(client, endpoint);
-  http.addHeader("Content-Type", "application/json");
+  http.addHeader(F("Content-Type"), F("application/json"));
 
   // NB: HttpClient works synchronously
   int httpCode = http.POST(payload);
