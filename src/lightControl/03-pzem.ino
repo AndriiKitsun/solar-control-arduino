@@ -1,11 +1,10 @@
-SoftwareSerial pzemSerial(PZEM_TX_PIN, PZEM_RX_PIN);
+SoftwareSerial pzemSWSerial(PZEM_TX_PIN, PZEM_RX_PIN);
 
-// Pzem custom address can be between 0x01 (1) and 0xF7 (247)
-PZEM004Tv30 inputPzem(pzemSerial, 0x01);
-PZEM004Tv30 outputPzem(pzemSerial, 0x02);
+PZEM004Tv30 inputAcPzem(pzemSWSerial, INPUT_AC_PZEM_ADDRESS);
+PZEM004Tv30 outputAcPzem(pzemSWSerial, OUTPUT_AC_PZEM_ADDRESS);
 
-Zone inputPzemZone = { 0.0, 0.0, 0.0, 0.0 };
-Zone outputPzemZone = { 0.0, 0.0, 0.0, 0.0 };
+Zone inputAcPzemZone = { 0.0, 0.0, 0.0, 0.0 };
+Zone outputAcPzemZone = { 0.0, 0.0, 0.0, 0.0 };
 
 Pzem getPzemValues(PZEM004Tv30 &pzem, Zone &zone) {
   Pzem sensor;
@@ -110,44 +109,35 @@ void resetPzemCounter(PZEM004Tv30 &sensor, Zone &zone) {
 }
 
 void resetEnergyCounter() {
-  resetPzemCounter(inputPzem, inputPzemZone);
-  resetPzemCounter(outputPzem, outputPzemZone);
+  resetPzemCounter(inputAcPzem, inputAcPzemZone);
+  resetPzemCounter(outputAcPzem, outputAcPzemZone);
+}
+
+String changePzemAddress(const uint8_t &addr) {
+  JsonDocument doc;
+  String result;
+
+  doc[F("currentAddress")] = inputAcPzem.getAddress();
+  doc[F("addressToSet")] = addr;
+  doc[F("isConnected")] = !isnan(inputAcPzem.voltage());
+  doc[F("isChanged")] = inputAcPzem.setAddress(addr);
+
+  serializeJson(doc, result);
+
+  return result;
 }
 
 String collectPzemPayload() {
   JsonDocument doc;
   String payload;
 
-  unsigned long start = millis();
-
   doc[F("inputAc")].to<JsonObject>();
   doc[F("outputAc")].to<JsonObject>();
 
-  unsigned long addedObjects = millis();
-
-  doc[F("inputAc")] = pzemToJson(getPzemValues(inputPzem, inputPzemZone));
-
-  unsigned long firstCalc = millis();
-
-  doc[F("outputAc")] = pzemToJson(getPzemValues(outputPzem, outputPzemZone));
-
-  unsigned long secCalc = millis();
+  doc[F("inputAc")] = pzemToJson(getPzemValues(inputAcPzem, inputAcPzemZone));
+  doc[F("outputAc")] = pzemToJson(getPzemValues(outputAcPzem, outputAcPzemZone));
 
   serializeJson(doc, payload);
-
-  unsigned long end = millis();
-
-  Serial.print(F("Adding objects: "));
-  Serial.println(addedObjects - start);
-  Serial.print(F("Input Pzem calculation: "));
-  Serial.println(firstCalc - addedObjects);
-  Serial.print(F("Output Pzem calculation: "));
-  Serial.println(secCalc - firstCalc);
-  Serial.print(F("Calculating: "));
-  Serial.println(secCalc - addedObjects);
-
-  Serial.print(F("Whole method: "));
-  Serial.println(end - start);
 
   return payload;
 }
