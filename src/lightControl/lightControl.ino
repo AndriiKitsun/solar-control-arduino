@@ -27,6 +27,13 @@ struct Pzem {
   Date createdAt;
 };
 
+struct Zone {
+  float t1StartEnergy;
+  float t2StartEnergy;
+  float t1EnergyAcc;
+  float t2EnergyAcc;
+};
+
 void initLedPins() {
   pinMode(LED_BUILTIN, OUTPUT);
 }

@@ -28,12 +28,12 @@ String getNTPStatus() {
   JsonDocument doc;
   String result;
 
-  doc["status"] = ntp.status();
-  doc["isSynced"] = ntp.synced();
-  doc["isBusy"] = ntp.busy();
-  doc["ping"] = ntp.ping();
-  doc["isoDate"] = toISODateString(getDate());
-  doc["tickStatus"] = ntp.tick();
+  doc[F("status")] = ntp.status();
+  doc[F("isSynced")] = ntp.synced();
+  doc[F("isBusy")] = ntp.busy();
+  doc[F("ping")] = ntp.ping();
+  doc[F("isoDate")] = toISODateString(getDate());
+  doc[F("tickStatus")] = ntp.tick();
 
   serializeJson(doc, result);
 
@@ -44,13 +44,13 @@ String getNTPStatusWithUpdateStatus(uint8_t updateStatus) {
   JsonDocument doc;
   String result;
 
-  doc["status"] = ntp.status();
-  doc["isSynced"] = ntp.synced();
-  doc["isBusy"] = ntp.busy();
-  doc["ping"] = ntp.ping();
-  doc["isoDate"] = toISODateString(getDate());
-  doc["tickStatus"] = ntp.tick();
-  doc["updateStatus"] = updateStatus;
+  doc[F("status")] = ntp.status();
+  doc[F("isSynced")] = ntp.synced();
+  doc[F("isBusy")] = ntp.busy();
+  doc[F("ping")] = ntp.ping();
+  doc[F("isoDate")] = toISODateString(getDate());
+  doc[F("tickStatus")] = ntp.tick();
+  doc[F("updateStatus")] = updateStatus;
 
   serializeJson(doc, result);
 
@@ -69,49 +69,49 @@ Date getDate() {
   };
 }
 
-String toISODateString(Date date) {
+String toISODateString(const Date &date) {
   String str;
   str.reserve(24);
 
   str += date.year;
-  str += "-";
+  str += F("-");
 
   if (date.month < 10) {
-    str += "0";
+    str += F("0");
   }
   str += date.month;
-  str += "-";
+  str += F("-");
 
   if (date.day < 10) {
-    str += "0";
+    str += F("0");
   }
   str += date.day;
 
-  str += "T";
+  str += F("T");
 
   if (date.hour < 10) {
-    str += "0";
+    str += F("0");
   }
   str += date.hour;
-  str += ":";
+  str += F(":");
 
   if (date.minute < 10) {
-    str += "0";
+    str += F("0");
   }
   str += date.minute;
-  str += ":";
+  str += F(":");
 
   if (date.second < 10) {
-    str += "0";
+    str += F("0");
   }
   str += date.second;
-  str += ".";
+  str += F(".");
 
   if (date.ms < 100) {
-    str += "0";
+    str += F("0");
   }
   str += date.ms;
-  str += "Z";
+  str += F("Z");
 
   return str;
 }

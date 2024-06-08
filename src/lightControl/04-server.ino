@@ -22,34 +22,59 @@ void handleClient() {
 }
 
 void configRouter() {
-  server.on("/", HTTP_GET, handleRoot);
-  server.on("/health", HTTP_GET, handleHealthCheck);
-  server.on("/counter", HTTP_DELETE, handleResetCounter);
-  server.on("/time", HTTP_GET, handleTime);
-  server.on("/time/sync", HTTP_POST, handleTimeUpdate);
+  server.on(F("/health"), HTTP_GET, handleHealthCheck);
+
+  server.on(F("/pzems"), HTTP_GET, handlePzemValues);
+  server.on(F("/pzems/address"), HTTP_PATCH, handlePzemAddressChange);
+  server.on(F("/pzems/counter"), HTTP_DELETE, handleCounterReset);
+
+  server.on(F("/time"), HTTP_GET, handleTime);
+  server.on(F("/time/sync"), HTTP_POST, handleTimeUpdate);
+
   server.onNotFound(handleNotFound);
-}
-
-// GET "/"
-void handleRoot() {
-  digitalWrite(LED_BUILTIN, LOW);
-
-  server.send(HTTP_CODE_OK, "application/json", pzemToJson(getPzemValues()));
-
-  digitalWrite(LED_BUILTIN, HIGH);
 }
 
 // GET "/health"
 void handleHealthCheck() {
   digitalWrite(LED_BUILTIN, LOW);
 
-  server.send(HTTP_CODE_OK, "text/plain", "UP");
+  server.send(HTTP_CODE_OK, F("text/plain"), F("UP"));
 
   digitalWrite(LED_BUILTIN, HIGH);
 }
 
-// DELETE "/counter"
-void handleResetCounter() {
+// GET "/pzems"
+void handlePzemValues() {
+  digitalWrite(LED_BUILTIN, LOW);
+
+  server.send(HTTP_CODE_OK, F("application/json"), collectPzemPayload());
+
+  digitalWrite(LED_BUILTIN, HIGH);
+}
+
+// PATCH "/pzems/address"
+void handlePzemAddressChange() {
+  digitalWrite(LED_BUILTIN, LOW);
+
+  long address = 0;
+
+  for (uint8_t i = 0; i < server.args(); i++) {
+    if (server.argName(i) == F("address")) {
+      address = server.arg(i).toInt();
+    }
+  }
+
+  if (address >= 1 && address <= 247) {
+    server.send(HTTP_CODE_OK, F("application/json"), changePzemAddress(address));
+  } else {
+    server.send(HTTP_CODE_BAD_REQUEST, F("text/plain"), F("The \"address\" query param should be in the range between 1 and 247"));
+  }
+
+  digitalWrite(LED_BUILTIN, HIGH);
+}
+
+// DELETE "/pzems/counter"
+void handleCounterReset() {
   digitalWrite(LED_BUILTIN, LOW);
 
   resetEnergyCounter();
@@ -63,7 +88,7 @@ void handleResetCounter() {
 void handleTime() {
   digitalWrite(LED_BUILTIN, LOW);
 
-  server.send(HTTP_CODE_OK, "application/json", getNTPStatus());
+  server.send(HTTP_CODE_OK, F("application/json"), getNTPStatus());
 
   digitalWrite(LED_BUILTIN, HIGH);
 }
@@ -74,7 +99,7 @@ void handleTimeUpdate() {
 
   uint8_t status = updateTime();
 
-  server.send(HTTP_CODE_OK, "application/json", getNTPStatusWithUpdateStatus(status));
+  server.send(HTTP_CODE_OK, F("application/json"), getNTPStatusWithUpdateStatus(status));
 
   digitalWrite(LED_BUILTIN, HIGH);
 }
@@ -83,7 +108,7 @@ void handleTimeUpdate() {
 void handleNotFound() {
   digitalWrite(LED_BUILTIN, LOW);
 
-  server.send(HTTP_CODE_NOT_FOUND, "text/plain", "Route Not Found");
+  server.send(HTTP_CODE_NOT_FOUND, F("text/plain"), F("Route Not Found"));
 
   digitalWrite(LED_BUILTIN, HIGH);
 }
