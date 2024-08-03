@@ -1,17 +1,19 @@
-#ifndef STASSID
 #define STASSID "WiFi-ssid"
 #define STAPSK "WiFi-password"
-#endif
 
-#define DOMAIN_NAME "server-domain-name"
-#define POST_PZEM_ENDPOINT "pzem-server-endpoint-url"
+#define ESP_DOMAIN_NAME "esp8266"
+
+// PZEM-004T V3.0
+#define AC_PZEM_RX_PIN 16
+#define AC_PZEM_TX_PIN 14
+#define AC_INPUT_PZEM_ADDRESS 0x01
+#define AC_OUTPUT_PZEM_ADDRESS 0x02
+
+// PZEM-017
+#define DC_PZEM_RX_PIN 3
+#define DC_PZEM_TX_PIN 1
+
+#define POST_PZEM_ENDPOINT "http://192.168.0.100:3000/"
 #define POST_PZEM_INTERVAL 1000
 
-#define TIMEZONE_OFFSET 0
-
-// GPIO pins
-#define PZEM_RX_PIN 1
-#define PZEM_TX_PIN 2
-
-#define INPUT_AC_PZEM_ADDRESS 0x01
-#define OUTPUT_AC_PZEM_ADDRESS 0x02
+#define TIMEZONE_OFFSET 3

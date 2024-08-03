@@ -1,6 +1,7 @@
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
-#include <PZEM004Tv30.h>
+// #include <PZEM004Tv30.h>
+#include <PZEM017v1.h>
 #include <ArduinoJson.h>
 #include <GyverNTP.h>
 #include <ESP8266HTTPClient.h>
@@ -27,6 +28,19 @@ struct Pzem {
   Date createdAt;
 };
 
+struct DcPzem {
+  float voltage;
+  float current;
+  float power;
+  float energy;
+  Date createdAt;
+
+  uint8_t address;
+  uint16_t shuntType;
+  bool updated;
+};
+
+
 struct Zone {
   float t1StartEnergy;
   float t2StartEnergy;
@@ -44,6 +58,8 @@ void setup() {
 
   initLedPins();
 
+  setShunt();
+
   connectToWiFi();
   startNTP();
   startServer();
@@ -57,5 +73,5 @@ void loop() {
   syncTime();
 
   handleClient();
-  streamPzemValues();
+  // streamPzemValues();
 }

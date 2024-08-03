@@ -11,7 +11,7 @@ void startNTP() {
 
     uint8_t status = updateTime();
 
-    Serial.print(F("Status: "));
+    Serial.print(F("Update status: "));
     Serial.println(status);
   }
 }

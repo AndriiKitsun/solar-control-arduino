@@ -1,7 +1,7 @@
 ESP8266WebServer server(80);
 
 void startServer() {
-  if (MDNS.begin(DOMAIN_NAME)) {
+  if (MDNS.begin(ESP_DOMAIN_NAME)) {
     Serial.println(F("MDNS responder started"));
   }
 
@@ -13,7 +13,7 @@ void startServer() {
   Serial.print(F("1. IP address: "));
   Serial.println(WiFi.localIP());
   Serial.print(F("2. URL: "));
-  Serial.println(F("http://" DOMAIN_NAME ".local"));
+  Serial.println(F("http://" ESP_DOMAIN_NAME ".local"));
 }
 
 void handleClient() {
@@ -65,7 +65,7 @@ void handlePzemAddressChange() {
   }
 
   if (address >= 1 && address <= 247) {
-    server.send(HTTP_CODE_OK, F("application/json"), changePzemAddress(address));
+    // server.send(HTTP_CODE_OK, F("application/json"), changePzemAddress(address));
   } else {
     server.send(HTTP_CODE_BAD_REQUEST, F("text/plain"), F("The \"address\" query param should be in the range between 1 and 247"));
   }
@@ -77,7 +77,7 @@ void handlePzemAddressChange() {
 void handleCounterReset() {
   digitalWrite(LED_BUILTIN, LOW);
 
-  resetEnergyCounter();
+  // resetEnergyCounter();
 
   server.send(HTTP_CODE_NO_CONTENT);
 

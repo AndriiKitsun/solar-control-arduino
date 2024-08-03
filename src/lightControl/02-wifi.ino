@@ -11,7 +11,7 @@ void connectToWiFi() {
   }
 
   Serial.println();
-  Serial.print(F("Connected to WiFi with MAC: "));
+  Serial.print(F("Connected to WiFi. Device MAC: "));
   Serial.println(WiFi.macAddress());
 }
 

@@ -1,10 +1,8 @@
-unsigned long previousMillis = 0;
-
 void streamPzemValues() {
-  unsigned long currentMillis = millis();
+  static unsigned long previousMillis;
 
-  if (currentMillis - previousMillis >= POST_PZEM_INTERVAL) {
-    previousMillis = currentMillis;
+  if (millis() - previousMillis >= POST_PZEM_INTERVAL) {
+    previousMillis = millis();
 
     jsonPOST(POST_PZEM_ENDPOINT, collectPzemPayload());
   }
