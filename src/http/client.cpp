@@ -1,14 +1,4 @@
-unsigned long previousMillis = 0;
-
-void streamPzemValues() {
-  unsigned long currentMillis = millis();
-
-  if (currentMillis - previousMillis >= POST_PZEM_INTERVAL) {
-    previousMillis = currentMillis;
-
-    jsonPOST(POST_PZEM_ENDPOINT, collectPzemPayload());
-  }
-}
+#include "http/client.h"
 
 void jsonPOST(String endpoint, String payload) {
   WiFiClient client;
@@ -35,4 +25,14 @@ void jsonPOST(String endpoint, String payload) {
   }
 
   http.end();
+}
+
+void sendWebhook() {
+  static unsigned long prevMillis;
+
+  if (millis() - prevMillis >= WEBHOOK_INTERVAL) {
+    prevMillis = millis();
+
+    jsonPOST(WEBHOOK_ENDPOINT, getPzemsPayload());
+  }
 }
