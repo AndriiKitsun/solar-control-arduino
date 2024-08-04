@@ -2,9 +2,8 @@
 
 // Public
 
-AcPzem::AcPzem(SoftwareSerial& port, uint8_t addr) {
-  PZEM004Tv30 _pzem(port, addr);
-  _zone = {0.0, 0.0, 0.0, 0.0};
+AcPzem::AcPzem(SoftwareSerial& port, uint8_t addr)
+    : _pzem(port, addr), _zone{0.0, 0.0, 0.0, 0.0} {
 }
 
 JsonDocument AcPzem::getValues() {
@@ -65,23 +64,16 @@ void AcPzem::resetCounter() {
   _zone.t2EnergyAcc = 0.0;
 }
 
-// private
+// Private
 
 void AcPzem::readValues() {
   _voltage = _pzem.voltage();
+  _createdAt = getDate();
 
   // If the value can't be read - skip further sensor polling
   if (isnan(_voltage)) {
-    // _current = NAN;
-    // _power = NAN;
-    // _energy = NAN;
-    // _frequency = NAN;
-    // _powerFactor = NAN;
-    // _t1Energy = NAN;
-    // _t2Energy = NAN;
-
+    _voltage = 0;
     return;
-  } else {
   }
 
   _current = _pzem.current();
@@ -89,7 +81,6 @@ void AcPzem::readValues() {
   _energy = _pzem.energy();
   _frequency = _pzem.frequency();
   _powerFactor = _pzem.pf();
-  _createdAt = getDate();
 
   calcZoneEnergy();
 }

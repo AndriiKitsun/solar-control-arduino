@@ -6,6 +6,7 @@
 #include "http/server.h"
 
 void jsonPOST(String endpoint, String payload);
+
 void sendWebhook();
 
 #endif

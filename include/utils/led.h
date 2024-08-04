@@ -5,6 +5,10 @@
 #include <Arduino.h>
 
 void initLedPins();
+
+void turnLedOn();
+void turnLedOff();
+
 void blinkLed();
 
 #endif

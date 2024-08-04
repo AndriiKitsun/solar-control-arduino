@@ -39,30 +39,30 @@ void configRouter() {
 
 // GET "/health"
 void handleHealthCheck() {
-  blinkLed();
+  turnLedOn();
 
   server.send(HTTP_CODE_OK, F("text/plain"), F("UP"));
 
-  blinkLed();
+  turnLedOff();
 }
 
 // GET "/pzems"
 void handlePzemValues() {
-  blinkLed();
+  turnLedOn();
 
   server.send(HTTP_CODE_OK, F("application/json"), getPzemsPayload());
 
-  blinkLed();
+  turnLedOff();
 }
 
 // PATCH "/pzems/address?id={id}&address={1}"
 void handlePzemAddressChange() {
-  blinkLed();
+  turnLedOn();
 
   String id = server.arg(F("id"));
   long address = server.arg(F("address")).toInt();
 
-  if (!id) {
+  if (id.isEmpty()) {
     server.send(HTTP_CODE_BAD_REQUEST, F("text/plain"), F("The \"id\" param is required"));
   } else if (!address) {
     server.send(HTTP_CODE_BAD_REQUEST, F("text/plain"), F("The \"address\" param is required"));
@@ -76,6 +76,11 @@ void handlePzemAddressChange() {
       doc = acInputPzem.changeAddress(address);
     } else if (id == F("acOutput")) {
       doc = acOutputPzem.changeAddress(address);
+    } else {
+      server.send(HTTP_CODE_NOT_FOUND, F("text/plain"), F("Pzem with input \"id\" is not found"));
+      turnLedOff();
+
+      return;
     }
 
     serializeJson(doc, payload);
@@ -83,28 +88,28 @@ void handlePzemAddressChange() {
     server.send(HTTP_CODE_OK, F("application/json"), payload);
   }
 
-  blinkLed();
+  turnLedOff();
 }
 
 // DELETE "/pzems/counter"
 void handlePzemsCounterReset() {
-  blinkLed();
+  turnLedOn();
 
   acInputPzem.resetCounter();
   acOutputPzem.resetCounter();
 
   server.send(HTTP_CODE_NO_CONTENT);
 
-  blinkLed();
+  turnLedOff();
 }
 
 // "**"
 void handleNotFound() {
-  blinkLed();
+  turnLedOn();
 
   server.send(HTTP_CODE_NOT_FOUND, F("text/plain"), F("Route Not Found"));
 
-  blinkLed();
+  turnLedOff();
 }
 
 // Other
