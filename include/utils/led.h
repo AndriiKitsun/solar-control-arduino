@@ -6,7 +6,6 @@
 
 void initLedPins();
 
-void turnLedOn();
 void turnLedOff();
 
 void blinkLed();

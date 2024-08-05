@@ -4,10 +4,6 @@ void initLedPins() {
   pinMode(LED_BUILTIN, OUTPUT);
 }
 
-void turnLedOn() {
-  digitalWrite(LED_BUILTIN, LOW);
-}
-
 void turnLedOff() {
   digitalWrite(LED_BUILTIN, HIGH);
 }

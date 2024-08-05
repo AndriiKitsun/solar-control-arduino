@@ -1,9 +1,9 @@
 #include <Arduino.h>
-#include "http/client.h"
 #include "http/server.h"
 #include "utils/date.h"
 #include "utils/led.h"
 #include "utils/wifi.h"
+#include "websocket/websocket.h"
 
 void setup() {
   Serial.begin(115200);
@@ -12,13 +12,16 @@ void setup() {
   initLedPins();
 
   connectToWiFi();
+
   startNTP();
   startServer();
+  startWebSocket();
 }
 
 void loop() {
   tickNTP();
+  tickServer();
+  tickWebSocket();
 
-  handleRequests();
-  sendWebhook();
+  broadcastPzemz();
 }

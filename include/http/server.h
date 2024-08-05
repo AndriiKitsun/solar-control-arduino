@@ -10,7 +10,8 @@
 #include "utils/led.h"
 
 void startServer();
-void handleRequests();
+void tickServer();
+
 void configRouter();
 
 void handleHealthCheck();

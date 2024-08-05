@@ -16,13 +16,13 @@ void startServer() {
   server.begin();
 
   Serial.println(F("HTTP server started on:"));
-  Serial.print(F("1. IP address: "));
+  Serial.print(F("1. IP address: http://"));
   Serial.println(WiFi.localIP());
   Serial.print(F("2. URL: "));
   Serial.println(F("http://" ESP_DOMAIN_NAME ".local"));
 }
 
-void handleRequests() {
+void tickServer() {
   server.handleClient();
   MDNS.update();
 }
@@ -39,77 +39,62 @@ void configRouter() {
 
 // GET "/health"
 void handleHealthCheck() {
-  turnLedOn();
-
   server.send(HTTP_CODE_OK, F("text/plain"), F("UP"));
-
-  turnLedOff();
 }
 
 // GET "/pzems"
 void handlePzemValues() {
-  turnLedOn();
-
   server.send(HTTP_CODE_OK, F("application/json"), getPzemsPayload());
-
-  turnLedOff();
 }
 
 // PATCH "/pzems/address?id={id}&address={1}"
 void handlePzemAddressChange() {
-  turnLedOn();
-
   String id = server.arg(F("id"));
   long address = server.arg(F("address")).toInt();
 
   if (id.isEmpty()) {
     server.send(HTTP_CODE_BAD_REQUEST, F("text/plain"), F("The \"id\" param is required"));
-  } else if (!address) {
-    server.send(HTTP_CODE_BAD_REQUEST, F("text/plain"), F("The \"address\" param is required"));
-  } else if (address < 0x01 || address > 0xF7) {
-    server.send(HTTP_CODE_BAD_REQUEST, F("text/plain"), F("The \"address\" param should be in the range between 1 and 247"));
-  } else {
-    JsonDocument doc;
-    String payload;
-
-    if (id == F("acInput")) {
-      doc = acInputPzem.changeAddress(address);
-    } else if (id == F("acOutput")) {
-      doc = acOutputPzem.changeAddress(address);
-    } else {
-      server.send(HTTP_CODE_NOT_FOUND, F("text/plain"), F("Pzem with input \"id\" is not found"));
-      turnLedOff();
-
-      return;
-    }
-
-    serializeJson(doc, payload);
-
-    server.send(HTTP_CODE_OK, F("application/json"), payload);
+    return;
   }
 
-  turnLedOff();
+  if (!address) {
+    server.send(HTTP_CODE_BAD_REQUEST, F("text/plain"), F("The \"address\" param is required"));
+    return;
+  }
+
+  if (address < 0x01 || address > 0xF7) {
+    server.send(HTTP_CODE_BAD_REQUEST, F("text/plain"), F("The \"address\" param should be in the range between 1 and 247"));
+    return;
+  }
+
+  JsonDocument doc;
+  String payload;
+
+  if (id == F("acInput")) {
+    doc = acInputPzem.changeAddress(address);
+  } else if (id == F("acOutput")) {
+    doc = acOutputPzem.changeAddress(address);
+  } else {
+    server.send(HTTP_CODE_NOT_FOUND, F("text/plain"), F("Pzem with input \"id\" is not found"));
+    return;
+  }
+
+  serializeJson(doc, payload);
+
+  server.send(HTTP_CODE_OK, F("application/json"), payload);
 }
 
 // DELETE "/pzems/counter"
 void handlePzemsCounterReset() {
-  turnLedOn();
-
   acInputPzem.resetCounter();
   acOutputPzem.resetCounter();
 
   server.send(HTTP_CODE_NO_CONTENT);
-
-  turnLedOff();
 }
 
 // "**"
 void handleNotFound() {
-  turnLedOn();
-
   server.send(HTTP_CODE_NOT_FOUND, F("text/plain"), F("Route Not Found"));
-
-  turnLedOff();
 }
 
 // Other
