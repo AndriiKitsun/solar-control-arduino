@@ -103,11 +103,20 @@ String getPzemsPayload() {
   JsonDocument doc;
   String payload;
 
-  doc[F("acInputPzem")].to<JsonObject>();
-  doc[F("acOutputPzem")].to<JsonObject>();
+  Date date = getDate();
 
-  doc[F("acInputPzem")] = acInputPzem.getValues();
-  doc[F("acOutputPzem")] = acOutputPzem.getValues();
+  doc[F("createdAtGmt")] = toISODateString(date);
+
+  JsonDocument acInputValues = acInputPzem.getValues(date);
+  JsonDocument acOutputValues = acOutputPzem.getValues(date);
+
+  if (!acInputValues.isNull()) {
+    doc[F("acInputPzem")] = acInputValues;
+  }
+
+  if (!acOutputValues.isNull()) {
+    doc[F("acOutputPzem")] = acOutputValues;
+  }
 
   serializeJson(doc, payload);
 

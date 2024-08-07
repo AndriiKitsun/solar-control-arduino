@@ -6,8 +6,10 @@ AcPzem::AcPzem(SoftwareSerial& port, uint8_t addr)
     : _pzem(port, addr), _zone{0.0, 0.0, 0.0, 0.0} {
 }
 
-JsonDocument AcPzem::getValues() {
+JsonDocument AcPzem::getValues(const Date& date) {
   JsonDocument doc;
+
+  _createdAt = date;
 
   readValues();
 
@@ -39,8 +41,6 @@ JsonDocument AcPzem::getValues() {
     doc[F("t2EnergyKwh")] = _t2Energy;
   }
 
-  doc[F("createdAtGmt")] = toISODateString(_createdAt);
-
   return doc;
 }
 
@@ -68,7 +68,6 @@ void AcPzem::resetCounter() {
 
 void AcPzem::readValues() {
   _voltage = _pzem.voltage();
-  _createdAt = getDate();
 
   // If the value can't be read - skip further sensor polling
   if (isnan(_voltage)) {
