@@ -36,10 +36,6 @@ Date getDate() {
   };
 }
 
-String getISODateString() {
-  return toISODateString(getDate());
-}
-
 String toISODateString(const Date& date) {
   String str;
   str.reserve(24);

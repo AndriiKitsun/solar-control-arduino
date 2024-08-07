@@ -21,7 +21,6 @@ void tickNTP();
 
 Date getDate();
 
-String getISODateString();
 String toISODateString(const Date& date);
 
 #endif

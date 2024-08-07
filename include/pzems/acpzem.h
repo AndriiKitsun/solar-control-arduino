@@ -18,7 +18,7 @@ class AcPzem {
  public:
   AcPzem(SoftwareSerial& port, uint8_t addr = PZEM_DEFAULT_ADDR);
 
-  JsonDocument getValues();
+  JsonDocument getValues(const Date& date);
   JsonDocument changeAddress(uint8_t addr);
   void resetCounter();
 
