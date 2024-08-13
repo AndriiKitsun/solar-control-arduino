@@ -21,6 +21,10 @@ JsonDocument AcPzem::getValues(const Date& date) {
     doc[F("currentA")] = _current;
   }
 
+  if (_power) {
+    doc[F("powerKw")] = _power;
+  }
+
   if (_energy) {
     doc[F("energyKwh")] = _energy;
   }
@@ -69,9 +73,17 @@ void AcPzem::resetCounter() {
 void AcPzem::readValues() {
   _voltage = _pzem.voltage();
 
-  // If the value can't be read - skip further sensor polling
+  // If sensor is disconnected - clear values and skip further sensor polling
   if (isnan(_voltage)) {
-    _voltage = 0;
+    _voltage = 0.0;
+    _current = 0.0;
+    _power = 0.0;
+    _energy = 0.0;
+    _frequency = 0.0;
+    _powerFactor = 0.0;
+    _t1Energy = 0.0;
+    _t2Energy = 0.0;
+
     return;
   }
 

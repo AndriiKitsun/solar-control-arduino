@@ -5,7 +5,7 @@ WebSocketsServer webSocket(81);
 void startWebSocket() {
   webSocket.begin();
 
-  Serial.println(F("Websocket started on:"));
+  Serial.println(F("WebSocket started on:"));
   Serial.print(F("1. IP address: ws://"));
   Serial.print(WiFi.localIP());
   Serial.println(F(":81"));
