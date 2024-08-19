@@ -3,8 +3,12 @@
 ESP8266WebServer server(80);
 
 SoftwareSerial acPzemSerial(AC_PZEM_RX_PIN, AC_PZEM_TX_PIN);
-AcPzem acInputPzem(acPzemSerial, AC_INPUT_PZEM_ADDRESS);
-AcPzem acOutputPzem(acPzemSerial, AC_OUTPUT_PZEM_ADDRESS);
+SoftwareSerial dcPzemSerial(DC_PZEM_RX_PIN, DC_PZEM_TX_PIN);
+
+AcPzem acInPzem(acPzemSerial, AC_INPUT_PZEM_ADDRESS);
+AcPzem acOutPzem(acPzemSerial, AC_OUTPUT_PZEM_ADDRESS);
+
+DcPzem dcBattOutPzem(dcPzemSerial, DC_BATTERY_OUTPUT_PZEM_ADDRESS);
 
 void startServer() {
   if (MDNS.begin(ESP_DOMAIN_NAME)) {
@@ -31,7 +35,9 @@ void configRouter() {
   server.on(F("/health"), HTTP_GET, handleHealthCheck);
 
   server.on(F("/pzems"), HTTP_GET, handlePzemValues);
+  server.on(F("/pzems/status"), HTTP_GET, handlePzemsStatus);
   server.on(F("/pzems/address"), HTTP_PATCH, handlePzemAddressChange);
+  server.on(F("/pzems/shunt"), HTTP_PATCH, handlePzemShuntChange);
   server.on(F("/pzems/counter"), HTTP_DELETE, handlePzemsCounterReset);
 
   server.onNotFound(handleNotFound);
@@ -45,6 +51,11 @@ void handleHealthCheck() {
 // GET "/pzems"
 void handlePzemValues() {
   server.send(HTTP_CODE_OK, F("application/json"), getPzemsPayload());
+}
+
+// GET "/pzems/status"
+void handlePzemsStatus() {
+  server.send(HTTP_CODE_OK, F("application/json"), getPzemsStatus());
 }
 
 // PATCH "/pzems/address?id={id}&address={1}"
@@ -71,11 +82,46 @@ void handlePzemAddressChange() {
   String payload;
 
   if (id == F("acInput")) {
-    doc = acInputPzem.changeAddress(address);
+    doc = acInPzem.changeAddress(address);
   } else if (id == F("acOutput")) {
-    doc = acOutputPzem.changeAddress(address);
+    doc = acOutPzem.changeAddress(address);
+  } else if (id == F("dcBatteryOutput")) {
+    doc = dcBattOutPzem.changeAddress(address);
   } else {
-    server.send(HTTP_CODE_NOT_FOUND, F("text/plain"), F("Pzem with input \"id\" is not found"));
+    server.send(HTTP_CODE_NOT_FOUND, F("text/plain"), F("PZEM with entered \"id\" is not found"));
+    return;
+  }
+
+  serializeJson(doc, payload);
+
+  server.send(HTTP_CODE_OK, F("application/json"), payload);
+}
+
+// PATCH "/pzems/shunt?id={id}&shunt={1}"
+void handlePzemShuntChange() {
+  String id = server.arg(F("id"));
+  long shuntType = server.arg(F("shunt")).toInt();
+
+  Serial.print("Enteret Shunt: ");
+  Serial.println(shuntType);
+
+  if (id.isEmpty()) {
+    server.send(HTTP_CODE_BAD_REQUEST, F("text/plain"), F("The \"id\" param is required"));
+    return;
+  }
+
+  if (shuntType < 0 || shuntType > 3) {
+    server.send(HTTP_CODE_BAD_REQUEST, F("text/plain"), F("The \"shunt\" param should be in the range between 0 and 3"));
+    return;
+  }
+
+  JsonDocument doc;
+  String payload;
+
+  if (id == F("dcBatteryOutput")) {
+    doc = dcBattOutPzem.changeShuntType(shuntType);
+  } else {
+    server.send(HTTP_CODE_NOT_FOUND, F("text/plain"), F("PZEM with entered \"id\" is not found"));
     return;
   }
 
@@ -86,8 +132,9 @@ void handlePzemAddressChange() {
 
 // DELETE "/pzems/counter"
 void handlePzemsCounterReset() {
-  acInputPzem.resetCounter();
-  acOutputPzem.resetCounter();
+  acInPzem.resetCounter();
+  acOutPzem.resetCounter();
+  dcBattOutPzem.resetCounter();
 
   server.send(HTTP_CODE_NO_CONTENT);
 }
@@ -107,16 +154,24 @@ String getPzemsPayload() {
 
   doc[F("createdAtGmt")] = toISODateString(date);
 
-  JsonDocument acInputValues = acInputPzem.getValues(date);
-  JsonDocument acOutputValues = acOutputPzem.getValues(date);
+  doc[F("acInput")] = acInPzem.getValues(date);
+  doc[F("acOutput")] = acOutPzem.getValues(date);
+  doc[F("dcBatteryOutput")] = dcBattOutPzem.getValues();
 
-  if (!acInputValues.isNull()) {
-    doc[F("acInputPzem")] = acInputValues;
-  }
+  serializeJson(doc, payload);
 
-  if (!acOutputValues.isNull()) {
-    doc[F("acOutputPzem")] = acOutputValues;
-  }
+  return payload;
+}
+
+String getPzemsStatus() {
+  JsonDocument doc;
+  String payload;
+
+  doc[F("createdAtGmt")] = toISODateString(getDate());
+
+  doc[F("acInput")] = acInPzem.getStatus();
+  doc[F("acOutput")] = acOutPzem.getStatus();
+  doc[F("dcBatteryOutput")] = dcBattOutPzem.getStatus();
 
   serializeJson(doc, payload);
 

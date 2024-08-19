@@ -6,6 +6,7 @@
 #include "websocket/websocket.h"
 
 void setup() {
+  // Serial.begin(74880);
   Serial.begin(115200);
   Serial.println();
 

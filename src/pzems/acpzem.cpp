@@ -6,6 +6,16 @@ AcPzem::AcPzem(SoftwareSerial& port, uint8_t addr)
     : _pzem(port, addr), _zone{0.0, 0.0, 0.0, 0.0} {
 }
 
+JsonDocument AcPzem::getStatus() {
+  JsonDocument doc;
+
+  doc[F("isConnected")] = !isnan(_pzem.voltage());
+  doc[F("currentAddress")] = _pzem.getAddress();
+  doc[F("savedAddress")] = _pzem.readAddress();
+
+  return doc;
+}
+
 JsonDocument AcPzem::getValues(const Date& date) {
   JsonDocument doc;
 
