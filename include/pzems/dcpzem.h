@@ -1,27 +1,25 @@
 #pragma once
-#ifndef ACPZEM_H
-#define ACPZEM_H
+#ifndef DCPZEM_H
+#define DCPZEM_H
 
 #include <Arduino.h>
 #include <ArduinoJson.h>
-#include <PZEM004Tv30.h>
+#include <PZEM017v1.h>
 #include "pzem.h"
 
-class AcPzem : public Pzem {
+class DcPzem : public Pzem {
  public:
-  AcPzem(SoftwareSerial& port, uint8_t addr = PZEM_DEFAULT_ADDR);
+  DcPzem(SoftwareSerial& port, uint8_t addr = PZEM017_DEFAULT_ADDR);
 
   JsonDocument getStatus();
   JsonDocument getValues(const Date& date);
 
   JsonDocument changeAddress(uint8_t addr);
+  JsonDocument changeShuntType(uint16_t type);
   void resetCounter();
 
  private:
-  PZEM004Tv30 _pzem;
-
-  float _frequency;
-  float _powerFactor;
+  PZEM017v1 _pzem;
 
   void readValues();
 };
