@@ -20,9 +20,6 @@ class AcPzem : public Pzem {
  private:
   PZEM004Tv30 _pzem;
 
-  float _voltage;
-  float _current;
-  float _power;
   float _frequency;
   float _powerFactor;
 

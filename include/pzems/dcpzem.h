@@ -21,10 +21,6 @@ class DcPzem : public Pzem {
  private:
   PZEM017v1 _pzem;
 
-  float _voltage;
-  float _current;
-  float _power;
-
   void readValues();
 };
 

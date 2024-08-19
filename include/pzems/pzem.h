@@ -16,7 +16,12 @@ class Pzem {
  protected:
   Zone _zone;
   Date _createdAt;
+
+  float _voltage;
+  float _current;
+  float _power;
   float _energy;
+
   float _t1Energy;
   float _t2Energy;
 
