@@ -156,7 +156,7 @@ String getPzemsPayload() {
 
   doc[F("acInput")] = acInPzem.getValues(date);
   doc[F("acOutput")] = acOutPzem.getValues(date);
-  doc[F("dcBatteryOutput")] = dcBattOutPzem.getValues();
+  doc[F("dcBatteryOutput")] = dcBattOutPzem.getValues(date);
 
   serializeJson(doc, payload);
 

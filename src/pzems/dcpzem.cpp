@@ -4,6 +4,7 @@
 
 DcPzem::DcPzem(SoftwareSerial& port, uint8_t addr)
     : _pzem(port, addr) {
+  _zone = {0.0, 0.0, 0.0, 0.0};
 }
 
 JsonDocument DcPzem::getStatus() {
@@ -17,8 +18,10 @@ JsonDocument DcPzem::getStatus() {
   return doc;
 }
 
-JsonDocument DcPzem::getValues() {
+JsonDocument DcPzem::getValues(const Date& date) {
   JsonDocument doc;
+
+  _createdAt = date;
 
   readValues();
 
@@ -61,6 +64,11 @@ JsonDocument DcPzem::changeShuntType(uint16_t type) {
 
 void DcPzem::resetCounter() {
   _pzem.resetEnergy();
+
+  _zone.t1StartEnergy = 0.0;
+  _zone.t2StartEnergy = 0.0;
+  _zone.t1EnergyAcc = 0.0;
+  _zone.t2EnergyAcc = 0.0;
 }
 
 // Private
@@ -81,4 +89,6 @@ void DcPzem::readValues() {
   _current = _pzem.current();
   _power = _pzem.power() / 1000.0;
   _energy = _pzem.energy();
+
+  calcZoneEnergy();
 }

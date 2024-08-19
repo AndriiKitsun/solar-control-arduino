@@ -5,13 +5,14 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include <PZEM017v1.h>
+#include "pzem.h"
 
-class DcPzem {
+class DcPzem : public Pzem {
  public:
   DcPzem(SoftwareSerial& port, uint8_t addr = PZEM017_DEFAULT_ADDR);
 
   JsonDocument getStatus();
-  JsonDocument getValues();
+  JsonDocument getValues(const Date& date);
 
   JsonDocument changeAddress(uint8_t addr);
   JsonDocument changeShuntType(uint16_t type);
@@ -23,7 +24,6 @@ class DcPzem {
   float _voltage;
   float _current;
   float _power;
-  float _energy;
 
   void readValues();
 };
