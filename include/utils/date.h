@@ -4,23 +4,24 @@
 
 #include <Arduino.h>
 #include <GyverNTP.h>
+#include <Timezone.h>
 
 struct Date {
-  uint16_t year;
-  uint8_t month;
-  uint8_t day;
-  uint8_t hour;
-  uint8_t minute;
-  uint8_t second;
+  int year;
+  int month;
+  int day;
+  int hour;
+  int minute;
+  int second;
   uint16_t ms;
 };
 
 void startNTP();
-bool forceUpdate();
 void tickNTP();
 
-Date getDate();
+Date getUTCDate();
+Date getLocalDate();
 
-String toISODateString(const Date& date);
+String toJSON(const Date& date);
 
 #endif
