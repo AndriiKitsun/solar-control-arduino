@@ -150,9 +150,9 @@ String getPzemsPayload() {
   JsonDocument doc;
   String payload;
 
-  Date date = getDate();
+  Date date = getLocalDate();
 
-  doc[F("createdAtGmt")] = toISODateString(date);
+  doc[F("createdAtGmt")] = toJSON(getUTCDate());
 
   doc[F("acInput")] = acInPzem.getValues(date);
   doc[F("acOutput")] = acOutPzem.getValues(date);
@@ -167,7 +167,8 @@ String getPzemsStatus() {
   JsonDocument doc;
   String payload;
 
-  doc[F("createdAtGmt")] = toISODateString(getDate());
+  doc[F("createdAtGmt")] = toJSON(getUTCDate());
+  doc[F("createdAt")] = toJSON(getLocalDate());
 
   doc[F("acInput")] = acInPzem.getStatus();
   doc[F("acOutput")] = acOutPzem.getStatus();

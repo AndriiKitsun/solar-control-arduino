@@ -1,6 +1,11 @@
 #include "utils/date.h"
 
-GyverNTP ntp(TIMEZONE_OFFSET);
+GyverNTP ntp(0);
+
+TimeChangeRule dstStart = {"EEST", Last, Sun, Mar, 3, 180};  // UTC+3
+TimeChangeRule stdStart = {"EET", Last, Sun, Oct, 4, 120};   // UTC+2
+Timezone uaTZ(dstStart, stdStart);
+TimeChangeRule* tcr;
 
 void startNTP() {
   bool status = ntp.begin();
@@ -12,19 +17,15 @@ void startNTP() {
     Serial.print(F("NTP Status is not ok. Force updating... "));
 
     Serial.print(F("Update status: "));
-    Serial.println(forceUpdate());
+    Serial.println(ntp.updateNow());
   }
-}
-
-bool forceUpdate() {
-  return ntp.updateNow();
 }
 
 void tickNTP() {
   ntp.tick();
 }
 
-Date getDate() {
+Date getUTCDate() {
   return {
     year : ntp.year(),
     month : ntp.month(),
@@ -36,7 +37,21 @@ Date getDate() {
   };
 }
 
-String toISODateString(const Date& date) {
+Date getLocalDate() {
+  time_t localTime = uaTZ.toLocal(ntp.getUnix(), &tcr);
+
+  return {
+    year : year(localTime),
+    month : month(localTime),
+    day : day(localTime),
+    hour : hour(localTime),
+    minute : minute(localTime),
+    second : second(localTime),
+    ms : ntp.ms(),
+  };
+}
+
+String toJSON(const Date& date) {
   String str;
   str.reserve(24);
 
