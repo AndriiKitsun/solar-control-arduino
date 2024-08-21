@@ -20,8 +20,10 @@ void tickWebSocket() {
 void broadcastPzemz() {
   static unsigned long prevMillis;
 
-  if (millis() - prevMillis >= BROADCAST_INTERVAL) {
+  if (millis() - prevMillis >= 5000) {
     prevMillis = millis();
+
+    getPzemsStatus();
 
     if (webSocket.connectedClients()) {
       String payload = getPzemsPayload();

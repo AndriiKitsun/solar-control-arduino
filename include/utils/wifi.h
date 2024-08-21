@@ -6,5 +6,6 @@
 #include <ESP8266WiFi.h>
 
 void connectToWiFi();
+bool isWiFiConnected();
 
 #endif

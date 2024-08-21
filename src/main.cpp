@@ -14,6 +14,8 @@ void setup() {
   connectToWiFi();
 
   startNTP();
+  startRTC();
+
   startServer();
   startWebSocket();
 }

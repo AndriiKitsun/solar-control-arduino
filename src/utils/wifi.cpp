@@ -22,3 +22,7 @@ void connectToWiFi() {
   Serial.print(F("Device MAC: "));
   Serial.println(WiFi.macAddress());
 }
+
+bool isWiFiConnected() {
+  return WiFi.status() == WL_CONNECTED;
+}

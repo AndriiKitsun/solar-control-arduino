@@ -4,6 +4,7 @@
 
 #include <Arduino.h>
 #include <GyverNTP.h>
+#include <RTClib.h>
 #include <Timezone.h>
 
 struct Date {
@@ -17,10 +18,13 @@ struct Date {
 };
 
 void startNTP();
+void startRTC();
 void tickNTP();
 
-Date getUTCDate();
-Date getLocalDate();
+Date getNTPDate();
+Date getRTCDate();
+Date getNTPLocalDate();
+Date getRTCLocalDate();
 
 String toJSON(const Date& date);
 

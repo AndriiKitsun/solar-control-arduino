@@ -1,6 +1,7 @@
 #include "utils/date.h"
 
 GyverNTP ntp(0);
+RTC_DS3231 rtc;
 
 TimeChangeRule dstStart = {"EEST", Last, Sun, Mar, 3, 180};  // UTC+3
 TimeChangeRule stdStart = {"EET", Last, Sun, Oct, 4, 120};   // UTC+2
@@ -21,11 +22,27 @@ void startNTP() {
   }
 }
 
+void startRTC() {
+  if (!rtc.begin()) {
+    Serial.println(F("Couldn't find RTC!"));
+
+    return;
+  }
+
+  Serial.println(F("RTC module started"));
+
+  if (rtc.lostPower()) {
+    Serial.println(F("RTC lost power, setting the time from NTP"));
+
+    rtc.adjust(DateTime(ntp.year(), ntp.month(), ntp.day(), ntp.hour(), ntp.minute(), ntp.second()));
+  }
+}
+
 void tickNTP() {
   ntp.tick();
 }
 
-Date getUTCDate() {
+Date getNTPDate() {
   return {
     year : ntp.year(),
     month : ntp.month(),
@@ -37,7 +54,21 @@ Date getUTCDate() {
   };
 }
 
-Date getLocalDate() {
+Date getRTCDate() {
+  DateTime now = rtc.now();
+
+  return {
+    year : now.year(),
+    month : now.month(),
+    day : now.day(),
+    hour : now.hour(),
+    minute : now.minute(),
+    second : now.second(),
+    ms : 0,
+  };
+}
+
+Date getNTPLocalDate() {
   time_t localTime = uaTZ.toLocal(ntp.getUnix(), &tcr);
 
   return {
@@ -48,6 +79,20 @@ Date getLocalDate() {
     minute : minute(localTime),
     second : second(localTime),
     ms : ntp.ms(),
+  };
+}
+
+Date getRTCLocalDate() {
+  time_t localTime = uaTZ.toLocal(rtc.now().unixtime(), &tcr);
+
+  return {
+    year : year(localTime),
+    month : month(localTime),
+    day : day(localTime),
+    hour : hour(localTime),
+    minute : minute(localTime),
+    second : second(localTime),
+    ms : 0,
   };
 }
 
@@ -90,6 +135,9 @@ String toJSON(const Date& date) {
   str += F(".");
 
   if (date.ms < 100) {
+    str += F("0");
+  }
+  if (date.ms < 10) {
     str += F("0");
   }
   str += date.ms;

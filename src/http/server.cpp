@@ -150,9 +150,9 @@ String getPzemsPayload() {
   JsonDocument doc;
   String payload;
 
-  Date date = getLocalDate();
+  Date date = getNTPLocalDate();
 
-  doc[F("createdAtGmt")] = toJSON(getUTCDate());
+  doc[F("createdAtGmt")] = toJSON(getNTPDate());
 
   doc[F("acInput")] = acInPzem.getValues(date);
   doc[F("acOutput")] = acOutPzem.getValues(date);
@@ -167,12 +167,28 @@ String getPzemsStatus() {
   JsonDocument doc;
   String payload;
 
-  doc[F("createdAtGmt")] = toJSON(getUTCDate());
-  doc[F("createdAt")] = toJSON(getLocalDate());
+  Serial.print("NTP datetime: ");
+  Serial.println(toJSON(getNTPDate()));
 
-  doc[F("acInput")] = acInPzem.getStatus();
-  doc[F("acOutput")] = acOutPzem.getStatus();
-  doc[F("dcBatteryOutput")] = dcBattOutPzem.getStatus();
+  Serial.print("RTC datetime: ");
+  Serial.println(toJSON(getRTCDate()));
+
+  Serial.print("NTP local datetime: ");
+  Serial.println(toJSON(getNTPLocalDate()));
+
+  Serial.print("RTC local datetime: ");
+  Serial.println(toJSON(getRTCLocalDate()));
+
+  Serial.println();
+
+  // doc[F("createdAtGmt")] = toJSON(getUTCDate());
+  // doc[F("createdAtGmtRtc")] = getRtcTimestamp();
+  // doc[F("createdAtGmtRtc2")] = toJSON(getUTCDateFromRTC());
+  // doc[F("createdAt")] = toJSON(getLocalDate());
+
+  // doc[F("acInput")] = acInPzem.getStatus();
+  // doc[F("acOutput")] = acOutPzem.getStatus();
+  // doc[F("dcBatteryOutput")] = dcBattOutPzem.getStatus();
 
   serializeJson(doc, payload);
 
