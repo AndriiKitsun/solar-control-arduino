@@ -32,10 +32,10 @@ void tickServer() {
 }
 
 void configRouter() {
-  server.on(F("/health"), HTTP_GET, handleHealthCheck);
+  server.on(F("/health"), HTTP_GET, handleEspHealthCheck);
+  server.on(F("/status"), HTTP_GET, handleEspStatus);
 
   server.on(F("/pzems"), HTTP_GET, handlePzemValues);
-  server.on(F("/pzems/status"), HTTP_GET, handlePzemsStatus);
   server.on(F("/pzems/address"), HTTP_PATCH, handlePzemAddressChange);
   server.on(F("/pzems/shunt"), HTTP_PATCH, handlePzemShuntChange);
   server.on(F("/pzems/counter"), HTTP_DELETE, handlePzemsCounterReset);
@@ -44,18 +44,18 @@ void configRouter() {
 }
 
 // GET "/health"
-void handleHealthCheck() {
+void handleEspHealthCheck() {
   server.send(HTTP_CODE_OK, F("text/plain"), F("UP"));
+}
+
+// GET "/status"
+void handleEspStatus() {
+  server.send(HTTP_CODE_OK, F("application/json"), getEspStatus());
 }
 
 // GET "/pzems"
 void handlePzemValues() {
   server.send(HTTP_CODE_OK, F("application/json"), getPzemsPayload());
-}
-
-// GET "/pzems/status"
-void handlePzemsStatus() {
-  server.send(HTTP_CODE_OK, F("application/json"), getPzemsStatus());
 }
 
 // PATCH "/pzems/address?id={id}&address={1}"
@@ -163,16 +163,20 @@ String getPzemsPayload() {
   return payload;
 }
 
-String getPzemsStatus() {
+String getEspStatus() {
   JsonDocument doc;
   String payload;
 
-  doc[F("createdAtGmt")] = toJSON(getUTCDate());
-  doc[F("createdAt")] = toJSON(getLocalDate());
+  JsonObject date = doc[F("date")].to<JsonObject>();
+  date[F("createdAtGmt")] = toJSON(getUTCDate());
+  date[F("createdAt")] = toJSON(getLocalDate());
 
-  doc[F("acInput")] = acInPzem.getStatus();
-  doc[F("acOutput")] = acOutPzem.getStatus();
-  doc[F("dcBatteryOutput")] = dcBattOutPzem.getStatus();
+  JsonObject pzems = doc[F("pzems")].to<JsonObject>();
+  pzems[F("acInputPzem")] = acInPzem.getStatus();
+  pzems[F("acOutputPzem")] = acOutPzem.getStatus();
+  pzems[F("dcBatteryOutputPzem")] = dcBattOutPzem.getStatus();
+
+  doc["eeprom"]["isConnected"] = isEepromConnected();
 
   serializeJson(doc, payload);
 

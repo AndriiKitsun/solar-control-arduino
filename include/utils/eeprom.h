@@ -1,0 +1,42 @@
+#pragma once
+#ifndef EEPROM_H
+#define EEPROM_H
+
+#include <Arduino.h>
+#include <at24c256.h>
+
+static AT24C256 eeprom(AT24C_ADDRESS_0);
+
+void startEeprom();
+
+bool isEepromConnected();
+
+template <typename T>
+bool setValue(int address, const T& data) {
+  eeprom.put(address, data);
+
+  uint8_t error = eeprom.getLastError();
+
+  if (error != 0) {
+    Serial.print(F("Error putting to EEPROM: "));
+    Serial.println(error);
+  }
+
+  return error == 0;
+}
+
+template <typename T>
+bool getValue(int address, T& data) {
+  eeprom.get(address, data);
+
+  uint8_t error = eeprom.getLastError();
+
+  if (error != 0) {
+    Serial.print(F("Error getting from EEPROM: "));
+    Serial.println(error);
+  }
+
+  return error == 0;
+}
+
+#endif

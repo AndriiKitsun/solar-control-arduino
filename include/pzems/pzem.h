@@ -4,12 +4,13 @@
 
 #include <Arduino.h>
 #include "utils/date.h"
+#include "utils/eeprom.h"
 
 struct Zone {
-  float t1StartEnergy;
-  float t2StartEnergy;
-  float t1EnergyAcc;
-  float t2EnergyAcc;
+  float t1StartEnergy = 0.0;
+  float t2StartEnergy = 0.0;
+  float t1EnergyAcc = 0.0;
+  float t2EnergyAcc = 0.0;
 };
 
 class Pzem {
@@ -31,12 +32,13 @@ class Pzem {
   float calcT2ZoneEnergy();
 
   bool isT1ZoneActive(uint8_t hour);
-
   bool isStartOfT1Zone(uint8_t hour, uint8_t minute, uint8_t second);
   bool isEndOfT1Zone(uint8_t hour, uint8_t minute, uint8_t second);
-
   bool isStartOfT2Zone(uint8_t hour, uint8_t minute, uint8_t second);
   bool isEndOfT2Zone(uint8_t hour, uint8_t minute, uint8_t second);
+
+  void saveZone(int address, const Zone& zone);
+  Zone getZone(int address);
 };
 
 #endif

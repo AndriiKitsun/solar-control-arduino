@@ -75,3 +75,65 @@ bool Pzem::isStartOfT2Zone(uint8_t hour, uint8_t minute, uint8_t second) {
 bool Pzem::isEndOfT2Zone(uint8_t hour, uint8_t minute, uint8_t second) {
   return hour == 6 && minute == 59 && second == 59;
 }
+
+void Pzem::saveZone(int address, const Zone& zone) {
+  setValue(address, zone);
+}
+
+Zone Pzem::getZone(int address) {
+  Zone zone;
+
+  Serial.print("Address '");
+  Serial.print(address);
+  Serial.println("' -->");
+
+  Serial.println("Default values: ");
+  Serial.println(zone.t1StartEnergy);
+  Serial.println(zone.t2StartEnergy);
+  Serial.println(zone.t1EnergyAcc);
+  Serial.println(zone.t2EnergyAcc);
+
+  bool isSuccess = getValue(address, zone);
+
+  if (!isSuccess) {
+    Serial.println("Reading is not success. Return default values. Values from eeprom: ");
+    Serial.println(zone.t1StartEnergy, 6);
+    Serial.println(zone.t2StartEnergy, 6);
+    Serial.println(zone.t1EnergyAcc, 6);
+    Serial.println(zone.t2EnergyAcc, 6);
+
+    return zone;
+  }
+
+  Serial.println("Read is ok. Values: ");
+  Serial.println(zone.t1StartEnergy, 6);
+  Serial.println(zone.t2StartEnergy, 6);
+  Serial.println(zone.t1EnergyAcc, 6);
+  Serial.println(zone.t2EnergyAcc, 6);
+
+  if (isnan(zone.t1StartEnergy)) {
+    zone.t1StartEnergy = 0.0;
+  }
+
+  if (isnan(zone.t2StartEnergy)) {
+    zone.t2StartEnergy = 0.0;
+  }
+
+  if (isnan(zone.t1EnergyAcc)) {
+    zone.t1EnergyAcc = 0.0;
+  }
+
+  if (isnan(zone.t2EnergyAcc)) {
+    zone.t2EnergyAcc = 0.0;
+  }
+
+  Serial.println("After conditional transformation: ");
+  Serial.println(zone.t1StartEnergy, 6);
+  Serial.println(zone.t2StartEnergy, 6);
+  Serial.println(zone.t1EnergyAcc, 6);
+  Serial.println(zone.t2EnergyAcc, 6);
+
+  Serial.println();
+
+  return zone;
+}
