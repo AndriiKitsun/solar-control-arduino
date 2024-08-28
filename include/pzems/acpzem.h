@@ -9,13 +9,13 @@
 
 class AcPzem : public Pzem {
  public:
-  AcPzem(SoftwareSerial& port, uint8_t addr = PZEM_DEFAULT_ADDR);
+  AcPzem(SoftwareSerial& port, uint8_t storageAddress, uint8_t pzemAddress = PZEM_DEFAULT_ADDR);
 
   JsonDocument getStatus();
   JsonDocument getValues(const Date& date);
 
   JsonDocument changeAddress(uint8_t addr);
-  void resetCounter();
+  bool resetCounter();
 
  private:
   PZEM004Tv30 _pzem;
@@ -23,6 +23,7 @@ class AcPzem : public Pzem {
   float _frequency;
   float _powerFactor;
 
+  bool isConnected();
   void readValues();
 };
 

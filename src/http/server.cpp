@@ -5,10 +5,10 @@ ESP8266WebServer server(80);
 SoftwareSerial acPzemSerial(AC_PZEM_RX_PIN, AC_PZEM_TX_PIN);
 SoftwareSerial dcPzemSerial(DC_PZEM_RX_PIN, DC_PZEM_TX_PIN);
 
-AcPzem acInPzem(acPzemSerial, AC_INPUT_PZEM_ADDRESS);
-AcPzem acOutPzem(acPzemSerial, AC_OUTPUT_PZEM_ADDRESS);
+AcPzem acInPzem(acPzemSerial, 0, AC_INPUT_PZEM_ADDRESS);
+AcPzem acOutPzem(acPzemSerial, 16, AC_OUTPUT_PZEM_ADDRESS);
 
-DcPzem dcBattOutPzem(dcPzemSerial, DC_BATTERY_OUTPUT_PZEM_ADDRESS);
+DcPzem dcBattOutPzem(dcPzemSerial, 32, DC_BATTERY_OUTPUT_PZEM_ADDRESS);
 
 void startServer() {
   if (MDNS.begin(ESP_DOMAIN_NAME)) {
@@ -102,7 +102,7 @@ void handlePzemShuntChange() {
   String id = server.arg(F("id"));
   long shuntType = server.arg(F("shunt")).toInt();
 
-  Serial.print("Enteret Shunt: ");
+  Serial.print(F("Entered Shunt: "));
   Serial.println(shuntType);
 
   if (id.isEmpty()) {
@@ -132,11 +132,16 @@ void handlePzemShuntChange() {
 
 // DELETE "/pzems/counter"
 void handlePzemsCounterReset() {
-  acInPzem.resetCounter();
-  acOutPzem.resetCounter();
-  dcBattOutPzem.resetCounter();
+  JsonDocument doc;
+  String payload;
 
-  server.send(HTTP_CODE_NO_CONTENT);
+  doc[F("acInput")] = acInPzem.resetCounter();
+  doc[F("acOutput")] = acOutPzem.resetCounter();
+  doc[F("dcBatteryOutput")] = dcBattOutPzem.resetCounter();
+
+  serializeJson(doc, payload);
+
+  server.send(HTTP_CODE_OK, F("application/json"), payload);
 }
 
 // "**"
@@ -176,7 +181,7 @@ String getEspStatus() {
   pzems[F("acOutputPzem")] = acOutPzem.getStatus();
   pzems[F("dcBatteryOutputPzem")] = dcBattOutPzem.getStatus();
 
-  doc["eeprom"]["isConnected"] = isEepromConnected();
+  doc[F("eeprom")][F("isConnected")] = isEepromConnected();
 
   serializeJson(doc, payload);
 

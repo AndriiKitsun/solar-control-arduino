@@ -14,19 +14,25 @@ struct Zone {
 };
 
 class Pzem {
+ public:
+  Pzem(uint8_t storageAddress);
+
  protected:
-  Zone _zone;
   Date _createdAt;
 
   float _voltage;
   float _current;
   float _power;
   float _energy;
-
   float _t1Energy;
   float _t2Energy;
 
   void calcZoneEnergy();
+  void clearZone();
+
+ private:
+  Zone _zone;
+  uint8_t _storageAddress;
 
   float calcT1ZoneEnergy();
   float calcT2ZoneEnergy();
@@ -37,8 +43,8 @@ class Pzem {
   bool isStartOfT2Zone(uint8_t hour, uint8_t minute, uint8_t second);
   bool isEndOfT2Zone(uint8_t hour, uint8_t minute, uint8_t second);
 
-  void saveZone(int address, const Zone& zone);
-  Zone getZone(int address);
+  void saveZone();
+  Zone getZone();
 };
 
 #endif

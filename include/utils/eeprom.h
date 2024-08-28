@@ -12,7 +12,7 @@ void startEeprom();
 bool isEepromConnected();
 
 template <typename T>
-bool setValue(int address, const T& data) {
+bool putValue(uint8_t address, const T& data) {
   eeprom.put(address, data);
 
   uint8_t error = eeprom.getLastError();
@@ -26,7 +26,7 @@ bool setValue(int address, const T& data) {
 }
 
 template <typename T>
-bool getValue(int address, T& data) {
+bool getValue(uint8_t address, T& data) {
   eeprom.get(address, data);
 
   uint8_t error = eeprom.getLastError();
