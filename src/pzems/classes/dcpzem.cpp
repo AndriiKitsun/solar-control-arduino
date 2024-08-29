@@ -1,9 +1,9 @@
-#include "pzems/dcpzem.h"
+#include "pzems/classes/dcpzem.h"
 
 // Public
 
 DcPzem::DcPzem(SoftwareSerial& port, uint8_t storageAddress, uint8_t pzemAddress)
-    : Pzem(storageAddress), _pzem(port, pzemAddress) {}
+    : BasePzem(storageAddress), _pzem(port, pzemAddress) {}
 
 JsonDocument DcPzem::getStatus() {
   JsonDocument doc;
@@ -61,7 +61,7 @@ JsonDocument DcPzem::changeShuntType(uint16_t type) {
 }
 
 bool DcPzem::resetCounter() {
-  if (!isConnected()) {
+  if (!isConnected() || !isEepromConnected()) {
     return false;
   }
 

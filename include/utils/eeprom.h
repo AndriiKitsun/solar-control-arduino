@@ -3,13 +3,14 @@
 #define EEPROM_H
 
 #include <Arduino.h>
+#include <ArduinoJson.h>
 #include <at24c256.h>
 
 static AT24C256 eeprom(AT24C_ADDRESS_0);
 
 void startEeprom();
-
 bool isEepromConnected();
+JsonDocument getEepromStatus();
 
 template <typename T>
 bool putValue(uint8_t address, const T& data) {

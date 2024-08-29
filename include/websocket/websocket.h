@@ -4,11 +4,11 @@
 
 #include <Arduino.h>
 #include <WebSocketsServer.h>
-#include "http/server.h"
+#include "pzems/pzem.h"
 
 void startWebSocket();
 void tickWebSocket();
 
-void broadcastPzemz();
+void broadcastPzems();
 
 #endif

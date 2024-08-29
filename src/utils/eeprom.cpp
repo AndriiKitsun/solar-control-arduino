@@ -16,3 +16,11 @@ bool isEepromConnected() {
 
   return eeprom.getLastError() == 0;
 }
+
+JsonDocument getEepromStatus() {
+  JsonDocument doc;
+
+  doc[F("isConnected")] = isEepromConnected();
+
+  return doc;
+}

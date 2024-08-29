@@ -1,14 +1,6 @@
 #include "http/server.h"
 
-ESP8266WebServer server(80);
-
-SoftwareSerial acPzemSerial(AC_PZEM_RX_PIN, AC_PZEM_TX_PIN);
-SoftwareSerial dcPzemSerial(DC_PZEM_RX_PIN, DC_PZEM_TX_PIN);
-
-AcPzem acInPzem(acPzemSerial, 0, AC_INPUT_PZEM_ADDRESS);
-AcPzem acOutPzem(acPzemSerial, 16, AC_OUTPUT_PZEM_ADDRESS);
-
-DcPzem dcBattOutPzem(dcPzemSerial, 32, DC_BATTERY_OUTPUT_PZEM_ADDRESS);
+static ESP8266WebServer server(80);
 
 void startServer() {
   if (MDNS.begin(ESP_DOMAIN_NAME)) {
@@ -50,12 +42,25 @@ void handleEspHealthCheck() {
 
 // GET "/status"
 void handleEspStatus() {
-  server.send(HTTP_CODE_OK, F("application/json"), getEspStatus());
+  JsonDocument doc;
+  String payload;
+
+  doc[F("date")] = getDateStatus();
+  doc[F("pzems")] = getPzemsStatus();
+  doc[F("eeprom")] = getEepromStatus();
+
+  serializeJson(doc, payload);
+
+  server.send(HTTP_CODE_OK, F("application/json"), payload);
 }
 
 // GET "/pzems"
 void handlePzemValues() {
-  server.send(HTTP_CODE_OK, F("application/json"), getPzemsPayload());
+  String payload;
+
+  serializeJson(getPzemsPayload(), payload);
+
+  server.send(HTTP_CODE_OK, F("application/json"), payload);
 }
 
 // PATCH "/pzems/address?id={id}&address={1}"
@@ -65,32 +70,31 @@ void handlePzemAddressChange() {
 
   if (id.isEmpty()) {
     server.send(HTTP_CODE_BAD_REQUEST, F("text/plain"), F("The \"id\" param is required"));
+
     return;
   }
 
   if (!address) {
     server.send(HTTP_CODE_BAD_REQUEST, F("text/plain"), F("The \"address\" param is required"));
+
     return;
   }
 
   if (address < 0x01 || address > 0xF7) {
     server.send(HTTP_CODE_BAD_REQUEST, F("text/plain"), F("The \"address\" param should be in the range between 1 and 247"));
+
     return;
   }
 
-  JsonDocument doc;
-  String payload;
+  JsonDocument doc = changePzemAddress(id, address);
 
-  if (id == F("acInput")) {
-    doc = acInPzem.changeAddress(address);
-  } else if (id == F("acOutput")) {
-    doc = acOutPzem.changeAddress(address);
-  } else if (id == F("dcBatteryOutput")) {
-    doc = dcBattOutPzem.changeAddress(address);
-  } else {
+  if (doc.isNull()) {
     server.send(HTTP_CODE_NOT_FOUND, F("text/plain"), F("PZEM with entered \"id\" is not found"));
+
     return;
   }
+
+  String payload;
 
   serializeJson(doc, payload);
 
@@ -102,28 +106,27 @@ void handlePzemShuntChange() {
   String id = server.arg(F("id"));
   long shuntType = server.arg(F("shunt")).toInt();
 
-  Serial.print(F("Entered Shunt: "));
-  Serial.println(shuntType);
-
   if (id.isEmpty()) {
     server.send(HTTP_CODE_BAD_REQUEST, F("text/plain"), F("The \"id\" param is required"));
+
     return;
   }
 
   if (shuntType < 0 || shuntType > 3) {
     server.send(HTTP_CODE_BAD_REQUEST, F("text/plain"), F("The \"shunt\" param should be in the range between 0 and 3"));
+
     return;
   }
 
-  JsonDocument doc;
-  String payload;
+  JsonDocument doc = changePzemShuntType(id, shuntType);
 
-  if (id == F("dcBatteryOutput")) {
-    doc = dcBattOutPzem.changeShuntType(shuntType);
-  } else {
+  if (doc.isNull()) {
     server.send(HTTP_CODE_NOT_FOUND, F("text/plain"), F("PZEM with entered \"id\" is not found"));
+
     return;
   }
+
+  String payload;
 
   serializeJson(doc, payload);
 
@@ -132,14 +135,9 @@ void handlePzemShuntChange() {
 
 // DELETE "/pzems/counter"
 void handlePzemsCounterReset() {
-  JsonDocument doc;
   String payload;
 
-  doc[F("acInput")] = acInPzem.resetCounter();
-  doc[F("acOutput")] = acOutPzem.resetCounter();
-  doc[F("dcBatteryOutput")] = dcBattOutPzem.resetCounter();
-
-  serializeJson(doc, payload);
+  serializeJson(resetPzemsCounter(), payload);
 
   server.send(HTTP_CODE_OK, F("application/json"), payload);
 }
@@ -147,43 +145,4 @@ void handlePzemsCounterReset() {
 // "**"
 void handleNotFound() {
   server.send(HTTP_CODE_NOT_FOUND, F("text/plain"), F("Route Not Found"));
-}
-
-// Other
-
-String getPzemsPayload() {
-  JsonDocument doc;
-  String payload;
-
-  Date date = getLocalDate();
-
-  doc[F("createdAtGmt")] = toJSON(getUTCDate());
-
-  doc[F("acInput")] = acInPzem.getValues(date);
-  doc[F("acOutput")] = acOutPzem.getValues(date);
-  doc[F("dcBatteryOutput")] = dcBattOutPzem.getValues(date);
-
-  serializeJson(doc, payload);
-
-  return payload;
-}
-
-String getEspStatus() {
-  JsonDocument doc;
-  String payload;
-
-  JsonObject date = doc[F("date")].to<JsonObject>();
-  date[F("createdAtGmt")] = toJSON(getUTCDate());
-  date[F("createdAt")] = toJSON(getLocalDate());
-
-  JsonObject pzems = doc[F("pzems")].to<JsonObject>();
-  pzems[F("acInputPzem")] = acInPzem.getStatus();
-  pzems[F("acOutputPzem")] = acOutPzem.getStatus();
-  pzems[F("dcBatteryOutputPzem")] = dcBattOutPzem.getStatus();
-
-  doc[F("eeprom")][F("isConnected")] = isEepromConnected();
-
-  serializeJson(doc, payload);
-
-  return payload;
 }

@@ -1,9 +1,9 @@
-#include "pzems/acpzem.h"
+#include "pzems/classes/acpzem.h"
 
 // Public
 
 AcPzem::AcPzem(SoftwareSerial& port, uint8_t storageAddress, uint8_t pzemAddress)
-    : Pzem(storageAddress), _pzem(port, pzemAddress) {}
+    : BasePzem(storageAddress), _pzem(port, pzemAddress) {}
 
 JsonDocument AcPzem::getStatus() {
   JsonDocument doc;
@@ -68,7 +68,7 @@ JsonDocument AcPzem::changeAddress(uint8_t addr) {
 }
 
 bool AcPzem::resetCounter() {
-  if (!isConnected()) {
+  if (!isConnected() || !isEepromConnected()) {
     return false;
   }
 

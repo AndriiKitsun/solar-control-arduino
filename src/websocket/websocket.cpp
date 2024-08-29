@@ -1,6 +1,6 @@
 #include "websocket/websocket.h"
 
-WebSocketsServer webSocket(81);
+static WebSocketsServer webSocket(81);
 
 void startWebSocket() {
   webSocket.begin();
@@ -17,14 +17,17 @@ void tickWebSocket() {
   webSocket.loop();
 }
 
-void broadcastPzemz() {
+void broadcastPzems() {
   static unsigned long prevMillis;
 
   if (millis() - prevMillis >= BROADCAST_INTERVAL) {
     prevMillis = millis();
 
     if (webSocket.connectedClients()) {
-      String payload = getPzemsPayload();
+      JsonDocument doc = getPzemsPayload();
+      String payload;
+
+      serializeJson(doc, payload);
 
       webSocket.broadcastTXT(payload);
     }

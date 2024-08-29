@@ -5,9 +5,9 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include <PZEM017v1.h>
-#include "pzem.h"
+#include "basePzem.h"
 
-class DcPzem : public Pzem {
+class DcPzem : public BasePzem {
  public:
   DcPzem(SoftwareSerial& port, uint8_t storageAddress, uint8_t pzemAddress = PZEM017_DEFAULT_ADDR);
 

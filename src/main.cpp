@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include "http/server.h"
+#include "pzems/pzem.h"
 #include "utils/date.h"
 #include "utils/eeprom.h"
 #include "utils/led.h"
@@ -16,6 +17,7 @@ void setup() {
 
   startNTP();
   startEeprom();
+  startPzems();
   startServer();
   startWebSocket();
 }
@@ -25,5 +27,5 @@ void loop() {
   tickServer();
   tickWebSocket();
 
-  broadcastPzemz();
+  broadcastPzems();
 }
