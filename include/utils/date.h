@@ -3,6 +3,7 @@
 #define DATE_H
 
 #include <Arduino.h>
+#include <ArduinoJson.h>
 #include <GyverNTP.h>
 #include <Timezone.h>
 
@@ -21,6 +22,7 @@ void tickNTP();
 
 Date getUTCDate();
 Date getLocalDate();
+JsonDocument getDateStatus();
 
 String toJSON(const Date& date);
 

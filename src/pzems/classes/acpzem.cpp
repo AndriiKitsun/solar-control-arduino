@@ -1,16 +1,14 @@
-#include "pzems/acpzem.h"
+#include "pzems/classes/acpzem.h"
 
 // Public
 
-AcPzem::AcPzem(SoftwareSerial& port, uint8_t addr)
-    : _pzem(port, addr) {
-  _zone = {0.0, 0.0, 0.0, 0.0};
-}
+AcPzem::AcPzem(SoftwareSerial& port, uint8_t storageAddress, uint8_t pzemAddress)
+    : BasePzem(storageAddress), _pzem(port, pzemAddress) {}
 
 JsonDocument AcPzem::getStatus() {
   JsonDocument doc;
 
-  doc[F("isConnected")] = !isnan(_pzem.voltage());
+  doc[F("isConnected")] = isConnected();
   doc[F("currentAddress")] = _pzem.getAddress();
   doc[F("savedAddress")] = _pzem.readAddress();
 
@@ -64,22 +62,28 @@ JsonDocument AcPzem::changeAddress(uint8_t addr) {
 
   doc[F("currentAddress")] = _pzem.getAddress();
   doc[F("addressToSet")] = addr;
-  doc[F("isConnected")] = !isnan(_pzem.voltage());
   doc[F("isChanged")] = _pzem.setAddress(addr);
 
   return doc;
 }
 
-void AcPzem::resetCounter() {
+bool AcPzem::resetCounter() {
+  if (!isConnected() || !isEepromConnected()) {
+    return false;
+  }
+
   _pzem.resetEnergy();
 
-  _zone.t1StartEnergy = 0.0;
-  _zone.t2StartEnergy = 0.0;
-  _zone.t1EnergyAcc = 0.0;
-  _zone.t2EnergyAcc = 0.0;
+  clearZone();
+
+  return true;
 }
 
 // Private
+
+bool AcPzem::isConnected() {
+  return !isnan(_pzem.voltage());
+}
 
 void AcPzem::readValues() {
   _voltage = _pzem.voltage();

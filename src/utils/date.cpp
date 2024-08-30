@@ -1,11 +1,11 @@
 #include "utils/date.h"
 
-GyverNTP ntp(0);
+static GyverNTP ntp(0);
 
-TimeChangeRule dstStart = {"EEST", Last, Sun, Mar, 3, 180};  // UTC+3
-TimeChangeRule stdStart = {"EET", Last, Sun, Oct, 4, 120};   // UTC+2
-Timezone uaTZ(dstStart, stdStart);
-TimeChangeRule* tcr;
+static TimeChangeRule dstStart = {"EEST", Last, Sun, Mar, 3, 180};  // UTC+3
+static TimeChangeRule stdStart = {"EET", Last, Sun, Oct, 4, 120};   // UTC+2
+static Timezone uaTZ(dstStart, stdStart);
+static TimeChangeRule* tcr;
 
 void startNTP() {
   bool status = ntp.begin();
@@ -49,6 +49,15 @@ Date getLocalDate() {
     second : second(localTime),
     ms : ntp.ms(),
   };
+}
+
+JsonDocument getDateStatus() {
+  JsonDocument doc;
+
+  doc[F("createdAtGmt")] = toJSON(getUTCDate());
+  doc[F("createdAt")] = toJSON(getLocalDate());
+
+  return doc;
 }
 
 String toJSON(const Date& date) {

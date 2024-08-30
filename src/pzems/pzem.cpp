@@ -1,77 +1,75 @@
 #include "pzems/pzem.h"
 
-// Protected
+static SoftwareSerial acPzemSerial(AC_PZEM_RX_PIN, AC_PZEM_TX_PIN);
+static SoftwareSerial dcPzemSerial(DC_PZEM_RX_PIN, DC_PZEM_TX_PIN);
 
-void Pzem::calcZoneEnergy() {
-  float t1Energy;
-  float t2Energy;
+static AcPzem acInPzem(acPzemSerial, 0, AC_INPUT_PZEM_ADDRESS);
+static AcPzem acOutPzem(acPzemSerial, 16, AC_OUTPUT_PZEM_ADDRESS);
 
-  if (isT1ZoneActive(_createdAt.hour)) {
-    t1Energy = calcT1ZoneEnergy();
-    t2Energy = _zone.t2EnergyAcc;
-  } else {
-    t1Energy = _zone.t1EnergyAcc;
-    t2Energy = calcT2ZoneEnergy();
+static DcPzem dcBattOutPzem(dcPzemSerial, 32, DC_BATTERY_OUTPUT_PZEM_ADDRESS);
+
+void startPzems() {
+  Serial.println(F("Initializing PZEM zones"));
+
+  acInPzem.startPzem();
+  acOutPzem.startPzem();
+  dcBattOutPzem.startPzem();
+}
+
+JsonDocument getPzemsPayload() {
+  JsonDocument doc;
+
+  Date date = getLocalDate();
+
+  doc[F("createdAtGmt")] = toJSON(getUTCDate());
+
+  doc[F(AC_INPUT_PZEM_ID)] = acInPzem.getValues(date);
+  doc[F(AC_OUTPUT_PZEM_ID)] = acOutPzem.getValues(date);
+  doc[F(DC_BATTERY_OUTPUT_PZEM_ID)] = dcBattOutPzem.getValues(date);
+
+  return doc;
+}
+
+JsonDocument getPzemsStatus() {
+  JsonDocument doc;
+
+  doc[F(AC_INPUT_PZEM_ID)] = acInPzem.getStatus();
+  doc[F(AC_OUTPUT_PZEM_ID)] = acOutPzem.getStatus();
+  doc[F(DC_BATTERY_OUTPUT_PZEM_ID)] = dcBattOutPzem.getStatus();
+
+  return doc;
+}
+
+JsonDocument resetPzemsCounter() {
+  JsonDocument doc;
+
+  doc[F(AC_INPUT_PZEM_ID)] = acInPzem.resetCounter();
+  doc[F(AC_OUTPUT_PZEM_ID)] = acOutPzem.resetCounter();
+  doc[F(DC_BATTERY_OUTPUT_PZEM_ID)] = dcBattOutPzem.resetCounter();
+
+  return doc;
+}
+
+JsonDocument changePzemAddress(String pzemId, uint8_t address) {
+  JsonDocument doc;
+
+  if (pzemId == F(AC_INPUT_PZEM_ID)) {
+    doc = acInPzem.changeAddress(address);
+  } else if (pzemId == F(AC_OUTPUT_PZEM_ID)) {
+    doc = acOutPzem.changeAddress(address);
+  } else if (pzemId == F(DC_BATTERY_OUTPUT_PZEM_ID)) {
+    doc = dcBattOutPzem.changeAddress(address);
   }
 
-  _t1Energy = t1Energy;
-  _t2Energy = t2Energy;
+  return doc;
 }
 
-float Pzem::calcT1ZoneEnergy() {
-  bool isStartOfZone =
-      isStartOfT1Zone(_createdAt.hour, _createdAt.minute, _createdAt.second);
-  bool isEndOfZone =
-      isEndOfT1Zone(_createdAt.hour, _createdAt.minute, _createdAt.second);
+JsonDocument changePzemShuntType(String pzemId, uint8_t shuntType) {
+  JsonDocument doc;
 
-  if (!_zone.t1StartEnergy || isStartOfZone) {
-    _zone.t1StartEnergy = _energy;
+  if (pzemId == F(DC_BATTERY_OUTPUT_PZEM_ID)) {
+    doc = dcBattOutPzem.changeShuntType(shuntType);
   }
 
-  float t1Energy = _energy - _zone.t1StartEnergy + _zone.t1EnergyAcc;
-
-  if (isEndOfZone) {
-    _zone.t1EnergyAcc = t1Energy;
-  }
-
-  return t1Energy;
-}
-
-float Pzem::calcT2ZoneEnergy() {
-  bool isStartOfZone =
-      isStartOfT2Zone(_createdAt.hour, _createdAt.minute, _createdAt.second);
-  bool isEndOfZone =
-      isEndOfT2Zone(_createdAt.hour, _createdAt.minute, _createdAt.second);
-
-  if (!_zone.t2StartEnergy || isStartOfZone) {
-    _zone.t2StartEnergy = _energy;
-  }
-
-  float t2Energy = _energy - _zone.t2StartEnergy + _zone.t2EnergyAcc;
-
-  if (isEndOfZone) {
-    _zone.t2EnergyAcc = t2Energy;
-  }
-
-  return t2Energy;
-}
-
-bool Pzem::isT1ZoneActive(uint8_t hour) {
-  return hour >= 7 && hour < 23;
-}
-
-bool Pzem::isStartOfT1Zone(uint8_t hour, uint8_t minute, uint8_t second) {
-  return hour == 7 && minute == 0 && second == 0;
-}
-
-bool Pzem::isEndOfT1Zone(uint8_t hour, uint8_t minute, uint8_t second) {
-  return hour == 22 && minute == 59 && second == 59;
-}
-
-bool Pzem::isStartOfT2Zone(uint8_t hour, uint8_t minute, uint8_t second) {
-  return hour == 23 && minute == 0 && second == 0;
-}
-
-bool Pzem::isEndOfT2Zone(uint8_t hour, uint8_t minute, uint8_t second) {
-  return hour == 6 && minute == 59 && second == 59;
+  return doc;
 }

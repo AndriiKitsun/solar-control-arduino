@@ -1,16 +1,14 @@
-#include "pzems/dcpzem.h"
+#include "pzems/classes/dcpzem.h"
 
 // Public
 
-DcPzem::DcPzem(SoftwareSerial& port, uint8_t addr)
-    : _pzem(port, addr) {
-  _zone = {0.0, 0.0, 0.0, 0.0};
-}
+DcPzem::DcPzem(SoftwareSerial& port, uint8_t storageAddress, uint8_t pzemAddress)
+    : BasePzem(storageAddress), _pzem(port, pzemAddress) {}
 
 JsonDocument DcPzem::getStatus() {
   JsonDocument doc;
 
-  doc[F("isConnected")] = !isnan(_pzem.voltage());
+  doc[F("isConnected")] = isConnected();
   doc[F("address")] = _pzem.getAddress();
   doc[F("holdingAddress")] = _pzem.getHoldingAddress();
   doc[F("shuntType")] = _pzem.getShunttype();
@@ -62,16 +60,23 @@ JsonDocument DcPzem::changeShuntType(uint16_t type) {
   return doc;
 }
 
-void DcPzem::resetCounter() {
+bool DcPzem::resetCounter() {
+  if (!isConnected() || !isEepromConnected()) {
+    return false;
+  }
+
   _pzem.resetEnergy();
 
-  _zone.t1StartEnergy = 0.0;
-  _zone.t2StartEnergy = 0.0;
-  _zone.t1EnergyAcc = 0.0;
-  _zone.t2EnergyAcc = 0.0;
+  clearZone();
+
+  return true;
 }
 
 // Private
+
+bool DcPzem::isConnected() {
+  return !isnan(_pzem.voltage());
+}
 
 void DcPzem::readValues() {
   _voltage = _pzem.voltage();

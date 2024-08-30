@@ -3,40 +3,19 @@
 #define PZEM_H
 
 #include <Arduino.h>
-#include "utils/date.h"
+#include "classes/acpzem.h"
+#include "classes/dcpzem.h"
 
-struct Zone {
-  float t1StartEnergy;
-  float t2StartEnergy;
-  float t1EnergyAcc;
-  float t2EnergyAcc;
-};
+#define AC_INPUT_PZEM_ID "acInput"
+#define AC_OUTPUT_PZEM_ID "acOutput"
+#define DC_BATTERY_OUTPUT_PZEM_ID "dcBatteryOutput"
 
-class Pzem {
- protected:
-  Zone _zone;
-  Date _createdAt;
+void startPzems();
 
-  float _voltage;
-  float _current;
-  float _power;
-  float _energy;
-
-  float _t1Energy;
-  float _t2Energy;
-
-  void calcZoneEnergy();
-
-  float calcT1ZoneEnergy();
-  float calcT2ZoneEnergy();
-
-  bool isT1ZoneActive(uint8_t hour);
-
-  bool isStartOfT1Zone(uint8_t hour, uint8_t minute, uint8_t second);
-  bool isEndOfT1Zone(uint8_t hour, uint8_t minute, uint8_t second);
-
-  bool isStartOfT2Zone(uint8_t hour, uint8_t minute, uint8_t second);
-  bool isEndOfT2Zone(uint8_t hour, uint8_t minute, uint8_t second);
-};
+JsonDocument getPzemsStatus();
+JsonDocument getPzemsPayload();
+JsonDocument resetPzemsCounter();
+JsonDocument changePzemAddress(String pzemId, uint8_t address);
+JsonDocument changePzemShuntType(String pzemId, uint8_t shuntType);
 
 #endif
