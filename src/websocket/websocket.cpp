@@ -19,12 +19,13 @@ void tickWebSocket() {
 
 void broadcastPzems() {
   static unsigned long prevMillis;
+  JsonDocument doc;
 
   if (millis() - prevMillis >= BROADCAST_INTERVAL) {
     prevMillis = millis();
+    doc = getPzemsPayload();
 
     if (webSocket.connectedClients()) {
-      JsonDocument doc = getPzemsPayload();
       String payload;
 
       serializeJson(doc, payload);

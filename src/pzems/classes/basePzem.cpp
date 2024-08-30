@@ -8,15 +8,16 @@ BasePzem::BasePzem(uint8_t storageAddress)
 void BasePzem::startPzem() {
   _zone = getZone();
 
-  Serial.println(F("Zone data:"));
+  Serial.print(F("Zone data on: "));
+  Serial.println(_storageAddress);
   Serial.print(F("t1StartEnergy "));
-  Serial.println(_zone.t1StartEnergy);
+  Serial.println(_zone.t1StartEnergy, 6);
   Serial.print(F("t2StartEnergy "));
-  Serial.println(_zone.t2StartEnergy);
+  Serial.println(_zone.t2StartEnergy, 6);
   Serial.print(F("t1EnergyAcc "));
-  Serial.println(_zone.t1EnergyAcc);
+  Serial.println(_zone.t1EnergyAcc, 6);
   Serial.print(F("t2EnergyAcc "));
-  Serial.println(_zone.t2EnergyAcc);
+  Serial.println(_zone.t2EnergyAcc, 6);
 }
 
 // Protected
@@ -45,7 +46,7 @@ float BasePzem::calcT1ZoneEnergy() {
   bool isEndOfZone =
       isEndOfT1Zone(_createdAt.hour, _createdAt.minute, _createdAt.second);
 
-  if (!_zone.t1StartEnergy || isStartOfZone) {
+  if ((!_zone.t1StartEnergy && _energy > 0) || isStartOfZone) {
     _zone.t1StartEnergy = _energy;
 
     saveZone();
@@ -68,7 +69,7 @@ float BasePzem::calcT2ZoneEnergy() {
   bool isEndOfZone =
       isEndOfT2Zone(_createdAt.hour, _createdAt.minute, _createdAt.second);
 
-  if (!_zone.t2StartEnergy || isStartOfZone) {
+  if ((!_zone.t2StartEnergy && _energy > 0) || isStartOfZone) {
     _zone.t2StartEnergy = _energy;
 
     saveZone();
@@ -120,7 +121,18 @@ void BasePzem::clearZone() {
  * Need to take this into account to set proper addresses
  */
 void BasePzem::saveZone() {
-  Serial.println("Save zone");
+  Serial.println(F("Save zone"));
+
+  Serial.print(F("Zone data to save to: "));
+  Serial.println(_storageAddress);
+  Serial.print(F("t1StartEnergy "));
+  Serial.println(_zone.t1StartEnergy, 6);
+  Serial.print(F("t2StartEnergy "));
+  Serial.println(_zone.t2StartEnergy, 6);
+  Serial.print(F("t1EnergyAcc "));
+  Serial.println(_zone.t1EnergyAcc, 6);
+  Serial.print(F("t2EnergyAcc "));
+  Serial.println(_zone.t2EnergyAcc, 6);
 
   putValue(_storageAddress, _zone);
 }
