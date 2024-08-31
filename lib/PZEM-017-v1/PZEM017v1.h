@@ -52,12 +52,12 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "WProgram.h"
 #endif
 
-// #define PZEM004_NO_SWSERIAL
-#if (not defined(PZEM004_NO_SWSERIAL)) && (defined(__AVR__) || defined(ESP8266) && (not defined(ESP32)))
-#define PZEM004_SOFTSERIAL
+// #define PZEM017V1_NO_SWSERIAL
+#if (not defined(PZEM017V1_NO_SWSERIAL)) && (defined(__AVR__) || defined(ESP8266) && (not defined(ESP32)))
+#define PZEM017V1_SOFTSERIAL
 #endif
 
-#if defined(PZEM004_SOFTSERIAL)
+#if defined(PZEM017V1_SOFTSERIAL)
 #include <SoftwareSerial.h>
 #endif
 
@@ -65,7 +65,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 class PZEM017v1 {
  public:
-#if defined(PZEM004_SOFTSERIAL)
+#if defined(PZEM017V1_SOFTSERIAL)
   PZEM017v1(SoftwareSerial& port, uint8_t addr = PZEM017_DEFAULT_ADDR);
 #endif
   PZEM017v1(HardwareSerial* port, uint8_t addr = PZEM017_DEFAULT_ADDR);
@@ -80,7 +80,7 @@ class PZEM017v1 {
   float getHighvoltAlarmValue();
   float getLowvoltAlarmValue();
   uint16_t getHoldingAddress();
-  uint16_t getShunttype();
+  uint16_t getShuntType();
 
   bool setAddress(uint8_t addr);
   uint8_t getAddress();
@@ -116,7 +116,7 @@ class PZEM017v1 {
     float HVAlarmVoltage;
     float LVAlarmVoltage;
     uint16_t address;
-    uint16_t shunttype;
+    uint16_t shuntType;
   } _parameterValues;  // Parameter values
 
   uint64_t _lastInputRead;    // Last time input values were updated
@@ -125,7 +125,7 @@ class PZEM017v1 {
   void init(uint8_t addr);  // Init common to all constructors
 
   bool updateValues();                            // Get most up to date values from device registers and cache them
-  uint16_t recieve(uint8_t* resp, uint16_t len);  // Receive len bytes into a buffer
+  uint16_t receive(uint8_t* resp, uint16_t len);  // Receive len bytes into a buffer
 
   bool sendCmd8(uint8_t cmd, uint16_t rAddr, uint16_t val, bool check = false, uint16_t slave_addr = 0xFFFF);  // Send 8 byte command
 

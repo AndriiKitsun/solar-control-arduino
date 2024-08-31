@@ -8,7 +8,8 @@
 
 #define AC_INPUT_PZEM_ID "acInput"
 #define AC_OUTPUT_PZEM_ID "acOutput"
-#define DC_BATTERY_OUTPUT_PZEM_ID "dcBatteryOutput"
+#define DC_BATTERY_PZEM_ID "dcBattery"
+#define DC_SUN_PZEM_ID "dcSun"
 
 void startPzems();
 

@@ -81,7 +81,7 @@ void printBuf(uint8_t* buffer, uint16_t len) {
  * @param transmitPin TX pin
  * @param addr Slave address of device
  */
-#if defined(PZEM004_SOFTSERIAL)
+#if defined(PZEM017V1_SOFTSERIAL)
 PZEM017v1::PZEM017v1(SoftwareSerial& port, uint8_t addr) {
   port.begin(PZEM_BAUD_RATE);
 
@@ -210,7 +210,7 @@ bool PZEM017v1::sendCmd8(uint8_t cmd, uint16_t rAddr, uint16_t val, bool check, 
   _serial->write(sendBuffer, 8);  // send frame
 
   if (check) {
-    if (!recieve(respBuffer, 8)) {  // if check enabled, read the response
+    if (!receive(respBuffer, 8)) {  // if check enabled, read the response
       return false;
     }
 
@@ -328,7 +328,7 @@ bool PZEM017v1::getParameters() {
   // Read 3 registers starting at 0x00
   sendCmd8(CMD_RHR, 0x00, 0x04, false);
 
-  if (recieve(response, 13) != 13) {  // Something went wrong
+  if (receive(response, 13) != 13) {  // Something went wrong
     return false;
   }
 
@@ -344,7 +344,7 @@ bool PZEM017v1::getParameters() {
   _parameterValues.address = ((uint32_t)response[7] << 8 |  // Raw address 0x00-0xf7
                               (uint32_t)response[8]);
 
-  _parameterValues.shunttype = ((uint32_t)response[9] << 8 |  // Shunt type 0x0000 - 0x0003 (100A/50A/200A/300A)
+  _parameterValues.shuntType = ((uint32_t)response[9] << 8 |  // Shunt type 0x0000 - 0x0003 (100A/50A/200A/300A)
                                 (uint32_t)response[10]);
   // Record current time as _lastHoldingRead
   _lastHoldingRead = millis();
@@ -398,18 +398,18 @@ uint16_t PZEM017v1::getHoldingAddress() {
 }
 
 /*!
- * PZEM017v1::shunttype
+ * PZEM017v1::shuntType
  *
- * Current shuttype
+ * Current shutType
  *
  *
- * @return device shuttype
+ * @return device shutType
  */
-uint16_t PZEM017v1::getShunttype() {
+uint16_t PZEM017v1::getShuntType() {
   if (!getParameters())
     return NAN;
 
-  return _parameterValues.shunttype;
+  return _parameterValues.shuntType;
 }
 
 /*!
@@ -431,7 +431,7 @@ bool PZEM017v1::updateValues() {
   // Read 10 registers starting at 0x00 (no check)
   sendCmd8(CMD_RIR, 0x00, 0x08, false);
 
-  if (recieve(response, 21) != 21) {  // Something went wrong
+  if (receive(response, 21) != 21) {  // Something went wrong
     return false;
   }
   // Update the current values
@@ -485,7 +485,7 @@ bool PZEM017v1::resetEnergy() {
   setCRC(buffer, 4);
   _serial->write(buffer, 4);
 
-  uint16_t length = recieve(reply, 5);
+  uint16_t length = receive(reply, 5);
 
   if (length == 0 || length == 5) {
     return false;
@@ -579,8 +579,8 @@ bool PZEM017v1::setLowvoltAlarm(uint16_t volts) {
  *
  * @return number of bytes read
  */
-uint16_t PZEM017v1::recieve(uint8_t* resp, uint16_t len) {
-#ifdef PZEM004_SOFTSERIAL
+uint16_t PZEM017v1::receive(uint8_t* resp, uint16_t len) {
+#ifdef PZEM017V1_SOFTSERIAL
   if (_isSoft)
     ((SoftwareSerial*)_serial)->listen();  // Start software serial listen
 #endif
@@ -715,7 +715,7 @@ void PZEM017v1::search() {
     // Serial.println(addr);
     sendCmd8(CMD_RIR, 0x00, 0x01, false, addr);
 
-    if (recieve(response, 7) != 7) {  // Something went wrong
+    if (receive(response, 7) != 7) {  // Something went wrong
       continue;
     } else {
       Serial.print("Device on addr: ");
