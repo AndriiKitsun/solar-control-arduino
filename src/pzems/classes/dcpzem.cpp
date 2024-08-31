@@ -9,9 +9,9 @@ JsonDocument DcPzem::getStatus() {
   JsonDocument doc;
 
   doc[F("isConnected")] = isConnected();
-  doc[F("address")] = _pzem.getAddress();
-  doc[F("holdingAddress")] = _pzem.getHoldingAddress();
-  doc[F("shuntType")] = _pzem.getShunttype();
+  doc[F("currentAddress")] = _pzem.getAddress();
+  doc[F("savedAddress")] = _pzem.getHoldingAddress();
+  doc[F("savedShuntType")] = _pzem.getShuntType();
 
   return doc;
 }
@@ -39,6 +39,14 @@ JsonDocument DcPzem::getValues(const Date& date) {
     doc[F("energyKwh")] = _energy;
   }
 
+  if (_t1Energy) {
+    doc[F("t1EnergyKwh")] = _t1Energy;
+  }
+
+  if (_t2Energy) {
+    doc[F("t2EnergyKwh")] = _t2Energy;
+  }
+
   return doc;
 }
 
@@ -54,7 +62,7 @@ JsonDocument DcPzem::changeAddress(uint8_t addr) {
 JsonDocument DcPzem::changeShuntType(uint16_t type) {
   JsonDocument doc;
 
-  doc[F("shuntToSet")] = type;
+  doc[F("shuntTypeToSet")] = type;
   doc[F("isChanged")] = _pzem.setShuntType(type);
 
   return doc;
@@ -65,35 +73,47 @@ bool DcPzem::resetCounter() {
     return false;
   }
 
-  _pzem.resetEnergy();
+  bool isSuccess = _pzem.resetEnergy();
 
-  clearZone();
+  if (isSuccess) {
+    clearZone();
+  }
 
-  return true;
+  return isSuccess;
 }
 
 // Private
 
 bool DcPzem::isConnected() {
-  return !isnan(_pzem.voltage());
+  return !isnan(_pzem.voltage()) || !isnan(_pzem.current()) || !isnan(_pzem.power()) || !isnan(_pzem.energy());
 }
 
 void DcPzem::readValues() {
   _voltage = _pzem.voltage();
 
-  // If sensor is disconnected - clear values and skip further sensor polling
-  if (isnan(_voltage)) {
-    _voltage = 0.0;
-    _current = 0.0;
-    _power = 0.0;
-    _energy = 0.0;
+  if (DEBUG_MODE) {
+    _current = _pzem.current();
+    _power = _pzem.power() / 1000.0;
+    _energy = _pzem.energy();
+  } else {
+    // If sensor is disconnected - clear response, skip further sensor polling to improve performance
+    if (isnan(_voltage)) {
+      _voltage = 0.0;
+      _current = 0.0;
+      _power = 0.0;
+      _energy = 0.0;
+      _t1Energy = 0.0;
+      _t2Energy = 0.0;
 
-    return;
+      return;
+    }
+
+    _current = _pzem.current();
+    _power = _pzem.power() / 1000.0;
+    _energy = _pzem.energy();
   }
 
-  _current = _pzem.current();
-  _power = _pzem.power() / 1000.0;
-  _energy = _pzem.energy();
-
-  calcZoneEnergy();
+  if (!isnan(_energy)) {
+    calcZoneEnergy();
+  }
 }
