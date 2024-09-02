@@ -45,6 +45,7 @@ void handleEspStatus() {
   JsonDocument doc;
   String payload;
 
+  doc[F("wifi")] = getWiFiStatus();
   doc[F("date")] = getDateStatus();
   doc[F("pzems")] = getPzemsStatus();
   doc[F("eeprom")] = getEepromStatus();

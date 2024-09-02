@@ -1,13 +1,13 @@
 #include "pzems/pzem.h"
 
 static SoftwareSerial acPzemSerial(AC_PZEM_RX_PIN, AC_PZEM_TX_PIN);
-static SoftwareSerial dcBattPzemSerial(DC_BATTERY_PZEM_RX_PIN, DC_PZEM_SHARED_TX_PIN);
+static SoftwareSerial dcBatteryPzemSerial(DC_BATTERY_PZEM_RX_PIN, DC_PZEM_SHARED_TX_PIN);
 static SoftwareSerial dcSunPzemSerial(DC_SUN_PZEM_RX_PIN, DC_PZEM_SHARED_TX_PIN);
 
 static AcPzem acInputPzem(acPzemSerial, 0, AC_INPUT_PZEM_ADDRESS);
 static AcPzem acOutputPzem(acPzemSerial, 16, AC_OUTPUT_PZEM_ADDRESS);
 
-static DcPzem dcBatteryPzem(dcBattPzemSerial, 32, DC_BATTERY_PZEM_ADDRESS);
+static DcPzem dcBatteryPzem(dcBatteryPzemSerial, 32, DC_BATTERY_PZEM_ADDRESS);
 static DcPzem dcSunPzem(dcSunPzemSerial, 48, DC_SUN_PZEM_ADDRESS);
 
 void startPzems() {

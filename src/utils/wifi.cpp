@@ -1,5 +1,4 @@
 #include "utils/wifi.h"
-#include "utils/led.h"
 
 void connectToWiFi() {
   Serial.print(F("Connecting to "));
@@ -21,4 +20,13 @@ void connectToWiFi() {
   Serial.println(WIFI_SSID);
   Serial.print(F("Device MAC: "));
   Serial.println(WiFi.macAddress());
+}
+
+JsonDocument getWiFiStatus() {
+  JsonDocument doc;
+
+  doc[F("ip")] = WiFi.localIP().toString();
+  doc[F("mac")] = WiFi.macAddress();
+
+  return doc;
 }
