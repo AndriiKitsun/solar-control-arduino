@@ -9,6 +9,7 @@ void startServer() {
 
   configRouter();
 
+  server.enableCORS(true);
   server.begin();
 
   Serial.println(F("HTTP server started on:"));
@@ -145,5 +146,12 @@ void handlePzemsCounterReset() {
 
 // "**"
 void handleNotFound() {
+  if (server.method() == HTTP_OPTIONS) {
+    server.sendHeader("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS");
+    server.send(HTTP_CODE_NO_CONTENT);
+
+    return;
+  }
+
   server.send(HTTP_CODE_NOT_FOUND, F("text/plain"), F("Route Not Found"));
 }
