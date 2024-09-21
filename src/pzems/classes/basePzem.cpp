@@ -2,8 +2,8 @@
 
 // Public
 
-BasePzem::BasePzem(uint8_t storageAddress)
-    : _storageAddress(storageAddress) {}
+BasePzem::BasePzem(String id, uint8_t storageAddress)
+    : _id(id), _storageAddress(storageAddress) {}
 
 void BasePzem::startPzem() {
   _zone = getZone();

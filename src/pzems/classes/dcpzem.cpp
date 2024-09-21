@@ -2,12 +2,13 @@
 
 // Public
 
-DcPzem::DcPzem(SoftwareSerial& port, uint8_t storageAddress, uint8_t pzemAddress)
-    : BasePzem(storageAddress), _pzem(port, pzemAddress) {}
+DcPzem::DcPzem(String id, SoftwareSerial& port, uint8_t storageAddress, uint8_t pzemAddress)
+    : BasePzem(id, storageAddress), _pzem(port, pzemAddress) {}
 
 JsonDocument DcPzem::getStatus() {
   JsonDocument doc;
 
+  doc[F("id")] = _id;
   doc[F("isConnected")] = isConnected();
   doc[F("currentAddress")] = _pzem.getAddress();
   doc[F("savedAddress")] = _pzem.getHoldingAddress();
@@ -47,12 +48,17 @@ JsonDocument DcPzem::getValues(const Date& date) {
     doc[F("t2EnergyKwh")] = _t2Energy;
   }
 
+  if (!doc.isNull()) {
+    doc[F("id")] = _id;
+  }
+
   return doc;
 }
 
 JsonDocument DcPzem::changeAddress(uint8_t addr) {
   JsonDocument doc;
 
+  doc[F("id")] = _id;
   doc[F("addressToSet")] = addr;
   doc[F("isChanged")] = _pzem.setAddress(addr);
 
@@ -62,15 +68,22 @@ JsonDocument DcPzem::changeAddress(uint8_t addr) {
 JsonDocument DcPzem::changeShuntType(uint16_t type) {
   JsonDocument doc;
 
+  doc[F("id")] = _id;
   doc[F("shuntTypeToSet")] = type;
   doc[F("isChanged")] = _pzem.setShuntType(type);
 
   return doc;
 }
 
-bool DcPzem::resetCounter() {
+JsonDocument DcPzem::resetCounter() {
+  JsonDocument doc;
+
+  doc[F("id")] = _id;
+
   if (!isConnected() || !isEepromConnected()) {
-    return false;
+    doc[F("isReset")] = false;
+
+    return doc;
   }
 
   bool isSuccess = _pzem.resetEnergy();
@@ -79,7 +92,9 @@ bool DcPzem::resetCounter() {
     clearZone();
   }
 
-  return isSuccess;
+  doc[F("isReset")] = isSuccess;
+
+  return doc;
 }
 
 // Private
