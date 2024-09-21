@@ -2,12 +2,13 @@
 
 // Public
 
-AcPzem::AcPzem(SoftwareSerial& port, uint8_t storageAddress, uint8_t pzemAddress)
-    : BasePzem(storageAddress), _pzem(port, pzemAddress) {}
+AcPzem::AcPzem(String id, SoftwareSerial& port, uint8_t storageAddress, uint8_t pzemAddress)
+    : BasePzem(id, storageAddress), _pzem(port, pzemAddress) {}
 
 JsonDocument AcPzem::getStatus() {
   JsonDocument doc;
 
+  doc[F("id")] = _id;
   doc[F("isConnected")] = isConnected();
   doc[F("currentAddress")] = _pzem.getAddress();
   doc[F("savedAddress")] = _pzem.readAddress();
@@ -21,6 +22,8 @@ JsonDocument AcPzem::getValues(const Date& date) {
   _createdAt = date;
 
   readValues();
+
+  doc[F("id")] = _id;
 
   if (_voltage) {
     doc[F("voltageV")] = _voltage;
@@ -60,23 +63,33 @@ JsonDocument AcPzem::getValues(const Date& date) {
 JsonDocument AcPzem::changeAddress(uint8_t addr) {
   JsonDocument doc;
 
-  doc[F("currentAddress")] = _pzem.getAddress();
+  doc[F("id")] = _id;
   doc[F("addressToSet")] = addr;
   doc[F("isChanged")] = _pzem.setAddress(addr);
 
   return doc;
 }
 
-bool AcPzem::resetCounter() {
+JsonDocument AcPzem::resetCounter() {
+  JsonDocument doc;
+
+  doc[F("id")] = _id;
+
   if (!isConnected() || !isEepromConnected()) {
-    return false;
+    doc[F("isReset")] = false;
+
+    return doc;
   }
 
-  _pzem.resetEnergy();
+  bool isSuccess = _pzem.resetEnergy();
 
-  clearZone();
+  if (isSuccess) {
+    clearZone();
+  }
 
-  return true;
+  doc[F("isReset")] = isSuccess;
+
+  return doc;
 }
 
 // Private

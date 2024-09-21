@@ -9,13 +9,13 @@
 
 class AcPzem : public BasePzem {
  public:
-  AcPzem(SoftwareSerial& port, uint8_t storageAddress, uint8_t pzemAddress = PZEM_DEFAULT_ADDR);
+  AcPzem(String id, SoftwareSerial& port, uint8_t storageAddress, uint8_t pzemAddress = PZEM_DEFAULT_ADDR);
 
   JsonDocument getStatus();
   JsonDocument getValues(const Date& date);
 
   JsonDocument changeAddress(uint8_t addr);
-  bool resetCounter();
+  JsonDocument resetCounter();
 
  private:
   PZEM004Tv30 _pzem;

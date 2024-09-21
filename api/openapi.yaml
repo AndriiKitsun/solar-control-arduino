@@ -24,8 +24,8 @@ paths:
         - ESP
       summary: Returns ESP health status
       operationId: getEspHealth
-      responses: 
-        200: 
+      responses:
+        200:
           description: OK
           content:
             text/plain:
@@ -72,12 +72,6 @@ paths:
           required: true
           schema:
             type: string
-            enum:
-              - acInput
-              - acOutput
-              - dcBattery
-              - dcSun
-            default: acInput
         - name: address
           in: query
           description: The address to set in PZEM memory
@@ -125,10 +119,6 @@ paths:
           required: true
           schema:
             type: string
-            enum:
-              - dcBattery
-              - dcSun
-            default: dcBattery
         - name: shunt
           in: query
           description: The shunt type to set in PZEM memory
@@ -174,7 +164,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PzemCounter'
+                type: array
+                items:
+                  $ref: '#/components/schemas/PzemCounter'
 
 components:
   schemas:
@@ -186,10 +178,12 @@ components:
         date:
           $ref: '#/components/schemas/DateStatus'
         pzems:
-          $ref: '#/components/schemas/PzemsStatus'
+          type: array
+          items:
+            $ref: '#/components/schemas/PzemStatus'
         eeprom:
           $ref: '#/components/schemas/EepromStatus'
-      required: 
+      required:
         - wifi
         - date
         - pzems
@@ -201,7 +195,7 @@ components:
           type: string
           description: Station interface IP address
           format: ipv4
-          examples: 
+          examples:
             - "198.51.100.42"
         mac:
           type: string
@@ -219,7 +213,7 @@ components:
           type: string
           description: UTC Date in ISO format
           format: date-time
-          examples: 
+          examples:
             - "2024-09-01T05:30:35.637Z"
         createdAt:
           type: string
@@ -230,25 +224,14 @@ components:
       required:
         - createdAtGmt
         - createdAt
-    PzemsStatus:
+    PzemStatus:
       type: object
       properties:
-        acInput:
-          $ref: '#/components/schemas/AcPzemStatus'
-        acOutput:
-          $ref: '#/components/schemas/AcPzemStatus'
-        dcBattery:
-          $ref: '#/components/schemas/DcPzemStatus'
-        dcSun:
-          $ref: '#/components/schemas/DcPzemStatus'
-      required:
-        - acInput
-        - acOutput
-        - dcBattery
-        - dcSun
-    AcPzemStatus:
-      type: object
-      properties:
+        id:
+          type: string
+          description: id of PZEM sensor
+          examples:
+            - acInput
         isConnected:
           type: boolean
           description: true/false indicator when the PZEM is connected
@@ -258,7 +241,7 @@ components:
           description: Configured address to connect to the PZEM
           minimum: 1
           maximum: 248
-          examples: 
+          examples:
             - 2
         savedAddress:
           type: integer
@@ -266,33 +249,7 @@ components:
           description: Address saved in PZEM memory
           minimum: 0
           maximum: 248
-          examples: 
-            - 2
-      required:
-        - isConnected
-        - currentAddress
-        - savedAddress
-    DcPzemStatus:
-      type: object
-      properties:
-        isConnected:
-          type: boolean
-          description: true/false indicator when the PZEM is connected
-        currentAddress:
-          type: integer
-          format: int32
-          description: Configured address to connect to the PZEM
-          minimum: 1
-          maximum: 248
-          examples: 
-            - 2
-        savedAddress:
-          type: integer
-          format: int32
-          description: Address saved in PZEM memory
-          minimum: 0
-          maximum: 248
-          examples: 
+          examples:
             - 2
         savedShuntType:
           type: integer
@@ -303,9 +260,10 @@ components:
           examples:
             - 1
       required:
+        - id
         - isConnected
         - currentAddress
-        - savedShuntType
+        - savedAddress
     EepromStatus:
       type: object
       properties:
@@ -323,39 +281,43 @@ components:
           description: Data collection date in UTC
           examples:
             - "2024-09-01T12:22:05.042Z"
-        acInput:
-          $ref: '#/components/schemas/AcPzem'
-        acOutput:
-          $ref: '#/components/schemas/AcPzem'
-        dcBattery:
-          $ref: '#/components/schemas/DcPzem'
-        dcSun:
-          $ref: '#/components/schemas/DcPzem'
-    AcPzem:
+        pzems:
+          type: array
+          items:
+            $ref: '#/components/schemas/Pzem'
+      required:
+        - createdAtGmt
+        - pzems
+    Pzem:
       type: object
       properties:
+        id:
+          type: string
+          description: id of PZEM sensor
+          examples:
+            - acInput
         voltageV:
           type: number
           format: float
-          description: AC voltage in Volts
+          description: AC/DC voltage in Volts
           examples:
             - 233.1000061
         currentA:
           type: number
           format: float
-          description: AC current in Amps
+          description: AC/DC current in Amps
           examples:
             - 0.097999997
         powerKw:
           type: number
           format: float
-          description: AC active power in kW
+          description: AC/DC active power in kW
           examples:
             - 0.0135
         energyKwh:
           type: number
           format: float
-          description: AC active energy in kWh since last reset
+          description: AC/DC active energy in kWh since last reset
           examples:
             - 0.003
         frequencyHz:
@@ -382,101 +344,65 @@ components:
           description: Calculated value of active energy during T2 zone
           examples:
             - 0.012914399
-    DcPzem:
-      type: object
-      properties:
-        voltageV:
-          type: number
-          format: float
-          description: DC voltage in Volts
-          examples:
-            - 12.109999966
-        currentA:
-          type: number
-          format: float
-          description: DC current in Amps
-          examples:
-            - 0.430000007
-        powerKw:
-          type: number
-          format: float
-          description: DC active power in kW
-          examples:
-            - 0.0052
-        energyKwh:
-          type: number
-          format: float
-          description: DC active energy in kWh since last reset
-          examples:
-            - 0.004
-        t1EnergyKwh:
-          type: number
-          format: float
-          description: Calculated value of active energy during T1 zone
-          examples:
-            - 0.004999999
-        t2EnergyKwh:
-          type: number
-          format: float
-          description: Calculated value of active energy during T2 zone
-          examples:
-            - 0.012914399
+      required:
+        - id
     PzemAddress:
       type: object
       properties:
-        currentAddress:
-          type: integer
-          format: int32
-          description: Current configured address to connect
-          minimum: 1
-          maximum: 248
-          examples: 
-            - 2
+        id:
+          type: string
+          description: id of PZEM sensor
+          examples:
+            - acInput
         addressToSet:
           type: integer
           format: int32
           description: Address to save in PZEM memory
           minimum: 1
           maximum: 248
-          examples: 
+          examples:
             - 1
         isChanged:
           type: boolean
           description: true/false indicator when the address is set
       required:
+        - id
         - addressToSet
         - isChanged
     DcPzemShunt:
       type: object
       properties:
+        id:
+          type: string
+          description: id of PZEM sensor
+          examples:
+            - dcBattery
         shuntTypeToSet:
           type: integer
           format: int32
           description: Shunt type to save in PZEM memory
           minimum: 0
           maximum: 3
-          examples: 
+          examples:
             - 1
         isChanged:
           type: boolean
           description: true/false indicator when the shunt type is set
       required:
+        - id
         - shuntTypeToSet
         - isChanged
     PzemCounter:
       type: object
-      description: true/false indicators for every PZEM to notify which counters were reset
       properties:
-        acInput:
+        id:
+          type: string
+          description: id of PZEM sensor
+          examples:
+            - acInput
+        isReset:
           type: boolean
-        acOutput:
-          type: boolean
-        dcBattery:
-          type: boolean
-        dcSun:
-          type: boolean
+          description: true/false indicators for every PZEM to notify which counters were reset
       required:
-        - acInput
-        - acOutput
-        - dcBattery
-        - dcSun
+        - id
+        - isReset
