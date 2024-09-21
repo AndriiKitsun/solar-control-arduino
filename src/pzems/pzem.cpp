@@ -28,10 +28,26 @@ JsonDocument getPzemsPayload() {
 
   JsonArray pzems = doc[F("pzems")].to<JsonArray>();
 
-  pzems.add(acInputPzem.getValues(date));
-  pzems.add(acOutputPzem.getValues(date));
-  pzems.add(dcBatteryPzem.getValues(date));
-  pzems.add(dcSunPzem.getValues(date));
+  JsonDocument acInputValues = acInputPzem.getValues(date);
+  JsonDocument acOutputValues = acOutputPzem.getValues(date);
+  JsonDocument dcBatteryValues = dcBatteryPzem.getValues(date);
+  JsonDocument dcSunValues = dcSunPzem.getValues(date);
+
+  if (!acInputValues.isNull()) {
+    pzems.add(acInputValues);
+  }
+
+  if (!acOutputValues.isNull()) {
+    pzems.add(acOutputValues);
+  }
+
+  if (!dcBatteryValues.isNull()) {
+    pzems.add(dcBatteryValues);
+  }
+
+  if (!dcSunValues.isNull()) {
+    pzems.add(dcSunValues);
+  }
 
   return doc;
 }

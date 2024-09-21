@@ -24,8 +24,6 @@ JsonDocument DcPzem::getValues(const Date& date) {
 
   readValues();
 
-  doc[F("id")] = _id;
-
   if (_voltage) {
     doc[F("voltageV")] = _voltage;
   }
@@ -48,6 +46,10 @@ JsonDocument DcPzem::getValues(const Date& date) {
 
   if (_t2Energy) {
     doc[F("t2EnergyKwh")] = _t2Energy;
+  }
+
+  if (!doc.isNull()) {
+    doc[F("id")] = _id;
   }
 
   return doc;
