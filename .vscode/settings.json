@@ -4,8 +4,13 @@
   "C_Cpp.clang_format_fallbackStyle": "{ BasedOnStyle: Chromium, ColumnLimit: 0 }",
   "editor.formatOnSave": true,
   "cSpell.words": [
+    "ACPZEM",
+    "DCPZEM",
+    "EEPROM",
     "EEST",
+    "espressif",
     "Gyver",
+    "nodemcuv",
     "PZEM",
     "Pzems"
   ]
