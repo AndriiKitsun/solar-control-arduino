@@ -65,13 +65,13 @@ void handlePzemValues() {
   server.send(HTTP_CODE_OK, F("application/json"), payload);
 }
 
-// PATCH "/pzems/address?id={id}&address={1}"
+// PATCH "/pzems/address?name={name}&address={1}"
 void handlePzemAddressChange() {
-  String id = server.arg(F("id"));
+  String name = server.arg(F("name"));
   long address = server.arg(F("address")).toInt();
 
-  if (id.isEmpty()) {
-    server.send(HTTP_CODE_BAD_REQUEST, F("text/plain"), F("The \"id\" param is required"));
+  if (name.isEmpty()) {
+    server.send(HTTP_CODE_BAD_REQUEST, F("text/plain"), F("The \"name\" param is required"));
 
     return;
   }
@@ -88,10 +88,10 @@ void handlePzemAddressChange() {
     return;
   }
 
-  JsonDocument doc = changePzemAddress(id, address);
+  JsonDocument doc = changePzemAddress(name, address);
 
   if (doc.isNull()) {
-    server.send(HTTP_CODE_NOT_FOUND, F("text/plain"), F("PZEM with entered \"id\" is not found"));
+    server.send(HTTP_CODE_NOT_FOUND, F("text/plain"), F("PZEM with entered name is not found"));
 
     return;
   }
@@ -103,13 +103,13 @@ void handlePzemAddressChange() {
   server.send(HTTP_CODE_OK, F("application/json"), payload);
 }
 
-// PATCH "/pzems/shunt?id={id}&shunt={1}"
+// PATCH "/pzems/shunt?name={name}&shunt={1}"
 void handlePzemShuntChange() {
-  String id = server.arg(F("id"));
+  String name = server.arg(F("name"));
   long shuntType = server.arg(F("shunt")).toInt();
 
-  if (id.isEmpty()) {
-    server.send(HTTP_CODE_BAD_REQUEST, F("text/plain"), F("The \"id\" param is required"));
+  if (name.isEmpty()) {
+    server.send(HTTP_CODE_BAD_REQUEST, F("text/plain"), F("The \"name\" param is required"));
 
     return;
   }
@@ -120,10 +120,10 @@ void handlePzemShuntChange() {
     return;
   }
 
-  JsonDocument doc = changePzemShuntType(id, shuntType);
+  JsonDocument doc = changePzemShuntType(name, shuntType);
 
   if (doc.isNull()) {
-    server.send(HTTP_CODE_NOT_FOUND, F("text/plain"), F("PZEM with entered \"id\" is not found"));
+    server.send(HTTP_CODE_NOT_FOUND, F("text/plain"), F("PZEM with entered name is not found"));
 
     return;
   }

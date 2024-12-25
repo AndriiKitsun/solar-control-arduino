@@ -15,12 +15,12 @@ struct Zone {
 
 class BasePzem {
  public:
-  BasePzem(String id, uint8_t storageAddress);
+  BasePzem(String name, uint8_t storageAddress);
 
   void startPzem();
 
  protected:
-  String _id;
+  String _name;
   Date _createdAt;
 
   float _voltage;

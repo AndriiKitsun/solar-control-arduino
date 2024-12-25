@@ -3,10 +3,10 @@
 static SoftwareSerial acPzemSerial(AC_PZEM_RX_PIN, AC_PZEM_TX_PIN);
 static SoftwareSerial dcBatteryPzemSerial(DC_BATTERY_PZEM_RX_PIN, DC_BATTERY_PZEM_TX_PIN);
 
-static AcPzem acInputPzem(AC_INPUT_PZEM_ID, acPzemSerial, 0, AC_INPUT_PZEM_ADDRESS);
-static AcPzem acOutputPzem(AC_OUTPUT_PZEM_ID, acPzemSerial, 16, AC_OUTPUT_PZEM_ADDRESS);
+static AcPzem acInputPzem(AC_INPUT_PZEM_NAME, acPzemSerial, 0, AC_INPUT_PZEM_ADDRESS);
+static AcPzem acOutputPzem(AC_OUTPUT_PZEM_NAME, acPzemSerial, 16, AC_OUTPUT_PZEM_ADDRESS);
 
-static DcPzem dcBatteryPzem(DC_BATTERY_PZEM_ID, dcBatteryPzemSerial, 32, DC_BATTERY_PZEM_ADDRESS);
+static DcPzem dcBatteryPzem(DC_BATTERY_PZEM_NAME, dcBatteryPzemSerial, 32, DC_BATTERY_PZEM_ADDRESS);
 
 void startPzems() {
   Serial.println(F("Initializing PZEM zones"));
@@ -64,24 +64,24 @@ JsonDocument resetPzemsCounter() {
   return doc;
 }
 
-JsonDocument changePzemAddress(String pzemId, uint8_t address) {
+JsonDocument changePzemAddress(String name, uint8_t address) {
   JsonDocument doc;
 
-  if (pzemId == F(AC_INPUT_PZEM_ID)) {
+  if (name == F(AC_INPUT_PZEM_NAME)) {
     doc = acInputPzem.changeAddress(address);
-  } else if (pzemId == F(AC_OUTPUT_PZEM_ID)) {
+  } else if (name == F(AC_OUTPUT_PZEM_NAME)) {
     doc = acOutputPzem.changeAddress(address);
-  } else if (pzemId == F(DC_BATTERY_PZEM_ID)) {
+  } else if (name == F(DC_BATTERY_PZEM_NAME)) {
     doc = dcBatteryPzem.changeAddress(address);
   }
 
   return doc;
 }
 
-JsonDocument changePzemShuntType(String pzemId, uint8_t shuntType) {
+JsonDocument changePzemShuntType(String name, uint8_t shuntType) {
   JsonDocument doc;
 
-  if (pzemId == F(DC_BATTERY_PZEM_ID)) {
+  if (name == F(DC_BATTERY_PZEM_NAME)) {
     doc = dcBatteryPzem.changeShuntType(shuntType);
   }
 

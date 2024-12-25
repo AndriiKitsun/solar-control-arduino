@@ -66,9 +66,9 @@ paths:
       summary: Sets the address to PZEM
       operationId: setPzemAddress
       parameters:
-        - name: id
+        - name: name
           in: query
-          description: ID of the PZEM for which the address is changed
+          description: The name of the PZEM for which the address is changed
           required: true
           schema:
             type: string
@@ -104,7 +104,7 @@ paths:
               schema:
                 type: string
                 examples:
-                  - PZEM with entered "id" is not found
+                  - PZEM with entered name is not found
 
   /pzems/shunt:
     patch:
@@ -113,9 +113,9 @@ paths:
       summary: Sets the shunt type to DC PZEM
       operationId: setPzemShunt
       parameters:
-        - name: id
+        - name: name
           in: query
-          description: ID of the DC PZEM for which the shunt type is changed
+          description: The name of the DC PZEM for which the shunt type is changed
           required: true
           schema:
             type: string
@@ -151,7 +151,7 @@ paths:
               schema:
                 type: string
                 examples:
-                  - PZEM with entered "id" is not found
+                  - PZEM with entered name is not found
   /pzems/counter:
     delete:
       tags:
@@ -227,9 +227,9 @@ components:
     PzemStatus:
       type: object
       properties:
-        id:
+        name:
           type: string
-          description: id of PZEM sensor
+          description: The name of the PZEM sensor
           examples:
             - acInput
         isConnected:
@@ -260,7 +260,7 @@ components:
           examples:
             - 1
       required:
-        - id
+        - name
         - isConnected
         - currentAddress
         - savedAddress
@@ -291,9 +291,9 @@ components:
     Pzem:
       type: object
       properties:
-        id:
+        name:
           type: string
-          description: id of PZEM sensor
+          description: The name of the PZEM sensor
           examples:
             - acInput
         voltageV:
@@ -345,13 +345,13 @@ components:
           examples:
             - 0.012914399
       required:
-        - id
+        - name
     PzemAddress:
       type: object
       properties:
-        id:
+        name:
           type: string
-          description: id of PZEM sensor
+          description: The name of the PZEM sensor
           examples:
             - acInput
         addressToSet:
@@ -366,15 +366,15 @@ components:
           type: boolean
           description: true/false indicator when the address is set
       required:
-        - id
+        - name
         - addressToSet
         - isChanged
     DcPzemShunt:
       type: object
       properties:
-        id:
+        name:
           type: string
-          description: id of PZEM sensor
+          description: The name of the PZEM sensor
           examples:
             - dcBattery
         shuntTypeToSet:
@@ -389,20 +389,20 @@ components:
           type: boolean
           description: true/false indicator when the shunt type is set
       required:
-        - id
+        - name
         - shuntTypeToSet
         - isChanged
     PzemCounter:
       type: object
       properties:
-        id:
+        name:
           type: string
-          description: id of PZEM sensor
+          description: The name of the PZEM sensor
           examples:
             - acInput
         isReset:
           type: boolean
           description: true/false indicators for every PZEM to notify which counters were reset
       required:
-        - id
+        - name
         - isReset
