@@ -6,9 +6,9 @@
 #include "classes/acpzem.h"
 #include "classes/dcpzem.h"
 
-#define AC_INPUT_PZEM_ID "acInput"
-#define AC_OUTPUT_PZEM_ID "acOutput"
-#define DC_BATTERY_PZEM_ID "dcBattery"
+#define AC_INPUT_PZEM_NAME "acInput"
+#define AC_OUTPUT_PZEM_NAME "acOutput"
+#define DC_BATTERY_PZEM_NAME "dcBattery"
 
 void startPzems();
 

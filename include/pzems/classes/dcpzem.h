@@ -9,7 +9,7 @@
 
 class DcPzem : public BasePzem {
  public:
-  DcPzem(String id, SoftwareSerial& port, uint8_t storageAddress, uint8_t pzemAddress = PZEM017_DEFAULT_ADDR);
+  DcPzem(String name, SoftwareSerial& port, uint8_t storageAddress, uint8_t pzemAddress = PZEM017_DEFAULT_ADDR);
 
   JsonDocument getStatus();
   JsonDocument getValues(const Date& date);

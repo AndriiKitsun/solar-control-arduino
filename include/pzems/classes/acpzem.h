@@ -9,7 +9,7 @@
 
 class AcPzem : public BasePzem {
  public:
-  AcPzem(String id, SoftwareSerial& port, uint8_t storageAddress, uint8_t pzemAddress = PZEM_DEFAULT_ADDR);
+  AcPzem(String name, SoftwareSerial& port, uint8_t storageAddress, uint8_t pzemAddress = PZEM_DEFAULT_ADDR);
 
   JsonDocument getStatus();
   JsonDocument getValues(const Date& date);
