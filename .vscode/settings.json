@@ -2,5 +2,11 @@
   "editor.tabSize": 2,
   "editor.detectIndentation": false,
   "C_Cpp.clang_format_fallbackStyle": "{ BasedOnStyle: Chromium, ColumnLimit: 0 }",
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "cSpell.words": [
+    "EEST",
+    "Gyver",
+    "PZEM",
+    "Pzems"
+  ]
 }
