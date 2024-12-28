@@ -3,18 +3,25 @@
 static ESP8266WebServer server(80);
 
 void startServer() {
+  if (MDNS.begin(ESP_DOMAIN_NAME)) {
+    Serial.println(F("MDNS responder started"));
+  }
+
   configRouter();
 
   server.enableCORS(true);
   server.begin();
 
   Serial.println(F("HTTP server started on:"));
-  Serial.print(F("http://"));
+  Serial.print(F("1. IP address: http://"));
   Serial.println(WiFi.localIP());
+  Serial.print(F("2. URL: "));
+  Serial.println(F("http://" ESP_DOMAIN_NAME ".local"));
 }
 
 void tickServer() {
   server.handleClient();
+  MDNS.update();
 }
 
 void configRouter() {
