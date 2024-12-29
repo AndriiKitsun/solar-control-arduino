@@ -33,6 +33,10 @@ void configRouter() {
   server.on(F("/pzems/shunt"), HTTP_PATCH, handlePzemShuntChange);
   server.on(F("/pzems/counter"), HTTP_DELETE, handlePzemsCounterReset);
 
+  server.on(F("/relay/on"), HTTP_POST, handleRelayTurnOn);
+  server.on(F("/relay/off"), HTTP_POST, handleRelayTurnOff);
+  server.on(F("/relay/toggle"), HTTP_POST, handleRelayToggle);
+
   server.onNotFound(handleNotFound);
 }
 
@@ -142,6 +146,27 @@ void handlePzemsCounterReset() {
   serializeJson(resetPzemsCounter(), payload);
 
   server.send(HTTP_CODE_OK, F("application/json"), payload);
+}
+
+// POST "/relay/on"
+void handleRelayTurnOn() {
+  turnRelayOn(RELAY_PIN);
+
+  server.send(HTTP_CODE_OK);
+}
+
+// POST "/relay/off"
+void handleRelayTurnOff() {
+  turnRelayOff(RELAY_PIN);
+
+  server.send(HTTP_CODE_OK);
+}
+
+// POST "/relay/toggle"
+void handleRelayToggle() {
+  toggleRelay(RELAY_PIN);
+
+  server.send(HTTP_CODE_OK);
 }
 
 // "**"

@@ -4,6 +4,7 @@
 #include "utils/date.h"
 #include "utils/eeprom.h"
 #include "utils/led.h"
+#include "utils/relay.h"
 #include "utils/wifi.h"
 #include "websocket/websocket.h"
 
@@ -12,6 +13,7 @@ void setup() {
   Serial.println();
 
   initLedPins();
+  initRelayPin(RELAY_PIN, HIGH);
 
   connectToWiFi();
 
