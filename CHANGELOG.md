@@ -1,5 +1,11 @@
 # solar-control-arduino
 
+## 1.0.1
+
+### Patch Changes
+
+- [#31](https://github.com/AndriiKitsun/solar-control-arduino/pull/31) [`2e67c75`](https://github.com/AndriiKitsun/solar-control-arduino/commit/2e67c75853d216ca33b21017f2ff9791a5c1e177) Thanks [@AndriiKitsun](https://github.com/AndriiKitsun)! - Add publish command for release job
+
 ## 1.0.0
 
 ### Major Changes
