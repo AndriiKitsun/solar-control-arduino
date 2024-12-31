@@ -21,5 +21,5 @@ jobs:
         run: npm ci
 
       - name: Changesets 📝
-        if: ${{ !startsWith(github.head_ref, 'changeset-release')
+        if: ${{ !startsWith(github.head_ref, 'changeset-release') }}
         run: npm run changeset:check
