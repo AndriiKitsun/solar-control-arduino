@@ -1,6 +1,9 @@
 name: Verify Pull Request
 
-on: pull_request
+on: 
+  pull_request:
+    branches-ignore:
+      - 'changeset-release/*'
 
 jobs:
   verify_pull_request:
@@ -24,5 +27,4 @@ jobs:
         run: npm ci
 
       - name: Changesets 📝
-        if: ${{ !startsWith(github.head_ref, 'changeset-release') }}
         run: npm run changeset:check
