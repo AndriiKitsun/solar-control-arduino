@@ -11,5 +11,8 @@
 # IDEs and editors
 .idea
 
+# Node
+/node_modules
+
 # Custom
 secrets.ini
