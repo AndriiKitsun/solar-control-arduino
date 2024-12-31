@@ -1,10 +1,9 @@
 name: Verify Pull Request
 
-on: 
+on:
   pull_request:
-    branches:
-      - '**'
-      - '!changeset-release/*'
+    branches-ignore:
+      - 'changeset-release/**'
 
 jobs:
   verify_pull_request:
