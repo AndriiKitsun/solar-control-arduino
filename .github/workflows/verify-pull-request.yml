@@ -3,7 +3,7 @@ name: Verify Pull Request
 on:
   pull_request:
     branches-ignore:
-      - 'changeset-release/**'
+      - 'changeset-release/main'
 
 jobs:
   verify_pull_request:
