@@ -10,7 +10,7 @@
   "scripts": {
     "changeset:add": "changeset",
     "changeset:version": "changeset version",
-    "changeset:tag": "changeset tag",
+    "changeset:publish": "changeset publish",
     "changeset:check": "changeset status --verbose --since=origin/main"
   },
   "keywords": [],
