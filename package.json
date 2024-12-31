@@ -1,0 +1,16 @@
+{
+  "name": "solar-control-arduino",
+  "version": "0.0.1",
+  "description": "Arduino project for monitoring solar station parameters",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
