@@ -1,15 +1,18 @@
 #include "pzems/pzem.h"
 
 static SoftwareSerial acPzemSerial(AC_PZEM_RX_PIN, AC_PZEM_TX_PIN);
-static SoftwareSerial dcBatteryPzemSerial(DC_BATTERY_PZEM_RX_PIN, DC_BATTERY_PZEM_TX_PIN);
 
 static AcPzem acInputPzem(AC_INPUT_PZEM_NAME, acPzemSerial, 0, AC_INPUT_PZEM_ADDRESS);
 static AcPzem acOutputPzem(AC_OUTPUT_PZEM_NAME, acPzemSerial, 16, AC_OUTPUT_PZEM_ADDRESS);
 
-static DcPzem dcBatteryPzem(DC_BATTERY_PZEM_NAME, dcBatteryPzemSerial, 32, DC_BATTERY_PZEM_ADDRESS);
+static DcPzem dcBatteryPzem(DC_BATTERY_PZEM_NAME, DC_BATTERY_PZEM_RO_PIN, DC_BATTERY_PZEM_RE_DE_PIN, DC_BATTERY_PZEM_DI_PIN, 32, DC_BATTERY_PZEM_ADDRESS);
 
 void startPzems() {
   Serial.println(F("Initializing PZEM zones"));
+
+  // Workaround to pass void callbacks in class
+  dcBatteryPzem._preTransmissionCb = []() { dcBatteryPzem.preTransmission(); };
+  dcBatteryPzem._postTransmissionCb = []() { dcBatteryPzem.postTransmission(); };
 
   acInputPzem.startPzem();
   acOutputPzem.startPzem();
