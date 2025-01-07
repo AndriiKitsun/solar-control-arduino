@@ -126,7 +126,7 @@ bool DcPzem::isConnected() {
 void DcPzem::readValues() {
   uint8_t result;
 
-  result = _node.readInputRegisters(0x0000, 7);
+  result = _node.readInputRegisters(0x0000, 5);
 
   if (result == _node.ku8MBSuccess) {
     _voltage = _node.getResponseBuffer(0x0000) / 100.0;                                              // Raw Voltage, V
