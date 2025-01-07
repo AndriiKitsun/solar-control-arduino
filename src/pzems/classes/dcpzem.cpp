@@ -129,10 +129,10 @@ void DcPzem::readValues() {
   result = _node.readInputRegisters(0x0000, 7);
 
   if (result == _node.ku8MBSuccess) {
-    _voltage = _node.getResponseBuffer(0x0000) / 100.0;                                           // Raw Voltage, V
-    _current = _node.getResponseBuffer(0x0001) / 100.0;                                           // Raw Current, A
-    _power = ((_node.getResponseBuffer(0x0003) << 16) + _node.getResponseBuffer(0x0002)) / 10.0;  // Raw power, W
-    _energy = (_node.getResponseBuffer(0x0005) << 16) + _node.getResponseBuffer(0x0004);          // Raw energy, kWh
+    _voltage = _node.getResponseBuffer(0x0000) / 100.0;                                              // Raw Voltage, V
+    _current = _node.getResponseBuffer(0x0001) / 100.0;                                              // Raw Current, A
+    _power = ((_node.getResponseBuffer(0x0003) << 16) + _node.getResponseBuffer(0x0002)) / 10000.0;  // Raw power, kW
+    _energy = (_node.getResponseBuffer(0x0005) << 16) + _node.getResponseBuffer(0x0004) / 1000.0;    // Raw energy, kWh
   } else {
     _voltage = 0.0;
     _current = 0.0;
