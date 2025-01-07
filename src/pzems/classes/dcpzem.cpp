@@ -8,6 +8,9 @@ DcPzem::DcPzem(String name, uint8_t roPin, uint8_t reDePin, uint8_t diPin, uint8
 void DcPzem::startPzem() {
   _pzemSerial.begin(9600, SWSERIAL_8N2, _roPin, _diPin);
 
+  pinMode(_reDePin, OUTPUT);
+  digitalWrite(_reDePin, LOW);
+
   _node.preTransmission(_preTransmissionCb);
   _node.postTransmission(_postTransmissionCb);
   _node.begin(_pzemAddress, _pzemSerial);
@@ -16,13 +19,13 @@ void DcPzem::startPzem() {
 }
 
 void DcPzem::preTransmission() {
-  digitalWrite(_reDePin, 1);
+  digitalWrite(_reDePin, HIGH);
   delay(1);
 }
 
 void DcPzem::postTransmission() {
   delay(3);
-  digitalWrite(_reDePin, 0);
+  digitalWrite(_reDePin, LOW);
 }
 
 // TODO

@@ -27,5 +27,5 @@ void loop() {
   tickServer();
   tickWebSocket();
 
-  // broadcastPzems();
+  broadcastPzems();
 }
