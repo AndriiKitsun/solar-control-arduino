@@ -9,9 +9,7 @@
   },
   "scripts": {
     "changeset:add": "changeset",
-    "changeset:version": "changeset version",
-    "changeset:publish": "changeset publish",
-    "changeset:check": "changeset status --verbose --since=origin/main"
+    "changeset:publish": "changeset publish"
   },
   "keywords": [],
   "author": "",
