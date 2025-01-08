@@ -6,7 +6,7 @@ DcPzem::DcPzem(String name, uint8_t roPin, uint8_t reDePin, uint8_t diPin, uint8
     : BasePzem(name, storageAddress), _roPin(roPin), _reDePin(reDePin), _diPin(diPin), _pzemAddress(pzemAddress) {}
 
 void DcPzem::startPzem() {
-  _pzemSerial.begin(9600, SWSERIAL_8N2, _roPin, _diPin);
+  _pzemSerial.begin(PZEM_BAUD_RATE, SWSERIAL_8N2, _roPin, _diPin);
 
   pinMode(_reDePin, OUTPUT);
   digitalWrite(_reDePin, LOW);
@@ -93,7 +93,6 @@ JsonDocument DcPzem::changeShuntType(uint16_t type) {
   return doc;
 }
 
-// TODO
 JsonDocument DcPzem::resetCounter() {
   JsonDocument doc;
 
@@ -105,8 +104,24 @@ JsonDocument DcPzem::resetCounter() {
     return doc;
   }
 
-  // bool isSuccess = _pzem.resetEnergy();
-  bool isSuccess = false;
+  uint16_t u16CRC = 0xFFFF;
+  uint8_t response[5];
+
+  u16CRC = crc16_update(u16CRC, _pzemAddress);
+  u16CRC = crc16_update(u16CRC, CMD_RESET);
+
+  preTransmission();
+
+  _pzemSerial.write(_pzemAddress);
+  _pzemSerial.write(CMD_RESET);
+  _pzemSerial.write(lowByte(u16CRC));
+  _pzemSerial.write(highByte(u16CRC));
+
+  postTransmission();
+
+  uint8_t responseLength = readSerial(response, 5);
+
+  bool isSuccess = !(responseLength == 0 || responseLength == 5);
 
   if (isSuccess) {
     clearZone();
@@ -129,14 +144,29 @@ void DcPzem::readValues() {
   result = _node.readInputRegisters(0x0000, 5);
 
   if (result == _node.ku8MBSuccess) {
-    _voltage = _node.getResponseBuffer(0x0000) / 100.0;                                              // Raw Voltage, V
-    _current = _node.getResponseBuffer(0x0001) / 100.0;                                              // Raw Current, A
-    _power = ((_node.getResponseBuffer(0x0003) << 16) + _node.getResponseBuffer(0x0002)) / 10000.0;  // Raw power, kW
-    _energy = (_node.getResponseBuffer(0x0005) << 16) + _node.getResponseBuffer(0x0004) / 1000.0;    // Raw energy, kWh
+    _voltage = _node.getResponseBuffer(REG_VOLTAGE) / 100.0;                                                   // Raw Voltage, V
+    _current = _node.getResponseBuffer(REG_CURRENT) / 100.0;                                                   // Raw Current, A
+    _power = ((_node.getResponseBuffer(REG_POWER_H) << 16) + _node.getResponseBuffer(REG_POWER_L)) / 10000.0;  // Raw power, kW
+    _energy = (_node.getResponseBuffer(REG_ENERGY_H) << 16) + _node.getResponseBuffer(REG_ENERGY_L) / 1000.0;  // Raw energy, kWh
   } else {
     _voltage = 0.0;
     _current = 0.0;
     _power = 0.0;
     _energy = 0.0;
   }
+}
+
+uint8_t DcPzem::readSerial(uint8_t* response, uint8_t length) {
+  unsigned long startTime = millis();
+  uint8_t index = 0;
+
+  while ((index < length) && (millis() - startTime < READ_TIMEOUT)) {
+    if (_pzemSerial.available()) {
+      response[index++] = _pzemSerial.read();
+    }
+
+    yield();
+  }
+
+  return index;
 }

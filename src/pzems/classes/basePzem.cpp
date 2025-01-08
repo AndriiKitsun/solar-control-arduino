@@ -121,19 +121,6 @@ void BasePzem::clearZone() {
  * Need to take this into account to set proper addresses
  */
 void BasePzem::saveZone() {
-  Serial.println(F("Save zone"));
-
-  Serial.print(F("Zone data to save to: "));
-  Serial.println(_storageAddress);
-  Serial.print(F("t1StartEnergy "));
-  Serial.println(_zone.t1StartEnergy, 6);
-  Serial.print(F("t2StartEnergy "));
-  Serial.println(_zone.t2StartEnergy, 6);
-  Serial.print(F("t1EnergyAcc "));
-  Serial.println(_zone.t1EnergyAcc, 6);
-  Serial.print(F("t2EnergyAcc "));
-  Serial.println(_zone.t2EnergyAcc, 6);
-
   putValue(_storageAddress, _zone);
 }
 

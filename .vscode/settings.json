@@ -12,6 +12,7 @@
     "Gyver",
     "nodemcuv",
     "PZEM",
-    "Pzems"
+    "Pzems",
+    "SWSERIAL"
   ]
 }
