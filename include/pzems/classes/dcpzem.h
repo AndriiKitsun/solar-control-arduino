@@ -8,18 +8,24 @@
 #include "SoftwareSerial.h"
 #include "basePzem.h"
 
-#define REG_VOLTAGE 0x0000
-#define REG_CURRENT 0x0001
-#define REG_POWER_L 0x0002
-#define REG_POWER_H 0x0003
-#define REG_ENERGY_L 0x0004
-#define REG_ENERGY_H 0x0005
+#define REG_READ_START 0x0000
+
+#define INPUT_REG_VOLTAGE 0x0000
+#define INPUT_REG_CURRENT 0x0001
+#define INPUT_REG_POWER_L 0x0002
+#define INPUT_REG_POWER_H 0x0003
+#define INPUT_REG_ENERGY_L 0x0004
+#define INPUT_REG_ENERGY_H 0x0005
+#define INPUT_REG_COUNT 5
+
+#define HOLDING_REG_ADDRESS 0x0002
+#define HOLDING_REG_SHUNT 0x0003
+#define HOLDING_REG_COUNT 3
 
 #define CMD_RESET 0x42
 
-#define READ_TIMEOUT 100
-
 #define PZEM_BAUD_RATE 9600
+#define READ_TIMEOUT 100
 
 class DcPzem : public BasePzem {
  public:

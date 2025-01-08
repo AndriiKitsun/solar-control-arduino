@@ -34,9 +34,12 @@ JsonDocument DcPzem::getStatus() {
 
   doc[F("name")] = _name;
   doc[F("isConnected")] = isConnected();
-  // doc[F("currentAddress")] = _pzem.getAddress();
-  // doc[F("savedAddress")] = _pzem.getHoldingAddress();
-  // doc[F("savedShuntType")] = _pzem.getShuntType();
+
+  if (_node.readHoldingRegisters(REG_READ_START, HOLDING_REG_COUNT) == _node.ku8MBSuccess) {
+    doc[F("currentAddress")] = _pzemAddress;
+    doc[F("savedAddress")] = _node.getResponseBuffer(HOLDING_REG_ADDRESS);
+    doc[F("savedShuntType")] = _node.getResponseBuffer(HOLDING_REG_SHUNT);
+  }
 
   return doc;
 }
@@ -139,15 +142,11 @@ bool DcPzem::isConnected() {
 }
 
 void DcPzem::readValues() {
-  uint8_t result;
-
-  result = _node.readInputRegisters(0x0000, 5);
-
-  if (result == _node.ku8MBSuccess) {
-    _voltage = _node.getResponseBuffer(REG_VOLTAGE) / 100.0;                                                   // Raw Voltage, V
-    _current = _node.getResponseBuffer(REG_CURRENT) / 100.0;                                                   // Raw Current, A
-    _power = ((_node.getResponseBuffer(REG_POWER_H) << 16) + _node.getResponseBuffer(REG_POWER_L)) / 10000.0;  // Raw power, kW
-    _energy = (_node.getResponseBuffer(REG_ENERGY_H) << 16) + _node.getResponseBuffer(REG_ENERGY_L) / 1000.0;  // Raw energy, kWh
+  if (_node.readInputRegisters(REG_READ_START, INPUT_REG_COUNT) == _node.ku8MBSuccess) {
+    _voltage = _node.getResponseBuffer(INPUT_REG_VOLTAGE) / 100.0;                                                         // Raw Voltage, V
+    _current = _node.getResponseBuffer(INPUT_REG_CURRENT) / 100.0;                                                         // Raw Current, A
+    _power = ((_node.getResponseBuffer(INPUT_REG_POWER_H) << 16) + _node.getResponseBuffer(INPUT_REG_POWER_L)) / 10000.0;  // Raw power, kW
+    _energy = (_node.getResponseBuffer(INPUT_REG_ENERGY_H) << 16) + _node.getResponseBuffer(INPUT_REG_ENERGY_L) / 1000.0;  // Raw energy, kWh
   } else {
     _voltage = 0.0;
     _current = 0.0;
