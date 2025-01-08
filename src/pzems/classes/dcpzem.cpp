@@ -28,7 +28,6 @@ void DcPzem::postTransmission() {
   digitalWrite(_reDePin, LOW);
 }
 
-// TODO
 JsonDocument DcPzem::getStatus() {
   JsonDocument doc;
 
@@ -85,13 +84,23 @@ JsonDocument DcPzem::changeAddress(uint8_t addr) {
   return doc;
 }
 
-// TODO
-JsonDocument DcPzem::changeShuntType(uint16_t type) {
+JsonDocument DcPzem::changeShuntType(uint8_t type) {
   JsonDocument doc;
+
+  // Sanity check
+  if (type < 0) {
+    type = 0;
+  }
+
+  if (type > 3) {
+    type = 3;
+  }
+
+  uint8_t result = _node.writeSingleRegister(HOLDING_REG_SHUNT, type);
 
   doc[F("name")] = _name;
   doc[F("shuntTypeToSet")] = type;
-  // doc[F("isChanged")] = _pzem.setShuntType(type);
+  doc[F("isChanged")] = result == _node.ku8MBSuccess;
 
   return doc;
 }

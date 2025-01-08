@@ -16,11 +16,11 @@
 #define INPUT_REG_POWER_H 0x0003
 #define INPUT_REG_ENERGY_L 0x0004
 #define INPUT_REG_ENERGY_H 0x0005
-#define INPUT_REG_COUNT 5
+#define INPUT_REG_COUNT 6
 
 #define HOLDING_REG_ADDRESS 0x0002
 #define HOLDING_REG_SHUNT 0x0003
-#define HOLDING_REG_COUNT 3
+#define HOLDING_REG_COUNT 4
 
 #define CMD_RESET 0x42
 
@@ -42,7 +42,7 @@ class DcPzem : public BasePzem {
   JsonDocument getValues(const Date& date);
 
   JsonDocument changeAddress(uint8_t addr);
-  JsonDocument changeShuntType(uint16_t type);
+  JsonDocument changeShuntType(uint8_t type);
   JsonDocument resetCounter();
 
  private:
