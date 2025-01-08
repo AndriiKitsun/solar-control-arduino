@@ -26,10 +26,11 @@
 
 #define PZEM_BAUD_RATE 9600
 #define READ_TIMEOUT 100
+#define PZEM_DEFAULT_ADDR 0xF8
 
 class DcPzem : public BasePzem {
  public:
-  DcPzem(String name, uint8_t roPin, uint8_t reDePin, uint8_t diPin, uint8_t storageAddress, uint8_t pzemAddress);
+  DcPzem(String name, uint8_t roPin, uint8_t reDePin, uint8_t diPin, uint8_t storageAddress, uint8_t pzemAddress = PZEM_DEFAULT_ADDR);
 
   void (*_preTransmissionCb)();
   void (*_postTransmissionCb)();

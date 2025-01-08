@@ -73,13 +73,22 @@ JsonDocument DcPzem::getValues(const Date& date) {
   return doc;
 }
 
-// TODO
 JsonDocument DcPzem::changeAddress(uint8_t addr) {
   JsonDocument doc;
 
   doc[F("name")] = _name;
   doc[F("addressToSet")] = addr;
-  // doc[F("isChanged")] = _pzem.setAddress(addr);
+
+  // Sanity check
+  if (addr < 0x01 || addr > 0xF7) {
+    doc[F("isChanged")] = false;
+
+    return doc;
+  }
+
+  uint8_t result = _node.writeSingleRegister(HOLDING_REG_ADDRESS, addr);
+
+  doc[F("isChanged")] = result == _node.ku8MBSuccess;
 
   return doc;
 }
