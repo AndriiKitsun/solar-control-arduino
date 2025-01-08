@@ -135,7 +135,7 @@ JsonDocument DcPzem::resetCounter() {
 // Private
 
 bool DcPzem::isConnected() {
-  return !isnan(_voltage) || !isnan(_current) || !isnan(_power) || !isnan(_energy);
+  return _voltage || _current || _power || _energy;
 }
 
 void DcPzem::readValues() {
