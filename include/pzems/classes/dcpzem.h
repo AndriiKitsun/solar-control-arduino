@@ -30,7 +30,7 @@
 
 class DcPzem : public BasePzem {
  public:
-  DcPzem(String name, uint8_t roPin, uint8_t reDePin, uint8_t diPin, uint8_t storageAddress, uint8_t pzemAddress = PZEM_DEFAULT_ADDR);
+  DcPzem(String name, uint8_t roPin, uint8_t reDePin, uint8_t diPin, uint8_t pzemAddress = PZEM_DEFAULT_ADDR);
 
   void (*_preTransmissionCb)();
   void (*_postTransmissionCb)();
@@ -40,7 +40,7 @@ class DcPzem : public BasePzem {
   void postTransmission();
 
   JsonDocument getStatus();
-  JsonDocument getValues(const Date& date);
+  JsonDocument getValues();
 
   JsonDocument changeAddress(uint8_t addr);
   JsonDocument changeShuntType(uint8_t type);
