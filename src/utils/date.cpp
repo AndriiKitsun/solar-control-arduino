@@ -1,14 +1,12 @@
 #include "utils/date.h"
 
-static GyverNTP ntp(0);
-
 static TimeChangeRule dstStart = {"EEST", Last, Sun, Mar, 3, 180};  // UTC+3
 static TimeChangeRule stdStart = {"EET", Last, Sun, Oct, 4, 120};   // UTC+2
 static Timezone uaTZ(dstStart, stdStart);
 static TimeChangeRule* tcr;
 
 void startNTP() {
-  bool status = ntp.begin();
+  bool status = NTP.begin(0);
 
   Serial.print(F("NTP started. Status: "));
   Serial.println(status);
@@ -17,28 +15,30 @@ void startNTP() {
     Serial.print(F("NTP Status is not ok. Force updating... "));
 
     Serial.print(F("Update status: "));
-    Serial.println(ntp.updateNow());
+    Serial.println(NTP.updateNow());
   }
 }
 
 void tickNTP() {
-  ntp.tick();
+  NTP.tick();
 }
 
 Date getUTCDate() {
+  Datime dt(NTP);
+
   return {
-    year : ntp.year(),
-    month : ntp.month(),
-    day : ntp.day(),
-    hour : ntp.hour(),
-    minute : ntp.minute(),
-    second : ntp.second(),
-    ms : ntp.ms(),
+    year : dt.year,
+    month : dt.month,
+    day : dt.day,
+    hour : dt.hour,
+    minute : dt.minute,
+    second : dt.second,
+    ms : NTP.ms(),
   };
 }
 
 Date getLocalDate() {
-  time_t localTime = uaTZ.toLocal(ntp.getUnix(), &tcr);
+  time_t localTime = uaTZ.toLocal(NTP.getUnix(), &tcr);
 
   return {
     year : year(localTime),
@@ -47,7 +47,7 @@ Date getLocalDate() {
     hour : hour(localTime),
     minute : minute(localTime),
     second : second(localTime),
-    ms : ntp.ms(),
+    ms : NTP.ms(),
   };
 }
 
