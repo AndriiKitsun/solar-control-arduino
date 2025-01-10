@@ -6,7 +6,7 @@
 
 class BasePzem {
  public:
-  BasePzem(String name);
+  explicit BasePzem(String name);
 
  protected:
   String _name;
