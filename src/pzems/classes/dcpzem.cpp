@@ -2,8 +2,8 @@
 
 // Public
 
-DcPzem::DcPzem(String name, uint8_t roPin, uint8_t reDePin, uint8_t diPin, uint8_t storageAddress, uint8_t pzemAddress)
-    : BasePzem(name, storageAddress), _roPin(roPin), _reDePin(reDePin), _diPin(diPin), _pzemAddress(pzemAddress) {}
+DcPzem::DcPzem(String name, uint8_t roPin, uint8_t reDePin, uint8_t diPin, uint8_t pzemAddress)
+    : BasePzem(name), _roPin(roPin), _reDePin(reDePin), _diPin(diPin), _pzemAddress(pzemAddress) {}
 
 void DcPzem::startPzem() {
   _pzemSerial.begin(PZEM_BAUD_RATE, SWSERIAL_8N2, _roPin, _diPin);
@@ -14,8 +14,6 @@ void DcPzem::startPzem() {
   _node.preTransmission(_preTransmissionCb);
   _node.postTransmission(_postTransmissionCb);
   _node.begin(_pzemAddress, _pzemSerial);
-
-  BasePzem::startPzem();
 }
 
 void DcPzem::preTransmission() {
@@ -43,10 +41,8 @@ JsonDocument DcPzem::getStatus() {
   return doc;
 }
 
-JsonDocument DcPzem::getValues(const Date& date) {
+JsonDocument DcPzem::getValues() {
   JsonDocument doc;
-
-  _createdAt = date;
 
   readValues();
 
@@ -119,7 +115,7 @@ JsonDocument DcPzem::resetCounter() {
 
   doc[F("name")] = _name;
 
-  if (!isConnected() || !isEepromConnected()) {
+  if (!isConnected()) {
     doc[F("isReset")] = false;
 
     return doc;
@@ -143,10 +139,6 @@ JsonDocument DcPzem::resetCounter() {
   uint8_t responseLength = readSerial(response, 5);
 
   bool isSuccess = !(responseLength == 0 || responseLength == 5);
-
-  if (isSuccess) {
-    clearZone();
-  }
 
   doc[F("isReset")] = isSuccess;
 

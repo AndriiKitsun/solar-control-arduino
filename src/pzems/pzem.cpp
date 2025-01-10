@@ -5,7 +5,7 @@ static SoftwareSerial acPzemSerial(AC_PZEM_RX_PIN, AC_PZEM_TX_PIN);
 static AcPzem acInputPzem(AC_INPUT_PZEM_NAME, acPzemSerial, 0, AC_INPUT_PZEM_ADDRESS);
 static AcPzem acOutputPzem(AC_OUTPUT_PZEM_NAME, acPzemSerial, 16, AC_OUTPUT_PZEM_ADDRESS);
 
-static DcPzem dcBatteryPzem(DC_BATTERY_PZEM_NAME, DC_BATTERY_PZEM_RO_PIN, DC_BATTERY_PZEM_RE_DE_PIN, DC_BATTERY_PZEM_DI_PIN, 32, DC_BATTERY_PZEM_ADDRESS);
+static DcPzem dcBatteryPzem(DC_BATTERY_PZEM_NAME, DC_BATTERY_PZEM_RO_PIN, DC_BATTERY_PZEM_RE_DE_PIN, DC_BATTERY_PZEM_DI_PIN, DC_BATTERY_PZEM_ADDRESS);
 
 void startPzems() {
   Serial.println(F("Initializing PZEMs"));
@@ -30,7 +30,7 @@ JsonDocument getPzemsPayload() {
 
   JsonDocument acInputValues = acInputPzem.getValues(date);
   JsonDocument acOutputValues = acOutputPzem.getValues(date);
-  JsonDocument dcBatteryValues = dcBatteryPzem.getValues(date);
+  JsonDocument dcBatteryValues = dcBatteryPzem.getValues();
 
   if (!acInputValues.isNull()) {
     pzems.add(acInputValues);
