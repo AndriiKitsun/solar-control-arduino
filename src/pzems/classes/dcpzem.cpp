@@ -8,8 +8,7 @@ DcPzem::DcPzem(String name, uint8_t roPin, uint8_t reDePin, uint8_t diPin, uint8
 void DcPzem::startPzem() {
   _pzemSerial.begin(PZEM_BAUD_RATE, SWSERIAL_8N2, _roPin, _diPin);
 
-  pinMode(_reDePin, OUTPUT);
-  digitalWrite(_reDePin, LOW);
+  initPin(_reDePin, LOW);
 
   _node.preTransmission(_preTransmissionCb);
   _node.postTransmission(_postTransmissionCb);
@@ -17,13 +16,13 @@ void DcPzem::startPzem() {
 }
 
 void DcPzem::preTransmission() {
-  digitalWrite(_reDePin, HIGH);
+  pinHigh(_reDePin);
   delay(1);
 }
 
 void DcPzem::postTransmission() {
   delay(3);
-  digitalWrite(_reDePin, LOW);
+  pinLow(_reDePin);
 }
 
 JsonDocument DcPzem::getStatus() {

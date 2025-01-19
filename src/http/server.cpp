@@ -150,21 +150,21 @@ void handlePzemsCounterReset() {
 
 // POST "/relay/on"
 void handleRelayTurnOn() {
-  turnRelayOn(RELAY_PIN);
+  pinHigh(RELAY_PIN);
 
   server.send(HTTP_CODE_OK);
 }
 
 // POST "/relay/off"
 void handleRelayTurnOff() {
-  turnRelayOff(RELAY_PIN);
+  pinLow(RELAY_PIN);
 
   server.send(HTTP_CODE_OK);
 }
 
 // POST "/relay/toggle"
 void handleRelayToggle() {
-  toggleRelay(RELAY_PIN);
+  togglePin(RELAY_PIN);
 
   server.send(HTTP_CODE_OK);
 }
