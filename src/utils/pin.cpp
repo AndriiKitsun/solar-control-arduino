@@ -21,7 +21,7 @@ void togglePin(uint8_t pin) {
 JsonDocument getPinStatus(uint8_t pin) {
   JsonDocument doc;
 
-  doc[F("status")] = digitalRead(pin);
+  doc[F("status")] = !!digitalRead(pin);
 
   return doc;
 }
