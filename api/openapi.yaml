@@ -17,6 +17,8 @@ tags:
     description: Operations with ESP board
   - name: PZEM
     description: Access to PZEM sensors
+  - name: Relay
+    description: Access to relays
 paths:
   /health:
     get:
@@ -167,6 +169,58 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/PzemCounter'
+  /relays:
+    get:
+      tags:
+        - Relay
+      summary: Returns a status of connected relay
+      operationId: getRelayStatus
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RelayStatus'
+  /relays/on:
+    post:
+      tags:
+        - Relay
+      summary: Turns relay ON and returns status
+      operationId: turnRelayOn
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RelayStatus'
+  /relays/off:
+    post:
+      tags:
+        - Relay
+      summary: Turns relay OFF and returns status
+      operationId: turnRelayOff
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RelayStatus'
+  /relays/toggle:
+    post:
+      tags:
+        - Relay
+      summary: Inverts relay state and returns status
+      operationId: toggleRelay
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RelayStatus'
 
 components:
   schemas:
@@ -406,3 +460,13 @@ components:
       required:
         - name
         - isReset
+    RelayStatus:
+      type: object
+      properties:
+        status:
+          type: boolean
+          description: Current status of the relay
+          examples:
+            - true
+      required:
+        - status
