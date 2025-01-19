@@ -1,5 +1,19 @@
 # solar-control-arduino
 
+## 1.1.0
+
+### Minor Changes
+
+- [#34](https://github.com/AndriiKitsun/solar-control-arduino/pull/34) [`0189d42`](https://github.com/AndriiKitsun/solar-control-arduino/commit/0189d42af3a10eaf4e7de9ab0b6a1d9db08ff202) Thanks [@AndriiKitsun](https://github.com/AndriiKitsun)! - SC-79: Move calculation of T1/T2 energy from BasePzem class to AcPzem
+
+- [#24](https://github.com/AndriiKitsun/solar-control-arduino/pull/24) [`8e581d9`](https://github.com/AndriiKitsun/solar-control-arduino/commit/8e581d9256e97c26c39288f72c7c473e8185e5a5) Thanks [@AndriiKitsun](https://github.com/AndriiKitsun)! - SC-49: Add relay support
+
+- [#33](https://github.com/AndriiKitsun/solar-control-arduino/pull/33) [`73c6f20`](https://github.com/AndriiKitsun/solar-control-arduino/commit/73c6f20c095434ba0b62ca1411518b9279196bc7) Thanks [@AndriiKitsun](https://github.com/AndriiKitsun)! - Rework RS485 transmitter logic using Modbus protocol
+
+### Patch Changes
+
+- [#35](https://github.com/AndriiKitsun/solar-control-arduino/pull/35) [`3182e32`](https://github.com/AndriiKitsun/solar-control-arduino/commit/3182e32ee09d80be7815ffecb71b32687d1ab2ea) Thanks [@AndriiKitsun](https://github.com/AndriiKitsun)! - SC-80: Update project libraries
+
 ## 1.0.1
 
 ### Patch Changes
