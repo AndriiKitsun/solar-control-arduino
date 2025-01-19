@@ -33,9 +33,10 @@ void configRouter() {
   server.on(F("/pzems/shunt"), HTTP_PATCH, handlePzemShuntChange);
   server.on(F("/pzems/counter"), HTTP_DELETE, handlePzemsCounterReset);
 
-  server.on(F("/relay/on"), HTTP_POST, handleRelayTurnOn);
-  server.on(F("/relay/off"), HTTP_POST, handleRelayTurnOff);
-  server.on(F("/relay/toggle"), HTTP_POST, handleRelayToggle);
+  server.on(F("/relays"), HTTP_GET, []() { handleRelayState(RELAY_GET); });
+  server.on(F("/relays/on"), HTTP_POST, []() { handleRelayState(RELAY_ON); });
+  server.on(F("/relays/off"), HTTP_POST, []() { handleRelayState(RELAY_OFF); });
+  server.on(F("/relays/toggle"), HTTP_POST, []() { handleRelayState(RELAY_TOGGLE); });
 
   server.onNotFound(handleNotFound);
 }
@@ -148,25 +149,31 @@ void handlePzemsCounterReset() {
   server.send(HTTP_CODE_OK, F("application/json"), payload);
 }
 
-// POST "/relay/on"
-void handleRelayTurnOn() {
-  pinHigh(RELAY_PIN);
+// GET "/relays"
+// POST "/relays/on"
+// POST "/relays/off"
+// POST "/relays/toggle"
+void handleRelayState(RelayState state) {
+  String payload;
 
-  server.send(HTTP_CODE_OK);
-}
+  switch (state) {
+    case RELAY_ON:
+      pinHigh(RELAY_PIN);
+      break;
+    case RELAY_OFF:
+      pinLow(RELAY_PIN);
+      break;
+    case RELAY_TOGGLE:
+      togglePin(RELAY_PIN);
+      break;
 
-// POST "/relay/off"
-void handleRelayTurnOff() {
-  pinLow(RELAY_PIN);
+    default:
+      break;
+  }
 
-  server.send(HTTP_CODE_OK);
-}
+  serializeJson(getPinStatus(RELAY_PIN), payload);
 
-// POST "/relay/toggle"
-void handleRelayToggle() {
-  togglePin(RELAY_PIN);
-
-  server.send(HTTP_CODE_OK);
+  server.send(HTTP_CODE_OK, F("application/json"), payload);
 }
 
 // "**"

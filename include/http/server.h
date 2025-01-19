@@ -10,6 +10,13 @@
 #include "utils/pin.h"
 #include "utils/wifi.h"
 
+enum RelayState {
+  RELAY_GET,
+  RELAY_ON,
+  RELAY_OFF,
+  RELAY_TOGGLE,
+};
+
 void startServer();
 void tickServer();
 
@@ -23,9 +30,7 @@ void handlePzemAddressChange();
 void handlePzemShuntChange();
 void handlePzemsCounterReset();
 
-void handleRelayTurnOn();
-void handleRelayTurnOff();
-void handleRelayToggle();
+void handleRelayState(RelayState state);
 
 void handleNotFound();
 

@@ -17,3 +17,11 @@ void pinLow(uint8_t pin) {
 void togglePin(uint8_t pin) {
   digitalWrite(pin, !digitalRead(pin));
 }
+
+JsonDocument getPinStatus(uint8_t pin) {
+  JsonDocument doc;
+
+  doc[F("status")] = digitalRead(pin);
+
+  return doc;
+}
