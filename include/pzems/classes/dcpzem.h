@@ -7,6 +7,7 @@
 #include "ModbusMaster.h"
 #include "SoftwareSerial.h"
 #include "basePzem.h"
+#include "utils/pin.h"
 
 #define REG_READ_START 0x0000
 
