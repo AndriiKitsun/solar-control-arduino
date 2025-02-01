@@ -259,14 +259,9 @@ components:
           maximum: 248
           examples:
             - 2
-        savedShuntType:
-          type: integer
-          format: int32
-          description: Shunt type saved in PZEM memory
-          minimum: 0
-          maximum: 3
-          examples:
-            - 1
+        isFullPower:
+          type: boolean
+          description: true/false indicator to include reactive power param into calculation
       required:
         - name
         - isConnected
@@ -304,31 +299,31 @@ components:
           description: The name of the sensor
           examples:
             - acInput
-        voltageV:
+        voltage:
           type: number
           format: float
           description: AC/DC voltage in Volts
           examples:
             - 233.1000061
-        currentA:
+        current:
           type: number
           format: float
           description: AC/DC current in Amps
           examples:
             - 0.097999997
-        powerKw:
+        power:
           type: number
           format: float
           description: AC/DC active power in kW
           examples:
             - 0.0135
-        energyKwh:
+        energy:
           type: number
           format: float
           description: AC/DC active energy in kWh since last reset
           examples:
             - 0.003
-        frequencyHz:
+        frequency:
           type: number
           format: float
           description: AC frequency in Hz
@@ -340,13 +335,13 @@ components:
           description: AC power factor of the load
           examples:
             - 0.589999974
-        t1EnergyKwh:
+        t1Energy:
           type: number
           format: float
           description: Calculated value of active energy during T1 zone
           examples:
             - 0.004999999
-        t2EnergyKwh:
+        t2Energy:
           type: number
           format: float
           description: Calculated value of active energy during T2 zone

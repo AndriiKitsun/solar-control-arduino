@@ -2,8 +2,8 @@
 
 static SoftwareSerial acPzemSerial(AC_PZEM_RX_PIN, AC_PZEM_TX_PIN);
 
-static AcPzem acInputPzem(AC_INPUT_SENSOR_NAME, acPzemSerial, 0, AC_INPUT_PZEM_ADDRESS);
-static AcPzem acOutputPzem(AC_OUTPUT_SENSOR_NAME, acPzemSerial, 16, AC_OUTPUT_PZEM_ADDRESS);
+static AcPzem acInputPzem(AC_INPUT_SENSOR_NAME, acPzemSerial, 0, true, AC_INPUT_PZEM_ADDRESS);
+static AcPzem acOutputPzem(AC_OUTPUT_SENSOR_NAME, acPzemSerial, 16, false, AC_OUTPUT_PZEM_ADDRESS);
 static DcDivider dcDivider(DC_BATTERY_SENSOR_NAME);
 
 void startSensors() {
