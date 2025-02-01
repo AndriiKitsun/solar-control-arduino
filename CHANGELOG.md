@@ -1,5 +1,17 @@
 # solar-control-arduino
 
+## 1.2.0
+
+### Minor Changes
+
+- [#38](https://github.com/AndriiKitsun/solar-control-arduino/pull/38) [`08c7dd3`](https://github.com/AndriiKitsun/solar-control-arduino/commit/08c7dd3f8966fa66b53499294f875af8c23eef32) Thanks [@AndriiKitsun](https://github.com/AndriiKitsun)! - SC-89: Add voltage divider support
+
+- [#37](https://github.com/AndriiKitsun/solar-control-arduino/pull/37) [`fa5257e`](https://github.com/AndriiKitsun/solar-control-arduino/commit/fa5257e8afcc7b51b471539abb0cae0a99b1ae6b) Thanks [@AndriiKitsun](https://github.com/AndriiKitsun)! - SC-98: Add endpoint to return current relay state
+
+- [#41](https://github.com/AndriiKitsun/solar-control-arduino/pull/41) [`7b524dc`](https://github.com/AndriiKitsun/solar-control-arduino/commit/7b524dc685979bf561154d79af1d52065cc387af) Thanks [@AndriiKitsun](https://github.com/AndriiKitsun)! - SC-99: Calculate full energy instead of active
+
+- [#39](https://github.com/AndriiKitsun/solar-control-arduino/pull/39) [`c70834e`](https://github.com/AndriiKitsun/solar-control-arduino/commit/c70834e9a9382fea910f7b018fabb8cd2816711d) Thanks [@AndriiKitsun](https://github.com/AndriiKitsun)! - SC-90: Delete DC PZEM logic
+
 ## 1.1.0
 
 ### Minor Changes
