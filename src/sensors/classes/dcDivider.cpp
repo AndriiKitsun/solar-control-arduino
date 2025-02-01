@@ -6,7 +6,7 @@ DcDivider::DcDivider(String name)
     : _name(name) {
 }
 
-void DcDivider::begin() {
+void DcDivider::start() {
   pinMode(A0, INPUT);
 }
 

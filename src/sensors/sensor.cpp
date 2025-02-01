@@ -11,7 +11,7 @@ void startSensors() {
 
   acInputPzem.startPzem();
   acOutputPzem.startPzem();
-  dcDivider.begin();
+  dcDivider.start();
 }
 
 JsonDocument getSensorsValues() {

@@ -3,7 +3,7 @@
 #define SENSOR_H
 
 #include <Arduino.h>
-#include "classes/acpzem.h"
+#include "classes/acPzem.h"
 #include "classes/dcDivider.h"
 
 #define AC_INPUT_SENSOR_NAME "acInput"

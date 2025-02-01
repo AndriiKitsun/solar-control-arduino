@@ -13,7 +13,7 @@ class DcDivider {
  public:
   DcDivider(String name);
 
-  void begin();
+  void start();
   JsonDocument getValues();
 
  private:
