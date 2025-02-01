@@ -25,9 +25,9 @@ void configRouter();
 void handleEspHealthCheck();
 void handleEspStatus();
 
-void handlePzemValues();
+void handleSensorsValues();
+
 void handlePzemAddressChange();
-void handlePzemShuntChange();
 void handlePzemsCounterReset();
 
 void handleRelayState(RelayState state);

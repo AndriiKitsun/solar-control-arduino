@@ -28,9 +28,9 @@ void configRouter() {
   server.on(F("/health"), HTTP_GET, handleEspHealthCheck);
   server.on(F("/status"), HTTP_GET, handleEspStatus);
 
-  server.on(F("/pzems"), HTTP_GET, handlePzemValues);
+  server.on(F("/sensors"), HTTP_GET, handleSensorsValues);
+
   server.on(F("/pzems/address"), HTTP_PATCH, handlePzemAddressChange);
-  server.on(F("/pzems/shunt"), HTTP_PATCH, handlePzemShuntChange);
   server.on(F("/pzems/counter"), HTTP_DELETE, handlePzemsCounterReset);
 
   server.on(F("/relays"), HTTP_GET, []() { handleRelayState(RELAY_GET); });
@@ -61,8 +61,8 @@ void handleEspStatus() {
   server.send(HTTP_CODE_OK, F("application/json"), payload);
 }
 
-// GET "/pzems"
-void handlePzemValues() {
+// GET "/sensors"
+void handleSensorsValues() {
   String payload;
 
   serializeJson(getPzemsPayload(), payload);
@@ -94,38 +94,6 @@ void handlePzemAddressChange() {
   }
 
   JsonDocument doc = changePzemAddress(name, address);
-
-  if (doc.isNull()) {
-    server.send(HTTP_CODE_NOT_FOUND, F("text/plain"), F("PZEM with entered name is not found"));
-
-    return;
-  }
-
-  String payload;
-
-  serializeJson(doc, payload);
-
-  server.send(HTTP_CODE_OK, F("application/json"), payload);
-}
-
-// PATCH "/pzems/shunt?name={name}&shunt={1}"
-void handlePzemShuntChange() {
-  String name = server.arg(F("name"));
-  long shuntType = server.arg(F("shunt")).toInt();
-
-  if (name.isEmpty()) {
-    server.send(HTTP_CODE_BAD_REQUEST, F("text/plain"), F("The \"name\" param is required"));
-
-    return;
-  }
-
-  if (shuntType < 0 || shuntType > 3) {
-    server.send(HTTP_CODE_BAD_REQUEST, F("text/plain"), F("The \"shunt\" param should be in the range between 0 and 3"));
-
-    return;
-  }
-
-  JsonDocument doc = changePzemShuntType(name, shuntType);
 
   if (doc.isNull()) {
     server.send(HTTP_CODE_NOT_FOUND, F("text/plain"), F("PZEM with entered name is not found"));
