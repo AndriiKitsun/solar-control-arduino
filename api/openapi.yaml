@@ -295,7 +295,7 @@ components:
             $ref: '#/components/schemas/Sensor'
       required:
         - createdAtGmt
-        - pzems
+        - sensors
     Sensor:
       type: object
       properties:
