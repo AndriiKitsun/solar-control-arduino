@@ -23,7 +23,7 @@ void broadcastPzems() {
 
   if (millis() - prevMillis >= BROADCAST_INTERVAL) {
     prevMillis = millis();
-    doc = getPzemsPayload();
+    doc = getSensorsValues();
 
     if (webSocket.connectedClients()) {
       String payload;

@@ -65,7 +65,7 @@ void handleEspStatus() {
 void handleSensorsValues() {
   String payload;
 
-  serializeJson(getPzemsPayload(), payload);
+  serializeJson(getSensorsValues(), payload);
 
   server.send(HTTP_CODE_OK, F("application/json"), payload);
 }

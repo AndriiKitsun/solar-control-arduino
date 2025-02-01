@@ -4,7 +4,7 @@
 
 #include <Arduino.h>
 #include <WebSocketsServer.h>
-#include "pzems/pzem.h"
+#include "sensors/sensor.h"
 
 void startWebSocket();
 void tickWebSocket();

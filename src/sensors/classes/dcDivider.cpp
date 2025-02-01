@@ -1,4 +1,4 @@
-#include "pzems/classes/dcDivider.h"
+#include "sensors/classes/dcDivider.h"
 
 // Public
 
