@@ -152,7 +152,8 @@ float AcPzem::calcReactiveParam(float value) {
 
 float AcPzem::calcFullPower(float value) {
   if (_isFullPower) {
-    return sqrt(pow(value, 2) + pow(calcReactiveParam(value), 2));
+    return hypotf(value, calcReactiveParam(value));
+    // return sqrt(pow(value, 2) + pow(calcReactiveParam(value), 2));
   }
 
   return value;
