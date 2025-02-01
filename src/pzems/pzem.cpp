@@ -12,7 +12,7 @@ void startPzems() {
 
   acInputPzem.startPzem();
   acOutputPzem.startPzem();
-  dcDivider.start();
+  dcDivider.begin();
 }
 
 JsonDocument getPzemsPayload() {

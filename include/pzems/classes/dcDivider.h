@@ -15,16 +15,13 @@ class DcDivider {
  public:
   DcDivider(String name);
 
-  void start();
-
+  void begin();
   JsonDocument getValues();
 
  private:
   String _name;
 
-  float _voltage;
-
-  void readValues();
+  float getVoltage();
 };
 
 #endif
