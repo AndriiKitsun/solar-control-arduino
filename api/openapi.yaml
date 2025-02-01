@@ -10,11 +10,12 @@ servers:
       protocol:
         enum:
           - http
-          - ws
         default: http
 tags:
   - name: ESP
     description: Operations with ESP board
+  - name: Sensor
+    description: Access to connected sensors
   - name: PZEM
     description: Access to PZEM sensors
   - name: Relay
@@ -48,19 +49,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/EspStatus'
-  /pzems:
+  /sensors:
     get:
       tags:
-        - PZEM
-      summary: Returns values of all connected PZEMs
-      operationId: getPzemValues
+        - Sensor
+      summary: Returns values of all connected sensors
+      operationId: getSensorsValues
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PzemData'
+                $ref: '#/components/schemas/SensorsData'
   /pzems/address:
     patch:
       tags:
@@ -99,53 +100,6 @@ paths:
                 type: string
                 examples:
                   - The "address" param should be in the range between 1 and 247
-        '404':
-          description: Not Found
-          content:
-            text/plain:
-              schema:
-                type: string
-                examples:
-                  - PZEM with entered name is not found
-
-  /pzems/shunt:
-    patch:
-      tags:
-        - PZEM
-      summary: Sets the shunt type to DC PZEM
-      operationId: setPzemShunt
-      parameters:
-        - name: name
-          in: query
-          description: The name of the DC PZEM for which the shunt type is changed
-          required: true
-          schema:
-            type: string
-        - name: shunt
-          in: query
-          description: The shunt type to set in PZEM memory
-          required: true
-          schema:
-            type: integer
-            format: int32
-            minimum: 0
-            maximum: 3
-            default: 1
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DcPzemShunt'
-        '400':
-          description: Bad Request
-          content:
-            text/plain:
-              schema:
-                type: string
-                examples:
-                  - The "shunt" param should be in the range between 0 and 3
         '404':
           description: Not Found
           content:
@@ -326,7 +280,7 @@ components:
           description: true/false indicator when the EEPROM module is connected
       required:
         - isConnected
-    PzemData:
+    SensorsData:
       type: object
       properties:
         createdAtGmt:
@@ -335,19 +289,19 @@ components:
           description: Data collection date in UTC
           examples:
             - "2024-09-01T12:22:05.042Z"
-        pzems:
+        sensors:
           type: array
           items:
-            $ref: '#/components/schemas/Pzem'
+            $ref: '#/components/schemas/Sensor'
       required:
         - createdAtGmt
         - pzems
-    Pzem:
+    Sensor:
       type: object
       properties:
         name:
           type: string
-          description: The name of the PZEM sensor
+          description: The name of the sensor
           examples:
             - acInput
         voltageV:
@@ -400,6 +354,7 @@ components:
             - 0.012914399
       required:
         - name
+        - voltageV
     PzemAddress:
       type: object
       properties:
@@ -422,29 +377,6 @@ components:
       required:
         - name
         - addressToSet
-        - isChanged
-    DcPzemShunt:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The name of the PZEM sensor
-          examples:
-            - dcBattery
-        shuntTypeToSet:
-          type: integer
-          format: int32
-          description: Shunt type to save in PZEM memory
-          minimum: 0
-          maximum: 3
-          examples:
-            - 1
-        isChanged:
-          type: boolean
-          description: true/false indicator when the shunt type is set
-      required:
-        - name
-        - shuntTypeToSet
         - isChanged
     PzemCounter:
       type: object

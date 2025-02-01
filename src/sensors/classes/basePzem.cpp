@@ -1,4 +1,4 @@
-#include "pzems/classes/basePzem.h"
+#include "sensors/classes/basePzem.h"
 
 // Public
 

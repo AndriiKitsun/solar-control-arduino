@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include "http/server.h"
-#include "pzems/pzem.h"
+#include "sensors/sensor.h"
 #include "utils/date.h"
 #include "utils/eeprom.h"
 #include "utils/led.h"
@@ -19,7 +19,7 @@ void setup() {
 
   startNTP();
   startEeprom();
-  startPzems();
+  startSensors();
   startServer();
   startWebSocket();
 }

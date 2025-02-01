@@ -1,4 +1,4 @@
-#include "pzems/classes/dcDivider.h"
+#include "sensors/classes/dcDivider.h"
 
 // Public
 
@@ -6,7 +6,7 @@ DcDivider::DcDivider(String name)
     : _name(name) {
 }
 
-void DcDivider::begin() {
+void DcDivider::start() {
   pinMode(A0, INPUT);
 }
 
