@@ -295,7 +295,7 @@ components:
             $ref: '#/components/schemas/Sensor'
       required:
         - createdAtGmt
-        - pzems
+        - sensors
     Sensor:
       type: object
       properties:
@@ -354,7 +354,6 @@ components:
             - 0.012914399
       required:
         - name
-        - voltageV
     PzemAddress:
       type: object
       properties:
