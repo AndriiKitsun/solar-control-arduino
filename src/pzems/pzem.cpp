@@ -5,13 +5,19 @@ static SoftwareSerial acPzemSerial(AC_PZEM_RX_PIN, AC_PZEM_TX_PIN);
 static AcPzem acInputPzem(AC_INPUT_PZEM_NAME, acPzemSerial, 0, AC_INPUT_PZEM_ADDRESS);
 static AcPzem acOutputPzem(AC_OUTPUT_PZEM_NAME, acPzemSerial, 16, AC_OUTPUT_PZEM_ADDRESS);
 
+static DcPzem dcBatteryPzem(DC_BATTERY_PZEM_NAME, DC_BATTERY_PZEM_RO_PIN, DC_BATTERY_PZEM_RE_DE_PIN, DC_BATTERY_PZEM_DI_PIN, DC_BATTERY_PZEM_ADDRESS);
 static DcDivider dcDivider(DC_BATTERY_PZEM_NAME);
 
 void startPzems() {
   Serial.println(F("Initializing PZEMs"));
 
+  // Workaround to pass void callbacks in class
+  dcBatteryPzem._preTransmissionCb = []() { dcBatteryPzem.preTransmission(); };
+  dcBatteryPzem._postTransmissionCb = []() { dcBatteryPzem.postTransmission(); };
+
   acInputPzem.startPzem();
   acOutputPzem.startPzem();
+  dcBatteryPzem.startPzem();
   dcDivider.begin();
 }
 
@@ -26,6 +32,7 @@ JsonDocument getPzemsPayload() {
 
   JsonDocument acInputValues = acInputPzem.getValues(date);
   JsonDocument acOutputValues = acOutputPzem.getValues(date);
+  // JsonDocument dcBatteryValues = dcBatteryPzem.getValues();
   JsonDocument dcBatteryValues = dcDivider.getValues();
 
   if (!acInputValues.isNull()) {
@@ -48,6 +55,7 @@ JsonDocument getPzemsStatus() {
 
   doc.add(acInputPzem.getStatus());
   doc.add(acOutputPzem.getStatus());
+  doc.add(dcBatteryPzem.getStatus());
 
   return doc;
 }
@@ -57,6 +65,7 @@ JsonDocument resetPzemsCounter() {
 
   doc.add(acInputPzem.resetCounter());
   doc.add(acOutputPzem.resetCounter());
+  doc.add(dcBatteryPzem.resetCounter());
 
   return doc;
 }
@@ -68,6 +77,8 @@ JsonDocument changePzemAddress(String name, uint8_t address) {
     doc = acInputPzem.changeAddress(address);
   } else if (name == F(AC_OUTPUT_PZEM_NAME)) {
     doc = acOutputPzem.changeAddress(address);
+  } else if (name == F(DC_BATTERY_PZEM_NAME)) {
+    doc = dcBatteryPzem.changeAddress(address);
   }
 
   return doc;
@@ -75,6 +86,10 @@ JsonDocument changePzemAddress(String name, uint8_t address) {
 
 JsonDocument changePzemShuntType(String name, uint8_t shuntType) {
   JsonDocument doc;
+
+  if (name == F(DC_BATTERY_PZEM_NAME)) {
+    doc = dcBatteryPzem.changeShuntType(shuntType);
+  }
 
   return doc;
 }
