@@ -4,6 +4,7 @@
 
 #include <Arduino.h>
 #include "classes/acpzem.h"
+#include "classes/dcDivider.h"
 #include "classes/dcpzem.h"
 
 #define AC_INPUT_PZEM_NAME "acInput"
