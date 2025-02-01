@@ -134,7 +134,7 @@ void AcPzem::readValues() {
   }
 
   _powerFactor = _pzem.pf();
-  _current = calcFullPower(_pzem.current());
+  _current = calcReactiveParam(_pzem.current());
   _power = calcFullPower(_pzem.power() / 1000.0);
   _energy = calcFullPower(_pzem.energy());
   _frequency = _pzem.frequency();
@@ -142,9 +142,17 @@ void AcPzem::readValues() {
   calcZoneEnergy();
 }
 
-float AcPzem::calcFullPower(float value) {
+float AcPzem::calcReactiveParam(float value) {
   if (_isFullPower) {
     return value / _powerFactor;
+  }
+
+  return value;
+}
+
+float AcPzem::calcFullPower(float value) {
+  if (_isFullPower) {
+    return sqrt(pow(value, 2) + pow(calcReactiveParam(value), 2));
   }
 
   return value;

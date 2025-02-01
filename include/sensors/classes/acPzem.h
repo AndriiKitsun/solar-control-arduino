@@ -43,10 +43,10 @@ class AcPzem : public BasePzem {
 
   bool isConnected();
   void readValues();
+
+  float calcReactiveParam(float value);
   float calcFullPower(float value);
   void calcZoneEnergy();
-  void clearZone();
-
   float calcT1ZoneEnergy();
   float calcT2ZoneEnergy();
 
@@ -56,6 +56,7 @@ class AcPzem : public BasePzem {
   bool isStartOfT2Zone(uint8_t hour, uint8_t minute, uint8_t second);
   bool isEndOfT2Zone(uint8_t hour, uint8_t minute, uint8_t second);
 
+  void clearZone();
   void saveZone();
   Zone getZone();
 };
