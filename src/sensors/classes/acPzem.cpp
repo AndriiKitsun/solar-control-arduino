@@ -2,8 +2,8 @@
 
 // Public
 
-AcPzem::AcPzem(String name, SoftwareSerial& port, uint8_t storageAddress, uint8_t pzemAddress)
-    : BasePzem(name), _pzem(port, pzemAddress), _storageAddress(storageAddress) {}
+AcPzem::AcPzem(String name, SoftwareSerial& port, uint8_t storageAddress, bool isFullPower, uint8_t pzemAddress)
+    : BasePzem(name), _pzem(port, pzemAddress), _storageAddress(storageAddress), _isFullPower(isFullPower) {}
 
 void AcPzem::startPzem() {
   _zone = getZone();
@@ -27,6 +27,7 @@ JsonDocument AcPzem::getStatus() {
   doc[F("isConnected")] = isConnected();
   doc[F("currentAddress")] = _pzem.getAddress();
   doc[F("savedAddress")] = _pzem.readAddress();
+  doc[F("isFullPower")] = _isFullPower;
 
   return doc;
 }
@@ -39,23 +40,23 @@ JsonDocument AcPzem::getValues(const Date& date) {
   readValues();
 
   if (_voltage) {
-    doc[F("voltageV")] = _voltage;
+    doc[F("voltage")] = _voltage;
   }
 
   if (_current) {
-    doc[F("currentA")] = _current;
+    doc[F("current")] = _current;
   }
 
   if (_power) {
-    doc[F("powerKw")] = _power;
+    doc[F("power")] = _power;
   }
 
   if (_energy) {
-    doc[F("energyKwh")] = _energy;
+    doc[F("energy")] = _energy;
   }
 
   if (_frequency) {
-    doc[F("frequencyHz")] = _frequency;
+    doc[F("frequency")] = _frequency;
   }
 
   if (_powerFactor) {
@@ -63,11 +64,11 @@ JsonDocument AcPzem::getValues(const Date& date) {
   }
 
   if (_t1Energy) {
-    doc[F("t1EnergyKwh")] = _t1Energy;
+    doc[F("t1Energy")] = _t1Energy;
   }
 
   if (_t2Energy) {
-    doc[F("t2EnergyKwh")] = _t2Energy;
+    doc[F("t2Energy")] = _t2Energy;
   }
 
   if (!doc.isNull()) {
@@ -132,13 +133,21 @@ void AcPzem::readValues() {
     return;
   }
 
-  _current = _pzem.current();
-  _power = _pzem.power() / 1000.0;
-  _energy = _pzem.energy();
-  _frequency = _pzem.frequency();
   _powerFactor = _pzem.pf();
+  _current = calcFullPower(_pzem.current());
+  _power = calcFullPower(_pzem.power() / 1000.0);
+  _energy = calcFullPower(_pzem.energy());
+  _frequency = _pzem.frequency();
 
   calcZoneEnergy();
+}
+
+float AcPzem::calcFullPower(float value) {
+  if (_isFullPower) {
+    return value / _powerFactor;
+  }
+
+  return value;
 }
 
 void AcPzem::calcZoneEnergy() {

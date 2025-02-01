@@ -13,7 +13,7 @@ void DcDivider::start() {
 JsonDocument DcDivider::getValues() {
   JsonDocument doc;
 
-  doc[F("voltageV")] = getVoltage();
+  doc[F("voltage")] = getVoltage();
   doc[F("name")] = _name;
 
   return doc;

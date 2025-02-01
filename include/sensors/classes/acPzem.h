@@ -18,7 +18,7 @@ struct Zone {
 
 class AcPzem : public BasePzem {
  public:
-  AcPzem(String name, SoftwareSerial& port, uint8_t storageAddress, uint8_t pzemAddress = PZEM_DEFAULT_ADDR);
+  AcPzem(String name, SoftwareSerial& port, uint8_t storageAddress, bool isFullPower, uint8_t pzemAddress = PZEM_DEFAULT_ADDR);
 
   void startPzem();
 
@@ -34,6 +34,7 @@ class AcPzem : public BasePzem {
   Zone _zone;
 
   uint8_t _storageAddress;
+  bool _isFullPower;
 
   float _t1Energy;
   float _t2Energy;
@@ -42,6 +43,7 @@ class AcPzem : public BasePzem {
 
   bool isConnected();
   void readValues();
+  float calcFullPower(float value);
   void calcZoneEnergy();
   void clearZone();
 
