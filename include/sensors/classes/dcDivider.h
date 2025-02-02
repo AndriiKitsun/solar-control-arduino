@@ -6,7 +6,7 @@
 #include <ArduinoJson.h>
 
 #define VREF 3.284      // Internal ESP voltage
-#define DIV_R1 94510.0  // 94K
+#define DIV_R1 97550.0  // 97K
 #define DIV_R2 5000.0   // 5K
 
 class DcDivider {
