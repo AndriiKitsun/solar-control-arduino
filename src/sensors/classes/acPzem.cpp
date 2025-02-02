@@ -75,6 +75,20 @@ JsonDocument AcPzem::getValues(const Date& date) {
     doc[F("name")] = _name;
   }
 
+  if (_isFullPower) {
+    doc[F("_apparentCurrent")] = _apparentCurrent;
+    doc[F("_apparentPower")] = _apparentPower;
+    doc[F("_apparentEnergy")] = _apparentEnergy;
+
+    doc[F("_reactiveCurrent")] = _reactiveCurrent;
+    doc[F("_reactivePower")] = _reactivePower;
+    doc[F("_reactiveEnergy")] = _reactiveEnergy;
+
+    doc[F("_ourReactivePower")] = _ourReactivePower;
+    doc[F("_ourApparentPower")] = _ourApparentPower;
+    doc[F("_ourApparentPowerSum")] = _ourApparentPowerSum;
+  }
+
   return doc;
 }
 
@@ -134,29 +148,50 @@ void AcPzem::readValues() {
   }
 
   _powerFactor = _pzem.pf();
-  _current = calcReactiveParam(_pzem.current());
-  _power = calcFullPower(_pzem.power() / 1000.0);
-  _energy = calcFullPower(_pzem.energy());
+
+  // Default
+  _current = _pzem.current();
+  _power = _pzem.power() / 1000.0;
+  _energy = _pzem.energy();
+
+  // Apparent
+  _apparentCurrent = calcApparentPower(_current);
+  _apparentPower = calcApparentPower(_power);
+  _apparentEnergy = calcApparentPower(_energy);
+
+  // Reactive mode
+  _reactiveCurrent = calcReactivePower(_apparentCurrent, _current);
+  _reactivePower = calcReactivePower(_apparentPower, _power);
+  _reactiveEnergy = calcReactivePower(_apparentEnergy, _energy);
+
+  // our mode
+
+  _ourReactivePower = calcOurPower(_power);
+  _ourApparentPower = sqrt(_power * _power + _ourReactivePower * _ourReactivePower);
+  _ourApparentPowerSum = _power + _ourReactivePower;
+
   _frequency = _pzem.frequency();
 
   calcZoneEnergy();
 }
 
-float AcPzem::calcReactiveParam(float value) {
-  if (_isFullPower) {
-    return value / _powerFactor;
+// S = P / PF
+float AcPzem::calcApparentPower(float value) {
+  if (_powerFactor == 0) {
+    return 0;
   }
 
-  return value;
+  return abs(value / _powerFactor);
 }
 
-float AcPzem::calcFullPower(float value) {
-  if (_isFullPower) {
-    return hypotf(value, calcReactiveParam(value));
-    // return sqrt(pow(value, 2) + pow(calcReactiveParam(value), 2));
-  }
+// Q = sqrt(S^2 - P^2)
+float AcPzem::calcReactivePower(float apparent, float value) {
+  return sqrt(apparent * apparent - value * value);
+}
 
-  return value;
+// Q = P * (1 - PF) / PF
+float AcPzem::calcOurPower(float value) {
+  return (value * (1 - _powerFactor)) / _powerFactor;
 }
 
 void AcPzem::calcZoneEnergy() {

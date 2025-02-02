@@ -44,8 +44,10 @@ class AcPzem : public BasePzem {
   bool isConnected();
   void readValues();
 
-  float calcReactiveParam(float value);
-  float calcFullPower(float value);
+  float calcApparentPower(float value);
+  float calcReactivePower(float apparent, float value);
+  float calcOurPower(float value);
+
   void calcZoneEnergy();
   float calcT1ZoneEnergy();
   float calcT2ZoneEnergy();
