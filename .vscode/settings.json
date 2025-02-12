@@ -12,7 +12,8 @@
     "nodemcuv",
     "PZEM",
     "Pzems",
-    "SWSERIAL"
+    "SWSERIAL",
+    "VREF"
   ],
   "files.associations": {
     "array": "cpp",
