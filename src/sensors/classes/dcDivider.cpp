@@ -23,7 +23,7 @@ JsonDocument DcDivider::getValues() {
 
 float DcDivider::getVoltage() {
   int value = analogRead(A0);
-  float vOut = value * VREF / 1024;
+  float vOut = value * DC_DIVIDER_VREF / 1024;
 
-  return vOut * ((DIV_R1 + DIV_R2) / DIV_R2);
+  return vOut * ((DC_DIVIDER_R1 + DC_DIVIDER_R2) / DC_DIVIDER_R2);
 }

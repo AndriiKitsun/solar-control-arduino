@@ -347,8 +347,6 @@ components:
           description: Calculated value of active energy during T2 zone
           examples:
             - 0.012914399
-      required:
-        - name
     PzemAddress:
       type: object
       properties:
