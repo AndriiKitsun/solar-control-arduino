@@ -26,6 +26,7 @@ void handleEspHealthCheck();
 void handleEspStatus();
 
 void handleSensorsValues();
+void handleSensorsProtectionChange();
 
 void handlePzemAddressChange();
 void handlePzemsCounterReset();

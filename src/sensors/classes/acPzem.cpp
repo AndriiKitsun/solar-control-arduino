@@ -2,8 +2,8 @@
 
 // Public
 
-AcPzem::AcPzem(String name, SoftwareSerial& port, uint8_t storageAddress, bool isFullPower, uint8_t pzemAddress)
-    : BasePzem(name), _pzem(port, pzemAddress), _storageAddress(storageAddress), _isFullPower(isFullPower) {}
+AcPzem::AcPzem(String name, SoftwareSerial& port, uint8_t storageAddress, uint8_t pzemAddress)
+    : BasePzem(name), _pzem(port, pzemAddress), _storageAddress(storageAddress) {}
 
 void AcPzem::startPzem() {
   _zone = getZone();
@@ -27,7 +27,6 @@ JsonDocument AcPzem::getStatus() {
   doc[F("isConnected")] = isConnected();
   doc[F("currentAddress")] = _pzem.getAddress();
   doc[F("savedAddress")] = _pzem.readAddress();
-  doc[F("isFullPower")] = _isFullPower;
 
   return doc;
 }
@@ -71,9 +70,11 @@ JsonDocument AcPzem::getValues(const Date& date) {
     doc[F("t2Energy")] = _t2Energy;
   }
 
-  if (!doc.isNull()) {
-    doc[F("name")] = _name;
+  if (doc.isNull()) {
+    return doc;
   }
+
+  doc[F("name")] = _name;
 
   return doc;
 }
@@ -134,20 +135,12 @@ void AcPzem::readValues() {
   }
 
   _powerFactor = _pzem.pf();
-  _current = calcFullPower(_pzem.current());
-  _power = calcFullPower(_pzem.power() / 1000.0);
-  _energy = calcFullPower(_pzem.energy());
+  _current = _pzem.current();
+  _power = _pzem.power() / 1000.0;
+  _energy = _pzem.energy();
   _frequency = _pzem.frequency();
 
   calcZoneEnergy();
-}
-
-float AcPzem::calcFullPower(float value) {
-  if (_isFullPower) {
-    return value / _powerFactor;
-  }
-
-  return value;
 }
 
 void AcPzem::calcZoneEnergy() {

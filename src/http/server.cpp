@@ -29,9 +29,10 @@ void configRouter() {
   server.on(F("/status"), HTTP_GET, handleEspStatus);
 
   server.on(F("/sensors"), HTTP_GET, handleSensorsValues);
+  server.on(F("/sensors/protection"), HTTP_POST, handleSensorsValues);
 
   server.on(F("/pzems/address"), HTTP_PATCH, handlePzemAddressChange);
-  server.on(F("/pzems/counter"), HTTP_DELETE, handlePzemsCounterReset);
+  server.on(F("/pzems/counter"), HTTP_DELETE, handleSensorsProtectionChange);
 
   server.on(F("/relays"), HTTP_GET, []() { handleRelayState(RELAY_GET); });
   server.on(F("/relays/on"), HTTP_POST, []() { handleRelayState(RELAY_ON); });
@@ -68,6 +69,9 @@ void handleSensorsValues() {
   serializeJson(getSensorsValues(), payload);
 
   server.send(HTTP_CODE_OK, F("application/json"), payload);
+}
+
+void handleSensorsProtectionChange() {
 }
 
 // PATCH "/pzems/address?name={name}&address={1}"
