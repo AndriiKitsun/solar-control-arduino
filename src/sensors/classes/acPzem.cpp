@@ -3,7 +3,7 @@
 // Public
 
 AcPzem::AcPzem(String name, SoftwareSerial& port, uint8_t storageAddress, uint8_t pzemAddress)
-    : BasePzem(name), _pzem(port, pzemAddress), _storageAddress(storageAddress) {}
+    : _name(name), _pzem(port, pzemAddress), _storageAddress(storageAddress) {}
 
 void AcPzem::startPzem() {
   _zone = getZone();

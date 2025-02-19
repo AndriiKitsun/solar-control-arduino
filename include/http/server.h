@@ -6,6 +6,7 @@
 #include <ESP8266HTTPClient.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
+#include "sensors/protection-rule.h"
 #include "sensors/sensor.h"
 #include "utils/pin.h"
 #include "utils/wifi.h"
@@ -26,7 +27,9 @@ void handleEspHealthCheck();
 void handleEspStatus();
 
 void handleSensorsValues();
-void handleSensorsProtectionChange();
+
+void handleProtectionRules();
+void handleProtectionRuleChange();
 
 void handlePzemAddressChange();
 void handlePzemsCounterReset();

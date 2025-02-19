@@ -10,6 +10,9 @@
 #define AC_OUTPUT_SENSOR_NAME "acOutput"
 #define DC_BATTERY_SENSOR_NAME "dcBattery"
 
+#define AC_INPUT_SENSOR_ADDRESS 0
+#define AC_OUTPUT_SENSOR_ADDRESS 16
+
 void startSensors();
 
 JsonDocument getSensorsValues();
