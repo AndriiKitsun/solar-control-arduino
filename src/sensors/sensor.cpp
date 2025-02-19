@@ -2,8 +2,8 @@
 
 static SoftwareSerial acPzemSerial(AC_PZEM_RX_PIN, AC_PZEM_TX_PIN);
 
-static AcPzem acInputPzem(AC_INPUT_SENSOR_NAME, acPzemSerial, 0, false, AC_INPUT_PZEM_ADDRESS);
-static AcPzem acOutputPzem(AC_OUTPUT_SENSOR_NAME, acPzemSerial, 16, false, AC_OUTPUT_PZEM_ADDRESS);
+static AcPzem acInputPzem(AC_INPUT_SENSOR_NAME, acPzemSerial, AC_INPUT_SENSOR_SAVE_ADDRESS, AC_INPUT_PZEM_ADDRESS);
+static AcPzem acOutputPzem(AC_OUTPUT_SENSOR_NAME, acPzemSerial, AC_OUTPUT_SENSOR_SAVE_ADDRESS, AC_OUTPUT_PZEM_ADDRESS);
 static DcDivider dcDivider(DC_BATTERY_SENSOR_NAME);
 
 void startSensors() {
@@ -19,7 +19,7 @@ JsonDocument getSensorsValues() {
 
   Date date = getLocalDate();
 
-  doc[F("createdAtGmt")] = toJSON(getUTCDate());
+  doc[F("createdAt")] = toJSON(getUTCDate());
 
   JsonArray pzems = doc[F("sensors")].to<JsonArray>();
 
@@ -32,10 +32,14 @@ JsonDocument getSensorsValues() {
   }
 
   if (!acOutputValues.isNull()) {
+    acOutputValues[F("protection")] = executeAcOutputProtection(acOutputValues);
+
     pzems.add(acOutputValues);
   }
 
   if (!dcBatteryValues.isNull()) {
+    dcBatteryValues[F("protection")] = executeDcBatteryProtection(dcBatteryValues);
+
     pzems.add(dcBatteryValues);
   }
 
@@ -68,6 +72,36 @@ JsonDocument changePzemAddress(String name, uint8_t address) {
   } else if (name == F(AC_OUTPUT_SENSOR_NAME)) {
     doc = acOutputPzem.changeAddress(address);
   }
+
+  return doc;
+}
+
+JsonDocument executeAcOutputProtection(const JsonDocument& data) {
+  JsonDocument doc;
+
+  bool isFrequency = checkProtection(AC_OUTPUT_FREQUENCY_RULE, data[F("frequency")]);
+  bool isVoltage = checkProtection(AC_OUTPUT_VOLTAGE_RULE, data[F("voltage")]);
+
+  if (isFrequency || isVoltage) {
+    pinLow(RELAY_PIN);
+  }
+
+  doc[AC_OUTPUT_FREQUENCY_RULE] = isFrequency;
+  doc[AC_OUTPUT_VOLTAGE_RULE] = isVoltage;
+
+  return doc;
+}
+
+JsonDocument executeDcBatteryProtection(const JsonDocument& data) {
+  JsonDocument doc;
+
+  bool isVoltage = checkProtection(DC_BATTERY_VOLTAGE_RULE, data[F("voltage")]);
+
+  if (isVoltage) {
+    pinLow(RELAY_PIN);
+  }
+
+  doc[DC_BATTERY_VOLTAGE_RULE] = isVoltage;
 
   return doc;
 }

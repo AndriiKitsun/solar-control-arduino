@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include "http/server.h"
+#include "sensors/protection-rule.h"
 #include "sensors/sensor.h"
 #include "utils/date.h"
 #include "utils/eeprom.h"
@@ -22,6 +23,8 @@ void setup() {
   startSensors();
   startServer();
   startWebSocket();
+
+  loadProtectionRules();
 }
 
 void loop() {

@@ -5,10 +5,10 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include <PZEM004Tv30.h>
-#include "basePzem.h"
 #include "utils/date.h"
 #include "utils/eeprom.h"
 
+// sizeof: 16
 struct Zone {
   float t1StartEnergy = 0.0;
   float t2StartEnergy = 0.0;
@@ -16,9 +16,9 @@ struct Zone {
   float t2EnergyAcc = 0.0;
 };
 
-class AcPzem : public BasePzem {
+class AcPzem {
  public:
-  AcPzem(String name, SoftwareSerial& port, uint8_t storageAddress, bool isFullPower, uint8_t pzemAddress = PZEM_DEFAULT_ADDR);
+  AcPzem(String name, SoftwareSerial& port, uint8_t storageAddress, uint8_t pzemAddress = PZEM_DEFAULT_ADDR);
 
   void startPzem();
 
@@ -33,17 +33,20 @@ class AcPzem : public BasePzem {
   Date _createdAt;
   Zone _zone;
 
+  String _name;
   uint8_t _storageAddress;
-  bool _isFullPower;
 
-  float _t1Energy;
-  float _t2Energy;
+  float _voltage;
+  float _current;
+  float _power;
+  float _energy;
   float _frequency;
   float _powerFactor;
+  float _t1Energy;
+  float _t2Energy;
 
   bool isConnected();
   void readValues();
-  float calcFullPower(float value);
   void calcZoneEnergy();
   void clearZone();
 

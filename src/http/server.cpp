@@ -30,6 +30,9 @@ void configRouter() {
 
   server.on(F("/sensors"), HTTP_GET, handleSensorsValues);
 
+  server.on(F("/protection-rules"), HTTP_GET, handleProtectionRules);
+  server.on(F("/protection-rules"), HTTP_PUT, handleProtectionRuleChange);
+
   server.on(F("/pzems/address"), HTTP_PATCH, handlePzemAddressChange);
   server.on(F("/pzems/counter"), HTTP_DELETE, handlePzemsCounterReset);
 
@@ -68,6 +71,61 @@ void handleSensorsValues() {
   serializeJson(getSensorsValues(), payload);
 
   server.send(HTTP_CODE_OK, F("application/json"), payload);
+}
+
+// GET "/protection-rules"
+void handleProtectionRules() {
+  String payload;
+
+  serializeJson(getProtectionRules(), payload);
+
+  server.send(HTTP_CODE_OK, F("application/json"), payload);
+}
+
+// PUT "/protection-rules"
+void handleProtectionRuleChange() {
+  JsonDocument body;
+  DeserializationError error = deserializeJson(body, server.arg("plain"));
+
+  if (error) {
+    server.send(HTTP_CODE_BAD_REQUEST, F("text/plain"), F("The passed payload is not valid"));
+
+    return;
+  }
+
+  if (body[F("id")].isNull()) {
+    server.send(HTTP_CODE_BAD_REQUEST, F("text/plain"), F("The \"id\" field is required"));
+
+    return;
+  }
+
+  if (body[F("min")].isNull()) {
+    server.send(HTTP_CODE_BAD_REQUEST, F("text/plain"), F("The \"min\" field is required"));
+
+    return;
+  }
+
+  if (body[F("max")].isNull()) {
+    server.send(HTTP_CODE_BAD_REQUEST, F("text/plain"), F("The \"max\" field is required"));
+
+    return;
+  }
+
+  ProtectionRuleSaveState saveResult = saveProtectionRule(body);
+
+  if (saveResult == SAVE_STATE_NOT_FOUND) {
+    server.send(HTTP_CODE_NOT_FOUND, F("text/plain"), F("Rule with entered id is not found"));
+
+    return;
+  }
+
+  if (saveResult == SAVE_STATE_ERROR) {
+    server.send(HTTP_CODE_INTERNAL_SERVER_ERROR, F("text/plain"), F("Rule saving finished with error"));
+
+    return;
+  }
+
+  server.send(HTTP_CODE_OK);
 }
 
 // PATCH "/pzems/address?name={name}&address={1}"

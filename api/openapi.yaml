@@ -16,6 +16,8 @@ tags:
     description: Operations with ESP board
   - name: Sensor
     description: Access to connected sensors
+  - name: Protection Rules
+    description: Access to protection rules
   - name: PZEM
     description: Access to PZEM sensors
   - name: Relay
@@ -62,6 +64,58 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SensorsData'
+  /protection-rules:
+    get:
+      tags:
+        - Protection Rules
+      summary: Returns values of all registered protection rules
+      operationId: getProtectionRules
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProtectionRule'
+    put:
+      tags:
+        - Protection Rules
+      summary: Save protection rule
+      operationId: saveProtectionRule
+      requestBody: 
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProtectionRule'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                type: string
+                examples:
+                  - The "min" field is required
+        '404':
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                type: string
+                examples:
+                  - Rule with entered id is not found
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                type: string
+                examples:
+                  - Rule saving finished with error
   /pzems/address:
     patch:
       tags:
@@ -278,7 +332,7 @@ components:
     SensorsData:
       type: object
       properties:
-        createdAtGmt:
+        createdAt:
           type: string
           format: date-time
           description: Data collection date in UTC
@@ -289,7 +343,7 @@ components:
           items:
             $ref: '#/components/schemas/Sensor'
       required:
-        - createdAtGmt
+        - createdAt
         - sensors
     Sensor:
       type: object
@@ -347,6 +401,36 @@ components:
           description: Calculated value of active energy during T2 zone
           examples:
             - 0.012914399
+        protection:
+          type: object
+          description: Object with registered protection rules
+          additionalProperties:
+            type: boolean
+          examples:
+          - acOutputFrequency: true
+            acOutputVoltage: false
+    ProtectionRule:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The id of the protection rule
+          examples:
+            - acOutputFrequency
+        min:
+          type: number
+          description: Min value of rule
+          examples:
+            - 49.31
+        max:
+          type: number
+          description: Max value of rule
+          examples:
+            - 51.15
+      required:
+        - id
+        - min
+        - max
     PzemAddress:
       type: object
       properties:
