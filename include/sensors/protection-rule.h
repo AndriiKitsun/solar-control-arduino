@@ -6,6 +6,12 @@
 #include <ArduinoJson.h>
 #include "utils/eeprom.h"
 
+#define PROTECTION_RULES_CONFIG_ADDRESS 32
+
+#define AC_OUTPUT_FREQUENCY_RULE F("acOutputFrequency")
+#define AC_OUTPUT_VOLTAGE_RULE F("acOutputVoltage")
+#define DC_BATTERY_VOLTAGE_RULE F("dcBatteryVoltage")
+
 // sizeof: 8
 struct ProtectionRule {
   float min;
@@ -25,17 +31,13 @@ enum ProtectionRuleSaveState {
   SAVE_STATE_NOT_FOUND,
 };
 
-#define PROTECTION_RULES_CONFIG_ADDRESS 32
-
-#define AC_OUTPUT_FREQUENCY_RULE F("acOutputFrequency")
-#define AC_OUTPUT_VOLTAGE_RULE F("acOutputVoltage")
-#define DC_BATTERY_VOLTAGE_RULE F("dcBatteryVoltage")
-
 void loadProtectionRules();
 JsonDocument getProtectionRules();
 
 ProtectionRuleSaveState saveProtectionRule(const JsonDocument& data);
 ProtectionRule updateProtectionRule(const JsonDocument& doc);
 ProtectionRuleSaveState storeProtectionRules();
+
+bool checkProtection(String id, float value);
 
 #endif

@@ -66,38 +66,22 @@ ProtectionRuleSaveState storeProtectionRules() {
   return SAVE_STATE_ERROR;
 }
 
-// JsonDocument executeProtectionCheck(const JsonObject& data, const ProtectionRule* rules) {
-//   uint8_t length = sizeof(rules) / sizeof(rules[0]);
-//   JsonDocument result;
+bool checkProtection(String id, float value) {
+  ProtectionRule rule;
 
-//   for (size_t i = 0; i < length; i++) {
-//     ProtectionRule rule = rules[i];
+  if (id == AC_OUTPUT_FREQUENCY_RULE) {
+    rule = config.acOutputFrequency;
+  } else if (id == AC_OUTPUT_VOLTAGE_RULE) {
+    rule = config.acOutputVoltage;
+  } else if (id == DC_BATTERY_VOLTAGE_RULE) {
+    rule = config.dcBatteryVoltage;
+  } else {
+    return false;
+  }
 
-//     if (rule.id == "acOutputFrequency") {
-//       float value = data["frequency"];
+  if (!value || !rule.min || !rule.max) {
+    return false;
+  }
 
-//       result[F("id")] = rule.id;
-//       result[F("executed")] = checkProtection(value, rule);
-//     } else if (rule.id == "acOutputVoltage") {
-//       float value = data["voltage"];
-
-//       result[F("id")] = rule.id;
-//       result[F("executed")] = checkProtection(value, rule);
-//     } else if (rule.id == "acOutputAvgVoltage") {
-//       float value = data["voltage"];
-
-//       result[F("id")] = rule.id;
-//       result[F("executed")] = checkProtection(value, rule);
-//     }
-//   }
-
-//   return result;
-// }
-
-// bool checkProtection(float value, const ProtectionRule& rule) {
-//   if (!value) {
-//     return false;
-//   }
-
-//   return value < rule.min || value > rule.max;
-// }
+  return value < rule.min || value > rule.max;
+}
