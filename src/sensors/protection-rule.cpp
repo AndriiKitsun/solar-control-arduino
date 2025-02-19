@@ -59,11 +59,11 @@ ProtectionRule updateProtectionRule(const JsonDocument& doc) {
 ProtectionRuleSaveState storeProtectionRules() {
   bool isSuccess = putValue(PROTECTION_RULES_CONFIG_ADDRESS, config);
 
-  if (isSuccess) {
-    return SAVE_STATE_SUCCESS;
+  if (!isSuccess) {
+    return SAVE_STATE_ERROR;
   }
 
-  return SAVE_STATE_ERROR;
+  return SAVE_STATE_SUCCESS;
 }
 
 bool checkProtection(String id, float value) {
