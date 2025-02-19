@@ -93,19 +93,19 @@ void handleProtectionRuleChange() {
     return;
   }
 
-  if (!body[F("id")]) {
+  if (body[F("id")].isNull()) {
     server.send(HTTP_CODE_BAD_REQUEST, F("text/plain"), F("The \"id\" field is required"));
 
     return;
   }
 
-  if (!body[F("min")]) {
+  if (body[F("min")].isNull()) {
     server.send(HTTP_CODE_BAD_REQUEST, F("text/plain"), F("The \"min\" field is required"));
 
     return;
   }
 
-  if (!body[F("max")]) {
+  if (body[F("max")].isNull()) {
     server.send(HTTP_CODE_BAD_REQUEST, F("text/plain"), F("The \"max\" field is required"));
 
     return;

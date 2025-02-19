@@ -19,7 +19,7 @@ JsonDocument getSensorsValues() {
 
   Date date = getLocalDate();
 
-  doc[F("createdAtGmt")] = toJSON(getUTCDate());
+  doc[F("createdAt")] = toJSON(getUTCDate());
 
   JsonArray pzems = doc[F("sensors")].to<JsonArray>();
 
