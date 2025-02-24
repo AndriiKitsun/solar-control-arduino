@@ -31,20 +31,36 @@ ProtectionRuleSaveState saveProtectionRule(const JsonDocument& doc) {
   String id = doc[F("id")];
 
   if (id == AC_OUTPUT_FREQUENCY_RULE) {
+    if (isEqual(config.acOutputFrequency, doc)) {
+      return SAVE_STATE_NOT_MODIFIED;
+    }
+
     config.acOutputFrequency = updateProtectionRule(doc);
 
     return storeProtectionRules();
   } else if (id == AC_OUTPUT_VOLTAGE_RULE) {
+    if (isEqual(config.acOutputVoltage, doc)) {
+      return SAVE_STATE_NOT_MODIFIED;
+    }
+
     config.acOutputVoltage = updateProtectionRule(doc);
 
     return storeProtectionRules();
   } else if (id == DC_BATTERY_VOLTAGE_RULE) {
+    if (isEqual(config.dcBatteryVoltage, doc)) {
+      return SAVE_STATE_NOT_MODIFIED;
+    }
+
     config.dcBatteryVoltage = updateProtectionRule(doc);
 
     return storeProtectionRules();
   }
 
   return SAVE_STATE_NOT_FOUND;
+}
+
+bool isEqual(const ProtectionRule& rule, const JsonDocument& doc) {
+  return rule.min == doc[F("min")] && rule.max == doc[F("max")];
 }
 
 ProtectionRule updateProtectionRule(const JsonDocument& doc) {

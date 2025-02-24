@@ -29,12 +29,14 @@ enum ProtectionRuleSaveState {
   SAVE_STATE_SUCCESS,
   SAVE_STATE_ERROR,
   SAVE_STATE_NOT_FOUND,
+  SAVE_STATE_NOT_MODIFIED,
 };
 
 void loadProtectionRules();
 JsonDocument getProtectionRules();
 
-ProtectionRuleSaveState saveProtectionRule(const JsonDocument& data);
+ProtectionRuleSaveState saveProtectionRule(const JsonDocument& doc);
+bool isEqual(const ProtectionRule& rule, const JsonDocument& doc);
 ProtectionRule updateProtectionRule(const JsonDocument& doc);
 ProtectionRuleSaveState storeProtectionRules();
 
