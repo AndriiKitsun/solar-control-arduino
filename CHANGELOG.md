@@ -1,5 +1,17 @@
 # solar-control-arduino
 
+## 1.3.0
+
+### Minor Changes
+
+- [#45](https://github.com/AndriiKitsun/solar-control-arduino/pull/45) [`0d19f21`](https://github.com/AndriiKitsun/solar-control-arduino/commit/0d19f2140fec13d238e8cbbfe5cb40ff3bdb1ea9) Thanks [@AndriiKitsun](https://github.com/AndriiKitsun)! - SC-104: Implement protection rules
+
+### Patch Changes
+
+- [#46](https://github.com/AndriiKitsun/solar-control-arduino/pull/46) [`0d79abf`](https://github.com/AndriiKitsun/solar-control-arduino/commit/0d79abffc0c3237ff41a4d7d4957f893adfc2084) Thanks [@AndriiKitsun](https://github.com/AndriiKitsun)! - SC-115: Do not rewrite protection rule when it is equal with passed DTO
+
+- [#44](https://github.com/AndriiKitsun/solar-control-arduino/pull/44) [`a2c66fc`](https://github.com/AndriiKitsun/solar-control-arduino/commit/a2c66fc55a2dab1fb55e815e37428ebbb0dd98b8) Thanks [@AndriiKitsun](https://github.com/AndriiKitsun)! - SC-108: Move divider constants to the env config
+
 ## 1.2.0
 
 ### Minor Changes
