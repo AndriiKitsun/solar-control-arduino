@@ -32,10 +32,13 @@ class AcPzem {
  private:
   String _name;
   PZEM004Tv30 _pzem;
-  Date _createdAt;
-  Zone _zone;
   uint8_t _storageAddress;
   MovingAverage _avgVoltageCalc;
+
+  Date _createdAt;
+  Zone _zone;
+  float _avgVoltageIdlePeriod;
+  unsigned long _avgVoltageTimeoutMs;
 
   float _voltage;
   float _avgVoltage;
@@ -49,6 +52,7 @@ class AcPzem {
 
   bool isConnected();
   void readValues();
+  void calcAvgVoltage();
   void calcZoneEnergy();
   void clearZone();
 

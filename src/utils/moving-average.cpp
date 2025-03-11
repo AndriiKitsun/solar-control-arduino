@@ -34,3 +34,9 @@ float MovingAverage::getAverage() {
 
   return _sum / _count;
 }
+
+void MovingAverage::reset() {
+  _index = 0;
+  _count = 0;
+  _sum = 0;
+}

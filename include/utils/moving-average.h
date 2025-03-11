@@ -18,8 +18,8 @@ class MovingAverage {
   ~MovingAverage();
 
   void addValue(float value);
-
   float getAverage();
+  void reset();
 };
 
 #endif
