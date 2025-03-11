@@ -338,12 +338,16 @@ components:
           description: Data collection date in UTC
           examples:
             - "2024-09-01T12:22:05.042Z"
+        power:
+          type: boolean
+          description: Status of the power relay
         sensors:
           type: array
           items:
             $ref: '#/components/schemas/Sensor'
       required:
         - createdAt
+        - power
         - sensors
     Sensor:
       type: object
