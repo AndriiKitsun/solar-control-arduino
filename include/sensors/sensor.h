@@ -15,6 +15,9 @@
 #define AC_INPUT_SENSOR_SAVE_ADDRESS 0
 #define AC_OUTPUT_SENSOR_SAVE_ADDRESS 16
 
+#define AC_SENSOR_AVG_VOLTAGE_SIZE 600
+#define DC_BATTERY_SENSOR_AVG_VOLTAGE_SIZE 50
+
 void startSensors();
 
 JsonDocument getSensorsValues();

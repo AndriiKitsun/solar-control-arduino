@@ -2,9 +2,9 @@
 
 static SoftwareSerial acPzemSerial(AC_PZEM_RX_PIN, AC_PZEM_TX_PIN);
 
-static AcPzem acInputPzem(AC_INPUT_SENSOR_NAME, acPzemSerial, AC_INPUT_SENSOR_SAVE_ADDRESS, AC_INPUT_PZEM_ADDRESS);
-static AcPzem acOutputPzem(AC_OUTPUT_SENSOR_NAME, acPzemSerial, AC_OUTPUT_SENSOR_SAVE_ADDRESS, AC_OUTPUT_PZEM_ADDRESS);
-static DcDivider dcDivider(DC_BATTERY_SENSOR_NAME);
+static AcPzem acInputPzem(AC_INPUT_SENSOR_NAME, acPzemSerial, AC_INPUT_SENSOR_SAVE_ADDRESS, AC_INPUT_PZEM_ADDRESS, AC_SENSOR_AVG_VOLTAGE_SIZE);
+static AcPzem acOutputPzem(AC_OUTPUT_SENSOR_NAME, acPzemSerial, AC_OUTPUT_SENSOR_SAVE_ADDRESS, AC_OUTPUT_PZEM_ADDRESS, AC_SENSOR_AVG_VOLTAGE_SIZE);
+static DcDivider dcDivider(DC_BATTERY_SENSOR_NAME, DC_BATTERY_SENSOR_AVG_VOLTAGE_SIZE);
 
 void startSensors() {
   Serial.println(F("Initializing sensors"));
@@ -94,11 +94,11 @@ JsonDocument executeAcOutputProtection(const JsonDocument& data) {
 JsonDocument executeDcBatteryProtection(const JsonDocument& data) {
   JsonDocument doc;
 
-  bool isVoltage = checkProtection(DC_BATTERY_VOLTAGE_RULE, data[F("voltage")]);
+  bool isAvgVoltage = checkProtection(DC_BATTERY_AVG_VOLTAGE_RULE, data[F("avgVoltage")]);
 
-  managePower(isVoltage);
+  managePower(isAvgVoltage);
 
-  doc[DC_BATTERY_VOLTAGE_RULE] = isVoltage;
+  doc[DC_BATTERY_AVG_VOLTAGE_RULE] = isAvgVoltage;
 
   return doc;
 }

@@ -7,6 +7,7 @@
 #include <PZEM004Tv30.h>
 #include "utils/date.h"
 #include "utils/eeprom.h"
+#include "utils/moving-average.h"
 
 // sizeof: 16
 struct Zone {
@@ -18,7 +19,7 @@ struct Zone {
 
 class AcPzem {
  public:
-  AcPzem(String name, SoftwareSerial& port, uint8_t storageAddress, uint8_t pzemAddress = PZEM_DEFAULT_ADDR);
+  AcPzem(String name, SoftwareSerial& port, uint8_t storageAddress, uint8_t pzemAddress, uint8_t avgVoltageSize);
 
   void startPzem();
 
@@ -31,12 +32,16 @@ class AcPzem {
  private:
   String _name;
   PZEM004Tv30 _pzem;
+  uint8_t _storageAddress;
+  MovingAverage _avgVoltageCalc;
+
   Date _createdAt;
   Zone _zone;
-
-  uint8_t _storageAddress;
+  float _avgVoltageIdlePeriod;
+  unsigned long _avgVoltageTimeoutMs;
 
   float _voltage;
+  float _avgVoltage;
   float _current;
   float _power;
   float _energy;
@@ -47,6 +52,7 @@ class AcPzem {
 
   bool isConnected();
   void readValues();
+  void calcAvgVoltage();
   void calcZoneEnergy();
   void clearZone();
 

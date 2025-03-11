@@ -2,8 +2,8 @@
 
 // Public
 
-DcDivider::DcDivider(String name)
-    : _name(name) {
+DcDivider::DcDivider(String name, uint8_t avgVoltageSize)
+    : _name(name), _avgVoltage(avgVoltageSize) {
 }
 
 void DcDivider::start() {
@@ -12,8 +12,12 @@ void DcDivider::start() {
 
 JsonDocument DcDivider::getValues() {
   JsonDocument doc;
+  float voltage = getVoltage();
 
-  doc[F("voltage")] = getVoltage();
+  _avgVoltage.addValue(voltage);
+
+  doc[F("voltage")] = voltage;
+  doc[F("avgVoltage")] = _avgVoltage.getAverage();
   doc[F("name")] = _name;
 
   return doc;

@@ -2,8 +2,13 @@
 
 // Public
 
-AcPzem::AcPzem(String name, SoftwareSerial& port, uint8_t storageAddress, uint8_t pzemAddress)
-    : _name(name), _pzem(port, pzemAddress), _storageAddress(storageAddress) {}
+AcPzem::AcPzem(String name, SoftwareSerial& port, uint8_t storageAddress, uint8_t pzemAddress, uint8_t avgVoltageSize)
+    : _pzem(port, pzemAddress), _avgVoltageCalc(avgVoltageSize) {
+  _name = name;
+  _storageAddress = storageAddress;
+
+  _avgVoltageIdlePeriod = avgVoltageSize * SENSORS_AVG_CALC_PERIOD * 1000;
+}
 
 void AcPzem::startPzem() {
   _zone = getZone();
@@ -40,6 +45,10 @@ JsonDocument AcPzem::getValues(const Date& date) {
 
   if (_voltage) {
     doc[F("voltage")] = _voltage;
+  }
+
+  if (_avgVoltage) {
+    doc[F("avgVoltage")] = _avgVoltage;
   }
 
   if (_current) {
@@ -120,9 +129,12 @@ bool AcPzem::isConnected() {
 void AcPzem::readValues() {
   _voltage = _pzem.voltage();
 
+  calcAvgVoltage();
+
   // If sensor is disconnected - clear values and skip further sensor polling
   if (isnan(_voltage)) {
     _voltage = 0.0;
+    _avgVoltage = 0.0;
     _current = 0.0;
     _power = 0.0;
     _energy = 0.0;
@@ -141,6 +153,28 @@ void AcPzem::readValues() {
   _frequency = _pzem.frequency();
 
   calcZoneEnergy();
+}
+
+void AcPzem::calcAvgVoltage() {
+  if (!isnan(_voltage)) {
+    _avgVoltageTimeoutMs = 0;
+
+    _avgVoltageCalc.addValue(_voltage);
+
+    _avgVoltage = _avgVoltageCalc.getAverage();
+
+    return;
+  }
+
+  if (!_avgVoltageTimeoutMs) {
+    _avgVoltageTimeoutMs = millis();
+  }
+
+  if (millis() - _avgVoltageTimeoutMs >= _avgVoltageIdlePeriod) {
+    _avgVoltageTimeoutMs = millis();
+
+    _avgVoltageCalc.reset();
+  }
 }
 
 void AcPzem::calcZoneEnergy() {
