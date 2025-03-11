@@ -94,11 +94,11 @@ JsonDocument executeAcOutputProtection(const JsonDocument& data) {
 JsonDocument executeDcBatteryProtection(const JsonDocument& data) {
   JsonDocument doc;
 
-  bool isVoltage = checkProtection(DC_BATTERY_VOLTAGE_RULE, data[F("voltage")]);
+  bool isAvgVoltage = checkProtection(DC_BATTERY_AVG_VOLTAGE_RULE, data[F("avgVoltage")]);
 
-  managePower(isVoltage);
+  managePower(isAvgVoltage);
 
-  doc[DC_BATTERY_VOLTAGE_RULE] = isVoltage;
+  doc[DC_BATTERY_AVG_VOLTAGE_RULE] = isAvgVoltage;
 
   return doc;
 }

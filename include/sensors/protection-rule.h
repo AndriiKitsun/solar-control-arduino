@@ -10,7 +10,7 @@
 
 #define AC_OUTPUT_FREQUENCY_RULE F("acOutputFrequency")
 #define AC_OUTPUT_VOLTAGE_RULE F("acOutputVoltage")
-#define DC_BATTERY_VOLTAGE_RULE F("dcBatteryVoltage")
+#define DC_BATTERY_AVG_VOLTAGE_RULE F("dcBatteryAvgVoltage")
 
 // sizeof: 8
 struct ProtectionRule {
@@ -22,7 +22,7 @@ struct ProtectionRule {
 struct ProtectionRulesConfig {
   ProtectionRule acOutputFrequency;
   ProtectionRule acOutputVoltage;
-  ProtectionRule dcBatteryVoltage;
+  ProtectionRule dcBatteryAvgVoltage;
 };
 
 enum ProtectionRuleSaveState {

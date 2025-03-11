@@ -20,9 +20,9 @@ JsonDocument getProtectionRules() {
   rule2["max"] = config.acOutputVoltage.max;
 
   JsonObject rule3 = doc.add<JsonObject>();
-  rule3["id"] = DC_BATTERY_VOLTAGE_RULE;
-  rule3["min"] = config.dcBatteryVoltage.min;
-  rule3["max"] = config.dcBatteryVoltage.max;
+  rule3["id"] = DC_BATTERY_AVG_VOLTAGE_RULE;
+  rule3["min"] = config.dcBatteryAvgVoltage.min;
+  rule3["max"] = config.dcBatteryAvgVoltage.max;
 
   return doc;
 }
@@ -30,30 +30,22 @@ JsonDocument getProtectionRules() {
 ProtectionRuleSaveState saveProtectionRule(const JsonDocument& doc) {
   String id = doc[F("id")];
 
+  auto processRule = [&](ProtectionRule& rule) -> ProtectionRuleSaveState {
+    if (isEqual(rule, doc)) {
+      return SAVE_STATE_NOT_MODIFIED;
+    }
+
+    rule = updateProtectionRule(doc);
+
+    return storeProtectionRules();
+  };
+
   if (id == AC_OUTPUT_FREQUENCY_RULE) {
-    if (isEqual(config.acOutputFrequency, doc)) {
-      return SAVE_STATE_NOT_MODIFIED;
-    }
-
-    config.acOutputFrequency = updateProtectionRule(doc);
-
-    return storeProtectionRules();
+    return processRule(config.acOutputFrequency);
   } else if (id == AC_OUTPUT_VOLTAGE_RULE) {
-    if (isEqual(config.acOutputVoltage, doc)) {
-      return SAVE_STATE_NOT_MODIFIED;
-    }
-
-    config.acOutputVoltage = updateProtectionRule(doc);
-
-    return storeProtectionRules();
-  } else if (id == DC_BATTERY_VOLTAGE_RULE) {
-    if (isEqual(config.dcBatteryVoltage, doc)) {
-      return SAVE_STATE_NOT_MODIFIED;
-    }
-
-    config.dcBatteryVoltage = updateProtectionRule(doc);
-
-    return storeProtectionRules();
+    return processRule(config.acOutputVoltage);
+  } else if (id == DC_BATTERY_AVG_VOLTAGE_RULE) {
+    return processRule(config.dcBatteryAvgVoltage);
   }
 
   return SAVE_STATE_NOT_FOUND;
@@ -89,8 +81,8 @@ bool checkProtection(String id, float value) {
     rule = config.acOutputFrequency;
   } else if (id == AC_OUTPUT_VOLTAGE_RULE) {
     rule = config.acOutputVoltage;
-  } else if (id == DC_BATTERY_VOLTAGE_RULE) {
-    rule = config.dcBatteryVoltage;
+  } else if (id == DC_BATTERY_AVG_VOLTAGE_RULE) {
+    rule = config.dcBatteryAvgVoltage;
   } else {
     return false;
   }
