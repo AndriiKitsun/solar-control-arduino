@@ -180,6 +180,7 @@ void handlePzemsCounterReset() {
 // POST "/relays/off"
 // POST "/relays/toggle"
 void handleRelayState(RelayState state) {
+  JsonDocument doc;
   String payload;
 
   switch (state) {
@@ -197,7 +198,9 @@ void handleRelayState(RelayState state) {
       break;
   }
 
-  serializeJson(getPinStatus(RELAY_PIN), payload);
+  doc[F("status")] = getPin(RELAY_PIN);
+
+  serializeJson(doc, payload);
 
   server.send(HTTP_CODE_OK, F("application/json"), payload);
 }

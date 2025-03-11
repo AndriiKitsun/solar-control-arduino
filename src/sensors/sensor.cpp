@@ -2,8 +2,8 @@
 
 static SoftwareSerial acPzemSerial(AC_PZEM_RX_PIN, AC_PZEM_TX_PIN);
 
-static AcPzem acInputPzem(AC_INPUT_SENSOR_NAME, acPzemSerial, AC_INPUT_SENSOR_SAVE_ADDRESS, AC_INPUT_PZEM_ADDRESS);
-static AcPzem acOutputPzem(AC_OUTPUT_SENSOR_NAME, acPzemSerial, AC_OUTPUT_SENSOR_SAVE_ADDRESS, AC_OUTPUT_PZEM_ADDRESS);
+static AcPzem acInputPzem(AC_INPUT_SENSOR_NAME, acPzemSerial, AC_INPUT_SENSOR_SAVE_ADDRESS, AC_OUTPUT_PZEM_ADDRESS);
+static AcPzem acOutputPzem(AC_OUTPUT_SENSOR_NAME, acPzemSerial, AC_OUTPUT_SENSOR_SAVE_ADDRESS, AC_INPUT_PZEM_ADDRESS);
 static DcDivider dcDivider(DC_BATTERY_SENSOR_NAME);
 
 void startSensors() {
@@ -20,6 +20,7 @@ JsonDocument getSensorsValues() {
   Date date = getLocalDate();
 
   doc[F("createdAt")] = toJSON(getUTCDate());
+  doc[F("power")] = getPin(RELAY_PIN);
 
   JsonArray pzems = doc[F("sensors")].to<JsonArray>();
 
