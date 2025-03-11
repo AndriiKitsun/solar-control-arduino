@@ -6,6 +6,10 @@ void initPin(uint8_t pin, uint8_t value) {
   digitalWrite(pin, value);
 }
 
+bool getPin(uint8_t pin) {
+  return !!digitalRead(pin);
+}
+
 void pinHigh(uint8_t pin) {
   digitalWrite(pin, HIGH);
 }
@@ -16,12 +20,4 @@ void pinLow(uint8_t pin) {
 
 void togglePin(uint8_t pin) {
   digitalWrite(pin, !digitalRead(pin));
-}
-
-JsonDocument getPinStatus(uint8_t pin) {
-  JsonDocument doc;
-
-  doc[F("status")] = !!digitalRead(pin);
-
-  return doc;
 }
