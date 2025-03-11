@@ -2,8 +2,8 @@
 
 // Public
 
-AcPzem::AcPzem(String name, SoftwareSerial& port, uint8_t storageAddress, uint8_t pzemAddress)
-    : _name(name), _pzem(port, pzemAddress), _storageAddress(storageAddress) {}
+AcPzem::AcPzem(String name, SoftwareSerial& port, uint8_t storageAddress, uint8_t pzemAddress, uint8_t avgVoltageSize)
+    : _name(name), _pzem(port, pzemAddress), _storageAddress(storageAddress), _avgVoltageCalc(avgVoltageSize) {}
 
 void AcPzem::startPzem() {
   _zone = getZone();
@@ -40,6 +40,10 @@ JsonDocument AcPzem::getValues(const Date& date) {
 
   if (_voltage) {
     doc[F("voltage")] = _voltage;
+  }
+
+  if (_avgVoltage) {
+    doc[F("avgVoltage")] = _avgVoltage;
   }
 
   if (_current) {
@@ -123,6 +127,7 @@ void AcPzem::readValues() {
   // If sensor is disconnected - clear values and skip further sensor polling
   if (isnan(_voltage)) {
     _voltage = 0.0;
+    _avgVoltage = 0.0;
     _current = 0.0;
     _power = 0.0;
     _energy = 0.0;
@@ -134,6 +139,9 @@ void AcPzem::readValues() {
     return;
   }
 
+  _avgVoltageCalc.addValue(_voltage);
+
+  _avgVoltage = _avgVoltageCalc.getAverage();
   _powerFactor = _pzem.pf();
   _current = _pzem.current();
   _power = _pzem.power() / 1000.0;
