@@ -363,6 +363,12 @@ components:
           description: AC/DC voltage in Volts
           examples:
             - 233.1000061
+        avgVoltage:
+          type: number
+          format: float
+          description: AC/DC average voltage in Volts
+          examples:
+            - 225.3
         current:
           type: number
           format: float

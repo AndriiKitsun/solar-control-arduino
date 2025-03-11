@@ -25,6 +25,9 @@
     "string_view": "cpp",
     "initializer_list": "cpp",
     "ranges": "cpp",
-    "typeinfo": "cpp"
+    "typeinfo": "cpp",
+    "chrono": "cpp",
+    "algorithm": "cpp",
+    "cmath": "cpp"
   }
 }

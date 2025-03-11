@@ -4,16 +4,18 @@
 
 #include <Arduino.h>
 #include <ArduinoJson.h>
+#include "utils/moving-average.h"
 
 class DcDivider {
  public:
-  DcDivider(String name);
+  DcDivider(String name, uint8_t avgVoltageSize);
 
   void start();
   JsonDocument getValues();
 
  private:
   String _name;
+  MovingAverage _avgVoltage;
 
   float getVoltage();
 };
