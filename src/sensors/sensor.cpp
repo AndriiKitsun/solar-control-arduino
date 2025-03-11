@@ -84,6 +84,8 @@ JsonDocument executeAcOutputProtection(const JsonDocument& data) {
 
   if (isFrequency || isVoltage) {
     pinLow(RELAY_PIN);
+  } else {
+    pinHigh(RELAY_PIN);
   }
 
   doc[AC_OUTPUT_FREQUENCY_RULE] = isFrequency;
@@ -99,6 +101,8 @@ JsonDocument executeDcBatteryProtection(const JsonDocument& data) {
 
   if (isVoltage) {
     pinLow(RELAY_PIN);
+  } else {
+    pinHigh(RELAY_PIN);
   }
 
   doc[DC_BATTERY_VOLTAGE_RULE] = isVoltage;

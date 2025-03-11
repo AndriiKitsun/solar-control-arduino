@@ -29,11 +29,11 @@ class AcPzem {
   JsonDocument resetCounter();
 
  private:
+  String _name;
   PZEM004Tv30 _pzem;
   Date _createdAt;
   Zone _zone;
 
-  String _name;
   uint8_t _storageAddress;
 
   float _voltage;
