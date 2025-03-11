@@ -26,4 +26,6 @@ JsonDocument changePzemAddress(String pzemId, uint8_t address);
 JsonDocument executeAcOutputProtection(const JsonDocument& data);
 JsonDocument executeDcBatteryProtection(const JsonDocument& data);
 
+void managePower(bool isProtectionTriggered);
+
 #endif

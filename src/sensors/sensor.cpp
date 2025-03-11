@@ -83,11 +83,7 @@ JsonDocument executeAcOutputProtection(const JsonDocument& data) {
   bool isFrequency = checkProtection(AC_OUTPUT_FREQUENCY_RULE, data[F("frequency")]);
   bool isVoltage = checkProtection(AC_OUTPUT_VOLTAGE_RULE, data[F("voltage")]);
 
-  if (isFrequency || isVoltage) {
-    pinLow(RELAY_PIN);
-  } else {
-    pinHigh(RELAY_PIN);
-  }
+  managePower(isFrequency || isVoltage);
 
   doc[AC_OUTPUT_FREQUENCY_RULE] = isFrequency;
   doc[AC_OUTPUT_VOLTAGE_RULE] = isVoltage;
@@ -100,13 +96,21 @@ JsonDocument executeDcBatteryProtection(const JsonDocument& data) {
 
   bool isVoltage = checkProtection(DC_BATTERY_VOLTAGE_RULE, data[F("voltage")]);
 
-  if (isVoltage) {
-    pinLow(RELAY_PIN);
-  } else {
-    pinHigh(RELAY_PIN);
-  }
+  managePower(isVoltage);
 
   doc[DC_BATTERY_VOLTAGE_RULE] = isVoltage;
 
   return doc;
+}
+
+void managePower(bool isProtectionTriggered) {
+  static bool prevResult;
+
+  if (isProtectionTriggered) {
+    pinLow(RELAY_PIN);
+  } else if (!isProtectionTriggered && prevResult) {
+    pinHigh(RELAY_PIN);
+  };
+
+  prevResult = isProtectionTriggered;
 }
