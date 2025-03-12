@@ -59,7 +59,7 @@ ProtectionRuleSaveState saveProtectionRule(const JsonDocument& doc) {
 }
 
 bool isEqual(const ProtectionRule& rule, const JsonDocument& doc) {
-  return rule.min == doc[F("min")] && rule.max == doc[F("max")];
+  return rule.min == (float)doc[F("min")] && rule.max == (float)doc[F("max")];
 }
 
 ProtectionRule updateProtectionRule(const JsonDocument& doc) {
