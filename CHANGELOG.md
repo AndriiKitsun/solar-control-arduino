@@ -1,5 +1,19 @@
 # solar-control-arduino
 
+## 1.4.0
+
+### Minor Changes
+
+- [#51](https://github.com/AndriiKitsun/solar-control-arduino/pull/51) [`0569753`](https://github.com/AndriiKitsun/solar-control-arduino/commit/0569753bb2386e804e4ec3cecb8dabada74b30fd) Thanks [@AndriiKitsun](https://github.com/AndriiKitsun)! - SC-133: Add AC Output Avg Voltage protection rule
+
+- [#52](https://github.com/AndriiKitsun/solar-control-arduino/pull/52) [`8d15a53`](https://github.com/AndriiKitsun/solar-control-arduino/commit/8d15a538ed0c842ad71871408f538e5a71db1b80) Thanks [@AndriiKitsun](https://github.com/AndriiKitsun)! - SC-134: Manual power off should be independent of protection rules
+
+- [#50](https://github.com/AndriiKitsun/solar-control-arduino/pull/50) [`90117e0`](https://github.com/AndriiKitsun/solar-control-arduino/commit/90117e010f3dd8853402f9e6737ee84d1d7ab0cd) Thanks [@AndriiKitsun](https://github.com/AndriiKitsun)! - SC-122: Dc battery voltage protection rule should take into account average voltage
+
+- [#49](https://github.com/AndriiKitsun/solar-control-arduino/pull/49) [`a0c60f9`](https://github.com/AndriiKitsun/solar-control-arduino/commit/a0c60f91d57b3a9b700565ed7c86c681f7352f83) Thanks [@AndriiKitsun](https://github.com/AndriiKitsun)! - SC-132: Add power relay status to the sensors websocket response
+
+- [#48](https://github.com/AndriiKitsun/solar-control-arduino/pull/48) [`4439594`](https://github.com/AndriiKitsun/solar-control-arduino/commit/4439594a6cb67a33c3b476bb247633ebe6817cee) Thanks [@AndriiKitsun](https://github.com/AndriiKitsun)! - SC-124: Turn on power relay when protection is not triggered
+
 ## 1.3.0
 
 ### Minor Changes
