@@ -1,6 +1,6 @@
 {
   "name": "solar-control-arduino",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Arduino project for monitoring solar station parameters",
   "private": true,
   "directories": {
