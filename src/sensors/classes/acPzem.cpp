@@ -2,7 +2,7 @@
 
 // Public
 
-AcPzem::AcPzem(String name, SoftwareSerial& port, uint8_t storageAddress, uint8_t pzemAddress, uint8_t avgVoltageSize)
+AcPzem::AcPzem(String name, SoftwareSerial& port, uint8_t storageAddress, uint8_t pzemAddress, uint16_t avgVoltageSize)
     : _pzem(port, pzemAddress), _avgVoltageCalc(avgVoltageSize) {
   _name = name;
   _storageAddress = storageAddress;

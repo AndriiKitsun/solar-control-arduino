@@ -6,7 +6,8 @@ static AcPzem acInputPzem(AC_INPUT_SENSOR_NAME, acPzemSerial, AC_INPUT_SENSOR_SA
 static AcPzem acOutputPzem(AC_OUTPUT_SENSOR_NAME, acPzemSerial, AC_OUTPUT_SENSOR_SAVE_ADDRESS, AC_OUTPUT_PZEM_ADDRESS, AC_SENSOR_AVG_VOLTAGE_SIZE);
 static DcDivider dcDivider(DC_BATTERY_SENSOR_NAME, DC_BATTERY_SENSOR_AVG_VOLTAGE_SIZE);
 
-static bool protectionTriggered = false;
+static bool prevProtectionResult = false;
+static bool protectionResult = false;
 
 void startSensors() {
   Serial.println(F("Initializing sensors"));
@@ -46,7 +47,7 @@ JsonDocument getSensorsValues() {
     pzems.add(dcBatteryValues);
   }
 
-  doc[F("pTriggered")] = protectionTriggered;
+  doc[F("pTriggered")] = protectionResult;
 
   handleProtectionResult();
 
@@ -93,7 +94,7 @@ JsonDocument executeAcOutputProtection(const JsonDocument& data) {
   bool result = isFrequency || isVoltage || isAvgVoltage;
 
   if (result) {
-    protectionTriggered = true;
+    protectionResult = true;
   }
 
   doc[AC_OUTPUT_FREQUENCY_RULE] = isFrequency;
@@ -109,7 +110,7 @@ JsonDocument executeDcBatteryProtection(const JsonDocument& data) {
   bool isAvgVoltage = checkProtection(DC_BATTERY_AVG_VOLTAGE_RULE, data[F("avgVoltage")]);
 
   if (isAvgVoltage) {
-    protectionTriggered = true;
+    protectionResult = true;
   }
 
   doc[DC_BATTERY_AVG_VOLTAGE_RULE] = isAvgVoltage;
@@ -118,7 +119,12 @@ JsonDocument executeDcBatteryProtection(const JsonDocument& data) {
 }
 
 void handleProtectionResult() {
-  protectionTriggered ? pinLow(RELAY_PIN) : pinHigh(RELAY_PIN);
+  if (protectionResult) {
+    pinLow(RELAY_PIN);
+  } else if (!protectionResult && prevProtectionResult) {
+    pinHigh(RELAY_PIN);
+  }
 
-  protectionTriggered = false;
+  prevProtectionResult = protectionResult;
+  protectionResult = false;
 }

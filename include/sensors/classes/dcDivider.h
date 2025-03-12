@@ -8,7 +8,7 @@
 
 class DcDivider {
  public:
-  DcDivider(String name, uint8_t avgVoltageSize);
+  DcDivider(String name, uint16_t avgVoltageSize);
 
   void start();
   JsonDocument getValues();

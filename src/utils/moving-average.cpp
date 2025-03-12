@@ -2,7 +2,7 @@
 
 // Public
 
-MovingAverage::MovingAverage(uint8_t size) {
+MovingAverage::MovingAverage(uint16_t size) {
   _windowSize = size;
   _values = new float[_windowSize];
   _index = 0;
