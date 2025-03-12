@@ -2,7 +2,7 @@
 
 // Public
 
-DcDivider::DcDivider(String name, uint8_t avgVoltageSize)
+DcDivider::DcDivider(String name, uint16_t avgVoltageSize)
     : _name(name), _avgVoltage(avgVoltageSize) {
 }
 

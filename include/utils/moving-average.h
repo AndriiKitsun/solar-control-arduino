@@ -6,14 +6,14 @@
 
 class MovingAverage {
  private:
-  uint8_t _windowSize;
+  uint16_t _windowSize;
   float* _values;
   int _index;
   int _count;
   float _sum;
 
  public:
-  MovingAverage(uint8_t size);
+  MovingAverage(uint16_t size);
 
   ~MovingAverage();
 
