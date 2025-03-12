@@ -1,5 +1,11 @@
 # solar-control-arduino
 
+## 1.4.1
+
+### Patch Changes
+
+- [#54](https://github.com/AndriiKitsun/solar-control-arduino/pull/54) [`0d1f525`](https://github.com/AndriiKitsun/solar-control-arduino/commit/0d1f525437f2e67e0af38678ab2dea5c84a08fc8) Thanks [@AndriiKitsun](https://github.com/AndriiKitsun)! - SC-135: Protection rule is not saved when existing rule is null
+
 ## 1.4.0
 
 ### Minor Changes
