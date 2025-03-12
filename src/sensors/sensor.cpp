@@ -6,6 +6,8 @@ static AcPzem acInputPzem(AC_INPUT_SENSOR_NAME, acPzemSerial, AC_INPUT_SENSOR_SA
 static AcPzem acOutputPzem(AC_OUTPUT_SENSOR_NAME, acPzemSerial, AC_OUTPUT_SENSOR_SAVE_ADDRESS, AC_OUTPUT_PZEM_ADDRESS, AC_SENSOR_AVG_VOLTAGE_SIZE);
 static DcDivider dcDivider(DC_BATTERY_SENSOR_NAME, DC_BATTERY_SENSOR_AVG_VOLTAGE_SIZE);
 
+static bool protectionTriggered = false;
+
 void startSensors() {
   Serial.println(F("Initializing sensors"));
 
@@ -43,6 +45,10 @@ JsonDocument getSensorsValues() {
 
     pzems.add(dcBatteryValues);
   }
+
+  doc[F("pTriggered")] = protectionTriggered;
+
+  handleProtectionResult();
 
   return doc;
 }
@@ -82,11 +88,17 @@ JsonDocument executeAcOutputProtection(const JsonDocument& data) {
 
   bool isFrequency = checkProtection(AC_OUTPUT_FREQUENCY_RULE, data[F("frequency")]);
   bool isVoltage = checkProtection(AC_OUTPUT_VOLTAGE_RULE, data[F("voltage")]);
+  bool isAvgVoltage = checkProtection(AC_OUTPUT_AVG_VOLTAGE_RULE, data[F("avgVoltage")]);
 
-  managePower(isFrequency || isVoltage);
+  bool result = isFrequency || isVoltage || isAvgVoltage;
+
+  if (result) {
+    protectionTriggered = true;
+  }
 
   doc[AC_OUTPUT_FREQUENCY_RULE] = isFrequency;
   doc[AC_OUTPUT_VOLTAGE_RULE] = isVoltage;
+  doc[AC_OUTPUT_AVG_VOLTAGE_RULE] = isAvgVoltage;
 
   return doc;
 }
@@ -96,21 +108,17 @@ JsonDocument executeDcBatteryProtection(const JsonDocument& data) {
 
   bool isAvgVoltage = checkProtection(DC_BATTERY_AVG_VOLTAGE_RULE, data[F("avgVoltage")]);
 
-  managePower(isAvgVoltage);
+  if (isAvgVoltage) {
+    protectionTriggered = true;
+  }
 
   doc[DC_BATTERY_AVG_VOLTAGE_RULE] = isAvgVoltage;
 
   return doc;
 }
 
-void managePower(bool isProtectionTriggered) {
-  static bool prevResult;
+void handleProtectionResult() {
+  protectionTriggered ? pinLow(RELAY_PIN) : pinHigh(RELAY_PIN);
 
-  if (isProtectionTriggered) {
-    pinLow(RELAY_PIN);
-  } else if (!isProtectionTriggered && prevResult) {
-    pinHigh(RELAY_PIN);
-  };
-
-  prevResult = isProtectionTriggered;
+  protectionTriggered = false;
 }

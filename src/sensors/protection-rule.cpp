@@ -9,20 +9,25 @@ void loadProtectionRules() {
 JsonDocument getProtectionRules() {
   JsonDocument doc;
 
-  JsonObject rule1 = doc.add<JsonObject>();
-  rule1["id"] = AC_OUTPUT_FREQUENCY_RULE;
-  rule1["min"] = config.acOutputFrequency.min;
-  rule1["max"] = config.acOutputFrequency.max;
+  JsonObject acOutputFrequency = doc.add<JsonObject>();
+  acOutputFrequency["id"] = AC_OUTPUT_FREQUENCY_RULE;
+  acOutputFrequency["min"] = config.acOutputFrequency.min;
+  acOutputFrequency["max"] = config.acOutputFrequency.max;
 
-  JsonObject rule2 = doc.add<JsonObject>();
-  rule2["id"] = AC_OUTPUT_VOLTAGE_RULE;
-  rule2["min"] = config.acOutputVoltage.min;
-  rule2["max"] = config.acOutputVoltage.max;
+  JsonObject acOutputVoltage = doc.add<JsonObject>();
+  acOutputVoltage["id"] = AC_OUTPUT_VOLTAGE_RULE;
+  acOutputVoltage["min"] = config.acOutputVoltage.min;
+  acOutputVoltage["max"] = config.acOutputVoltage.max;
 
-  JsonObject rule3 = doc.add<JsonObject>();
-  rule3["id"] = DC_BATTERY_AVG_VOLTAGE_RULE;
-  rule3["min"] = config.dcBatteryAvgVoltage.min;
-  rule3["max"] = config.dcBatteryAvgVoltage.max;
+  JsonObject acOutputAvgVoltage = doc.add<JsonObject>();
+  acOutputAvgVoltage["id"] = AC_OUTPUT_AVG_VOLTAGE_RULE;
+  acOutputAvgVoltage["min"] = config.acOutputAvgVoltage.min;
+  acOutputAvgVoltage["max"] = config.acOutputAvgVoltage.max;
+
+  JsonObject dcBatteryAvgVoltage = doc.add<JsonObject>();
+  dcBatteryAvgVoltage["id"] = DC_BATTERY_AVG_VOLTAGE_RULE;
+  dcBatteryAvgVoltage["min"] = config.dcBatteryAvgVoltage.min;
+  dcBatteryAvgVoltage["max"] = config.dcBatteryAvgVoltage.max;
 
   return doc;
 }
@@ -44,6 +49,8 @@ ProtectionRuleSaveState saveProtectionRule(const JsonDocument& doc) {
     return processRule(config.acOutputFrequency);
   } else if (id == AC_OUTPUT_VOLTAGE_RULE) {
     return processRule(config.acOutputVoltage);
+  } else if (id == AC_OUTPUT_AVG_VOLTAGE_RULE) {
+    return processRule(config.acOutputAvgVoltage);
   } else if (id == DC_BATTERY_AVG_VOLTAGE_RULE) {
     return processRule(config.dcBatteryAvgVoltage);
   }
@@ -81,6 +88,8 @@ bool checkProtection(String id, float value) {
     rule = config.acOutputFrequency;
   } else if (id == AC_OUTPUT_VOLTAGE_RULE) {
     rule = config.acOutputVoltage;
+  } else if (id == AC_OUTPUT_AVG_VOLTAGE_RULE) {
+    rule = config.acOutputAvgVoltage;
   } else if (id == DC_BATTERY_AVG_VOLTAGE_RULE) {
     rule = config.dcBatteryAvgVoltage;
   } else {
