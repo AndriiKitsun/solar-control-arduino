@@ -10,6 +10,7 @@
 
 #define AC_OUTPUT_FREQUENCY_RULE F("acOutputFrequency")
 #define AC_OUTPUT_VOLTAGE_RULE F("acOutputVoltage")
+#define AC_OUTPUT_AVG_VOLTAGE_RULE F("acOutputAvgVoltage")
 #define DC_BATTERY_AVG_VOLTAGE_RULE F("dcBatteryAvgVoltage")
 
 // sizeof: 8
@@ -18,10 +19,11 @@ struct ProtectionRule {
   float max;
 };
 
-// sizeof: 24
+// sizeof: 32
 struct ProtectionRulesConfig {
   ProtectionRule acOutputFrequency;
   ProtectionRule acOutputVoltage;
+  ProtectionRule acOutputAvgVoltage;
   ProtectionRule dcBatteryAvgVoltage;
 };
 

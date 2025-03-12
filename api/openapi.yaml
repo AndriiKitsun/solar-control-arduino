@@ -345,10 +345,14 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Sensor'
+        pTriggered:
+          type: boolean
+          description: Indicator to point whether protection has been triggered
       required:
         - createdAt
         - power
         - sensors
+        - pTriggered
     Sensor:
       type: object
       properties:
