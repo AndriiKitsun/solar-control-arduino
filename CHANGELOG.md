@@ -1,5 +1,11 @@
 # solar-control-arduino
 
+## 1.5.0
+
+### Minor Changes
+
+- [#56](https://github.com/AndriiKitsun/solar-control-arduino/pull/56) [`37d678e`](https://github.com/AndriiKitsun/solar-control-arduino/commit/37d678e7d07fb6845e6b8d209233a66adc138fde) Thanks [@AndriiKitsun](https://github.com/AndriiKitsun)! - SC-148: Calculate average frequency and use it in protection
+
 ## 1.4.1
 
 ### Patch Changes
