@@ -397,6 +397,12 @@ components:
           description: AC frequency in Hz
           examples:
             - 50
+        avgFrequency:
+          type: number
+          format: float
+          description: Average AC frequency in Hz
+          examples:
+            - 50
         powerFactor:
           type: number
           format: float

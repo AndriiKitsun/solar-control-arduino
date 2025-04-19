@@ -3,11 +3,12 @@
 // Public
 
 AcPzem::AcPzem(String name, SoftwareSerial& port, uint8_t storageAddress, uint8_t pzemAddress, uint16_t avgVoltageSize)
-    : _pzem(port, pzemAddress), _avgVoltageCalc(avgVoltageSize) {
+    : _pzem(port, pzemAddress), _avgVoltageCalc(avgVoltageSize), _avgFrequencyCalc(AC_SENSOR_AVG_FREQUENCY_SIZE) {
   _name = name;
   _storageAddress = storageAddress;
 
-  _avgVoltageIdlePeriod = avgVoltageSize * SENSORS_AVG_CALC_PERIOD * 1000;
+  _avgVoltageIdlePeriod = avgVoltageSize * SENSORS_AVG_IDLE_PERIOD * 1000;
+  _avgFrequencyIdlePeriod = AC_SENSOR_AVG_FREQUENCY_SIZE * SENSORS_AVG_IDLE_PERIOD * 1000;
 }
 
 void AcPzem::startPzem() {
@@ -65,6 +66,10 @@ JsonDocument AcPzem::getValues(const Date& date) {
 
   if (_frequency) {
     doc[F("frequency")] = _frequency;
+  }
+
+  if (_avgFrequency) {
+    doc[F("avgFrequency")] = _avgFrequency;
   }
 
   if (_powerFactor) {
@@ -152,6 +157,8 @@ void AcPzem::readValues() {
   _energy = _pzem.energy();
   _frequency = _pzem.frequency();
 
+  calcAvgFrequency();
+
   calcZoneEnergy();
 }
 
@@ -174,6 +181,28 @@ void AcPzem::calcAvgVoltage() {
     _avgVoltageTimeoutMs = millis();
 
     _avgVoltageCalc.reset();
+  }
+}
+
+void AcPzem::calcAvgFrequency() {
+  if (!isnan(_frequency)) {
+    _avgFrequencyTimeoutMs = 0;
+
+    _avgFrequencyCalc.addValue(_frequency);
+
+    _avgFrequency = _avgFrequencyCalc.getAverage();
+
+    return;
+  }
+
+  if (!_avgFrequencyTimeoutMs) {
+    _avgFrequencyTimeoutMs = millis();
+  }
+
+  if (millis() - _avgFrequencyTimeoutMs >= _avgFrequencyIdlePeriod) {
+    _avgFrequencyTimeoutMs = millis();
+
+    _avgFrequencyCalc.reset();
   }
 }
 

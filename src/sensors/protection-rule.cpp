@@ -9,10 +9,10 @@ void loadProtectionRules() {
 JsonDocument getProtectionRules() {
   JsonDocument doc;
 
-  JsonObject acOutputFrequency = doc.add<JsonObject>();
-  acOutputFrequency["id"] = AC_OUTPUT_FREQUENCY_RULE;
-  acOutputFrequency["min"] = config.acOutputFrequency.min;
-  acOutputFrequency["max"] = config.acOutputFrequency.max;
+  JsonObject acOutputAvgFrequency = doc.add<JsonObject>();
+  acOutputAvgFrequency["id"] = AC_OUTPUT_AVG_FREQUENCY_RULE;
+  acOutputAvgFrequency["min"] = config.acOutputAvgFrequency.min;
+  acOutputAvgFrequency["max"] = config.acOutputAvgFrequency.max;
 
   JsonObject acOutputVoltage = doc.add<JsonObject>();
   acOutputVoltage["id"] = AC_OUTPUT_VOLTAGE_RULE;
@@ -45,8 +45,8 @@ ProtectionRuleSaveState saveProtectionRule(const JsonDocument& doc) {
     return storeProtectionRules();
   };
 
-  if (id == AC_OUTPUT_FREQUENCY_RULE) {
-    return processRule(config.acOutputFrequency);
+  if (id == AC_OUTPUT_AVG_FREQUENCY_RULE) {
+    return processRule(config.acOutputAvgFrequency);
   } else if (id == AC_OUTPUT_VOLTAGE_RULE) {
     return processRule(config.acOutputVoltage);
   } else if (id == AC_OUTPUT_AVG_VOLTAGE_RULE) {
@@ -84,8 +84,8 @@ ProtectionRuleSaveState storeProtectionRules() {
 bool checkProtection(String id, float value) {
   ProtectionRule rule;
 
-  if (id == AC_OUTPUT_FREQUENCY_RULE) {
-    rule = config.acOutputFrequency;
+  if (id == AC_OUTPUT_AVG_FREQUENCY_RULE) {
+    rule = config.acOutputAvgFrequency;
   } else if (id == AC_OUTPUT_VOLTAGE_RULE) {
     rule = config.acOutputVoltage;
   } else if (id == AC_OUTPUT_AVG_VOLTAGE_RULE) {

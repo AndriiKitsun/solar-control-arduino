@@ -8,7 +8,7 @@
 
 #define PROTECTION_RULES_CONFIG_ADDRESS 32
 
-#define AC_OUTPUT_FREQUENCY_RULE F("acOutputFrequency")
+#define AC_OUTPUT_AVG_FREQUENCY_RULE F("acOutputAvgFrequency")
 #define AC_OUTPUT_VOLTAGE_RULE F("acOutputVoltage")
 #define AC_OUTPUT_AVG_VOLTAGE_RULE F("acOutputAvgVoltage")
 #define DC_BATTERY_AVG_VOLTAGE_RULE F("dcBatteryAvgVoltage")
@@ -21,7 +21,7 @@ struct ProtectionRule {
 
 // sizeof: 32
 struct ProtectionRulesConfig {
-  ProtectionRule acOutputFrequency;
+  ProtectionRule acOutputAvgFrequency;
   ProtectionRule acOutputVoltage;
   ProtectionRule acOutputAvgVoltage;
   ProtectionRule dcBatteryAvgVoltage;

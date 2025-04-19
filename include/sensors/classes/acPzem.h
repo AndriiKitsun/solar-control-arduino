@@ -5,6 +5,7 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include <PZEM004Tv30.h>
+#include "sensors/sensor.h"
 #include "utils/date.h"
 #include "utils/eeprom.h"
 #include "utils/moving-average.h"
@@ -34,11 +35,15 @@ class AcPzem {
   PZEM004Tv30 _pzem;
   uint8_t _storageAddress;
   MovingAverage _avgVoltageCalc;
+  MovingAverage _avgFrequencyCalc;
 
   Date _createdAt;
   Zone _zone;
+
   float _avgVoltageIdlePeriod;
   unsigned long _avgVoltageTimeoutMs;
+  float _avgFrequencyIdlePeriod;
+  unsigned long _avgFrequencyTimeoutMs;
 
   float _voltage;
   float _avgVoltage;
@@ -46,6 +51,7 @@ class AcPzem {
   float _power;
   float _energy;
   float _frequency;
+  float _avgFrequency;
   float _powerFactor;
   float _t1Energy;
   float _t2Energy;
@@ -53,6 +59,7 @@ class AcPzem {
   bool isConnected();
   void readValues();
   void calcAvgVoltage();
+  void calcAvgFrequency();
   void calcZoneEnergy();
   void clearZone();
 

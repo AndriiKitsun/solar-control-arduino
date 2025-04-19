@@ -87,17 +87,17 @@ JsonDocument changePzemAddress(String name, uint8_t address) {
 JsonDocument executeAcOutputProtection(const JsonDocument& data) {
   JsonDocument doc;
 
-  bool isFrequency = checkProtection(AC_OUTPUT_FREQUENCY_RULE, data[F("frequency")]);
+  bool isAvgFrequency = checkProtection(AC_OUTPUT_AVG_FREQUENCY_RULE, data[F("avgFrequency")]);
   bool isVoltage = checkProtection(AC_OUTPUT_VOLTAGE_RULE, data[F("voltage")]);
   bool isAvgVoltage = checkProtection(AC_OUTPUT_AVG_VOLTAGE_RULE, data[F("avgVoltage")]);
 
-  bool result = isFrequency || isVoltage || isAvgVoltage;
+  bool result = isAvgFrequency || isVoltage || isAvgVoltage;
 
   if (result) {
     protectionResult = true;
   }
 
-  doc[AC_OUTPUT_FREQUENCY_RULE] = isFrequency;
+  doc[AC_OUTPUT_AVG_FREQUENCY_RULE] = isAvgFrequency;
   doc[AC_OUTPUT_VOLTAGE_RULE] = isVoltage;
   doc[AC_OUTPUT_AVG_VOLTAGE_RULE] = isAvgVoltage;
 

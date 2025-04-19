@@ -11,7 +11,7 @@ void startNTP() {
   Serial.print(F("NTP started. Status: "));
   Serial.println(status);
 
-  if (status != GyverNTP::Status::OK) {
+  if (!status) {
     Serial.print(F("NTP Status is not ok. Force updating... "));
 
     Serial.print(F("Update status: "));
